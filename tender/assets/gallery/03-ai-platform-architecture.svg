@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+  <rect width="1200" height="800" fill="#fff"/>
+  <text x="80" y="78" font-family="Arial" font-size="34" font-weight="700" fill="#0f172a">AI 算力平台总体架构</text>
+  <g font-family="Arial" font-size="17">
+    <rect x="80" y="120" width="1040" height="110" rx="18" fill="#eff6ff" stroke="#bfdbfe"/><text x="110" y="158" fill="#1d4ed8">交互层</text><text x="110" y="190" fill="#334155">投标工作台 · 智能问答 · 审查看板 · 图库管理</text>
+    <rect x="80" y="260" width="1040" height="130" rx="18" fill="#f0fdf4" stroke="#bbf7d0"/><text x="110" y="300" fill="#166534">能力层</text><text x="110" y="332" fill="#334155">标书生成 · 智能审查 · 图像理解 · 知识检索</text><text x="110" y="362" fill="#64748b">多模型路由 · 提示词编排 · 结果溯源</text>
+    <rect x="80" y="420" width="1040" height="130" rx="18" fill="#fff7ed" stroke="#fed7aa"/><text x="110" y="460" fill="#9a3412">数据层</text><text x="110" y="492" fill="#334155">招标文件库 · 企业资质库 · 历史标书库 · 图片素材库</text><text x="110" y="522" fill="#64748b">向量索引 · 标签体系 · 权限隔离</text>
+    <rect x="80" y="580" width="1040" height="130" rx="18" fill="#f8fafc" stroke="#cbd5e1"/><text x="110" y="620" fill="#334155">基础设施层</text><text x="110" y="652" fill="#334155">Kubernetes · 鲲鹏服务器 · GPU/NPU 调度 · 对象存储</text><text x="110" y="682" fill="#64748b">日志审计 · 监控告警 · 弹性伸缩</text>
+  </g>
+  <g stroke="#025dff" stroke-width="5" fill="none"><path d="M600 230 L600 260"/><path d="M600 390 L600 420"/><path d="M600 550 L600 580"/></g>
+  <g fill="#025dff"><circle cx="1070" cy="160" r="9"/><circle cx="1070" cy="300" r="9"/><circle cx="1070" cy="460" r="9"/><circle cx="1070" cy="620" r="9"/></g>
+  <text x="960" y="740" font-family="Arial" font-size="16" fill="#64748b">支持私有化部署，可对接企业统一身份认证</text>
+</svg>

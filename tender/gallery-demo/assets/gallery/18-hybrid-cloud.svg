@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+  <rect width="1200" height="800" fill="#f8fafc"/>
+  <text x="70" y="76" font-family="Arial" font-size="34" font-weight="700" fill="#0f172a">混合云统一管理架构</text>
+  <g font-family="Arial" font-size="17">
+    <rect x="90" y="140" width="300" height="260" rx="20" fill="#fff" stroke="#cbd5e1"/><text x="130" y="190">本地数据中心</text><text x="130" y="225">核心数据库</text><text x="130" y="260">敏感业务系统</text><text x="130" y="295">合规审计系统</text>
+    <rect x="450" y="140" width="300" height="260" rx="20" fill="#fff" stroke="#cbd5e1"/><text x="490" y="190">私有算力云</text><text x="490" y="225">Kubernetes 集群</text><text x="490" y="260">模型训练资源池</text><text x="490" y="295">GPU / NPU 调度</text>
+    <rect x="810" y="140" width="300" height="260" rx="20" fill="#fff" stroke="#cbd5e1"/><text x="850" y="190">公有云</text><text x="850" y="225">弹性 Web 服务</text><text x="850" y="260">对象存储备份</text><text x="850" y="295">跨区域 CDN</text>
+  </g>
+  <g stroke="#025dff" stroke-width="6" fill="none"><path d="M390 270 C430 270 410 270 450 270"/><path d="M750 270 C790 270 770 270 810 270"/></g>
+  <rect x="90" y="470" width="1020" height="110" rx="20" fill="#eff6ff"/>
+  <g font-family="Arial" font-size="18" fill="#1d4ed8"><text x="130" y="515">统一身份认证</text><text x="380" y="515">统一监控告警</text><text x="630" y="515">统一日志审计</text><text x="860" y="515">统一成本分析</text></g>
+  <g font-family="Arial" font-size="16" fill="#475569"><text x="90" y="650">专线加密互联，业务可按合规要求在本地、私有云和公有云之间弹性迁移。</text><text x="90" y="690">支持统一资源清单、权限策略和跨云备份恢复，避免多云环境形成管理孤岛。</text></g>
+</svg>

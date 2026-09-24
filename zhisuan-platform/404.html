@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>页面不存在 · 大模型智算平台</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230F1418'/%3E%3Cpath d='M9 21V11l4 6 3-4 4 8' fill='none' stroke='%230B6E7F' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/app.css?v=20260924-4">
+<style>
+/* ============================================================
+   G-07 页面不存在 404 · 无外壳页面
+   自建居中式独立布局（不写 .shell / .rail / .band / .ledger）。
+   语义：走错路 ≠ 出事 —— 全页只用中性墨阶，不出现任何语义色。
+   出路要能真的走通：内置命令面板同一份入口索引，输入即可过滤。
+   ============================================================ */
+
+body.standalone {
+  display: flex;
+  height: auto;
+  min-height: 100%;
+  background: var(--canvas);
+  position: relative;
+}
+/* 背景网格：只用令牌与透明度，不做彩色装饰 */
+body.standalone::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 56px 56px, 56px 56px;
+  opacity: .5;
+}
+
+.err {
+  position: relative;
+  z-index: 1;
+  margin: auto;
+  width: min(720px, 100%);
+  padding: var(--sp-8) var(--sp-6);
+}
+.err__head { text-align: center; }
+.err__badge {
+  width: 64px; height: 64px; margin: 0 auto var(--sp-4);
+  border-radius: var(--r-3);
+  display: grid; place-items: center;
+  background: var(--surface-sunken);
+  border: 1px solid var(--line-strong);
+  color: var(--ink-500);
+}
+.err__badge svg { width: 30px; height: 30px; }
+.err__code { font-size: 54px; font-weight: 600; line-height: 1; color: var(--ink-900); }
+.err__sub { margin-top: var(--sp-2); }
+.err__card { margin-top: var(--sp-6); text-align: left; }
+.err__why { font-size: var(--text-meta); color: var(--ink-600); line-height: 1.75; }
+
+.err__steps { counter-reset: s; list-style: none; margin: 0; padding: 0; display: grid; gap: var(--sp-3); }
+.err__steps li {
+  display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: var(--sp-3);
+  font-size: var(--text-meta); color: var(--ink-600); line-height: 1.7;
+}
+.err__steps li::before {
+  counter-increment: s; content: counter(s);
+  width: 22px; height: 22px; border-radius: var(--r-1);
+  background: var(--ink-900); color: var(--surface);
+  font-family: var(--font-num); font-size: 11px; font-weight: 600;
+  display: grid; place-items: center;
+}
+.err__steps b { color: var(--ink-900); font-weight: 600; }
+.err__kbd {
+  display: inline-flex; align-items: center; height: 18px; padding: 0 5px;
+  border: 1px solid var(--line-strong); border-radius: var(--r-1);
+  background: var(--surface); color: var(--ink-700);
+  font-family: var(--font-num); font-size: 11px;
+}
+
+.err__search { display: block; margin-top: var(--sp-3); }
+.err__search .input { width: 100%; padding-left: 29px; }
+.err__results { list-style: none; margin: var(--sp-2) 0 0; padding: 0; display: grid; gap: 2px; }
+.err__results a {
+  display: flex; align-items: center; gap: var(--sp-2);
+  height: 32px; padding: 0 var(--sp-3);
+  border-radius: var(--r-1);
+  font-size: var(--text-meta); color: var(--ink-700);
+}
+.err__results a:hover { background: var(--surface-sunken); color: var(--ink-900); }
+.err__results .grp { margin-left: auto; font-size: var(--text-micro); color: var(--ink-400); }
+.err__empty { margin-top: var(--sp-2); padding: 0 var(--sp-3); font-size: var(--text-meta); color: var(--ink-400); }
+.err__foot { text-align: center; margin-top: var(--sp-5); }
+</style>
+</head>
+<body class="standalone" data-page="G-07">
+
+<main class="err">
+  <div class="err__head">
+    <div class="err__badge" aria-hidden="true" id="errBadge"></div>
+    <div class="err__code num">404</div>
+    <h1 class="t-page mt-2">页面不存在</h1>
+    <p class="t-meta err__sub">这个地址没有对应的页面。链接可能已过期、对象已被归档，或者路径写错了。</p>
+  </div>
+
+  <section class="card err__card">
+    <div class="card__head">
+      <h2>为什么看到这一页</h2>
+      <span class="chip chip--neutral"><i class="chip__dot"></i>路由未注册</span>
+      <span class="spacer"></span>
+      <span class="t-micro">未发生任何计费</span>
+    </div>
+    <div class="card__body">
+      <p class="err__why">平台没有匹配到这个路径。请求没有触发任何模型调用或算力占用，<span class="t-strong">不会产生 Token 与卡时消耗</span>，你不需要为这次访问做任何处理。</p>
+
+      <dl class="kv mt-5">
+        <dt>请求路径</dt><dd class="num">/apps/video-check/console</dd>
+        <dt>可能原因</dt><dd>链接已过期 · 对象已归档 · 手输路径有误</dd>
+        <dt>账号</dt><dd>张越 · 华鲲元启</dd>
+        <dt>错误编号</dt><dd class="num">ERR-404-4C21B7</dd>
+        <dt>时间</dt><dd class="num">2026-09-24 14:32:07</dd>
+      </dl>
+
+      <hr class="divider">
+
+      <div class="t-micro mb-3">你可以这样做</div>
+      <ol class="err__steps">
+        <li><span><b>回到工作台。</b>「常用应用」「推荐模型」「我的任务」三个入口都在那里，正在跑的 12 个任务不会因为这次误访问中断。</span></li>
+        <li><span><b>用命令面板找。</b>在任意已登录页面按 <span class="err__kbd">⌘K</span> 打开命令面板，可跨模块搜索页面、模型与应用。</span></li>
+        <li><span><b>就地搜索。</b>下面这份索引与命令面板同源，直接输入关键字即可（例如「用量」「微调」）。</span></li>
+      </ol>
+
+      <div class="search err__search" role="search">
+        <input class="input" id="q404" type="search" autocomplete="off"
+               placeholder="命令面板 · 搜索页面、模型或应用（⌘K）" aria-label="搜索页面、模型或应用">
+      </div>
+      <ul class="err__results" id="r404">
+        <li><a href="home.html">工作台<span class="grp">页面 · G-02</span></a></li>
+        <li><a href="apps-industry.html">应用中心 · 行业应用<span class="grp">页面 · A-01</span></a></li>
+        <li><a href="models.html">模型广场<span class="grp">页面 · M-01</span></a></li>
+        <li><a href="compute-overview.html">算力仓库 · 资源看板<span class="grp">页面 · R-01</span></a></li>
+        <li><a href="console-usage.html">控制中心 · 用量概览<span class="grp">页面 · C-01</span></a></li>
+        <li><a href="console-quota.html">预算与配额管理<span class="grp">页面 · C-02</span></a></li>
+      </ul>
+      <p class="err__empty hidden" id="r404empty">没有匹配的页面 · 试试「用量」「模型」「配额」</p>
+    </div>
+    <div class="card__foot row">
+      <a class="btn btn--primary" href="home.html">返回工作台</a>
+      <button class="btn" type="button" id="focusSearch">打开命令面板（⌘K）</button>
+      <span class="spacer"></span>
+      <a class="btn btn--ghost" href="apps-industry.html">去应用中心</a>
+    </div>
+  </section>
+
+  <p class="err__foot t-micro">错误编号 <span class="num-sm">ERR-404-4C21B7</span> · <span class="num-sm">2026-09-24 14:32:07</span> · 若你确定这个页面应该存在，请把编号提供给平台运维</p>
+</main>
+
+<!-- 无外壳页面不引入 app.js：图标与就地搜索都在本页完成 -->
+<script src="assets/charts.js"></script>
+<script>
+  document.getElementById('errBadge').innerHTML = DSH.icon('search');
+  document.querySelector('.err__search').insertAdjacentHTML('afterbegin', DSH.icon('search'));
+
+  var q = document.getElementById('q404');
+  var list = document.getElementById('r404');
+  var empty = document.getElementById('r404empty');
+  var items = Array.prototype.slice.call(list.querySelectorAll('li'));
+
+  function filter404() {
+    var v = q.value.trim().toLowerCase();
+    var hit = 0;
+    items.forEach(function (li) {
+      var on = !v || li.textContent.toLowerCase().indexOf(v) >= 0;
+      li.classList.toggle('hidden', !on);
+      if (on) hit++;
+    });
+    empty.classList.toggle('hidden', hit > 0);
+  }
+  q.addEventListener('input', filter404);
+  document.getElementById('focusSearch').addEventListener('click', function () { q.focus(); });
+  document.addEventListener('keydown', function (e) {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); q.focus(); }
+  });
+</script>
+</body>
+</html>

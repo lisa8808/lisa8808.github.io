@@ -1,0 +1,880 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>资源看板 · 算力仓库 · 大模型智算平台</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230F1418'/%3E%3Cpath d='M9 21V11l4 6 3-4 4 8' fill='none' stroke='%230B6E7F' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/app.css?v=20260924-4">
+<style>
+  /* ============================================================
+     R-01 资源看板 · 页面专属样式（只使用 var(--token)，不改动 assets/）
+     ============================================================ */
+
+  /* ---------- 算力池片卡 ---------- */
+  .nodegrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-4); }
+  .nodegrid .nodegrid__pool {
+    min-width: 0; padding: var(--sp-4); border: 1px solid var(--line);
+    border-radius: var(--r-3); background: var(--surface);
+    display: flex; flex-direction: column; align-items: stretch; gap: var(--sp-3);
+    box-shadow: var(--e-1); transition: border-color var(--t) var(--ease), box-shadow var(--t) var(--ease);
+  }
+  .nodegrid .nodegrid__pool:hover { border-color: var(--compute-line); box-shadow: var(--e-2); }
+  .resource-card__head { display: flex; align-items: flex-start; gap: var(--sp-3); }
+  .resource-card__icon {
+    width: 36px; height: 36px; flex: none; display: grid; place-items: center;
+    border-radius: var(--r-2); background: var(--compute-soft); color: var(--compute-strong);
+    font-family: var(--font-num); font-size: 11px; font-weight: 700;
+  }
+  .resource-card__title { flex: 1 1 auto; min-width: 0; }
+  .nodegrid .nodegrid__pool-name {
+    width: auto; color: var(--ink-900); font-family: var(--font-num);
+    font-size: var(--text-meta); font-weight: 650; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .resource-card__spec { margin-top: 2px; color: var(--ink-400); font-size: var(--text-micro); }
+  .resource-card__total { flex: none; color: var(--ink-700); font: 600 var(--text-micro)/1.4 var(--font-num); }
+  .resource-card__stats {
+    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+    padding: 10px 0; border-top: 1px solid var(--line-soft); border-bottom: 1px solid var(--line-soft);
+  }
+  .resource-card__stat { min-width: 0; padding: 0 8px; }
+  .resource-card__stat:first-child { padding-left: 0; }
+  .resource-card__stat + .resource-card__stat { border-left: 1px solid var(--line-soft); }
+  .resource-card__stat b { display: block; color: var(--ink-900); font: 650 16px/1.2 var(--font-num); }
+  .resource-card__stat span { display: block; margin-top: 3px; color: var(--ink-400); font-size: 10px; white-space: nowrap; }
+  .resource-card__stat--warn b { color: var(--spend-strong); }
+  .resource-card__stat--risk b { color: var(--risk-strong); }
+  .resource-card__util { display: flex; align-items: center; gap: var(--sp-2); }
+  .resource-card__util-track { height: 5px; flex: 1 1 auto; overflow: hidden; border-radius: var(--r-full); background: var(--surface-sunken); }
+  .resource-card__util-fill { height: 100%; border-radius: inherit; background: var(--compute); }
+  .resource-card__util span { flex: none; color: var(--ink-500); font: 500 10px/1 var(--font-num); }
+  .nodegrid .nodegrid__cells { grid-template-columns: repeat(16, minmax(0, 1fr)); gap: 3px; }
+  .nodegrid .nodecell {
+    width: auto; height: auto; aspect-ratio: 1;
+    display: grid; place-items: center;
+    font-size: 9px; font-weight: 700; line-height: 1;
+    color: var(--surface);
+  }
+  .nodecell[data-state="fault"]::after { content: "!"; }
+  .nodecell[data-state="warn"]::after {
+    content: ""; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--surface); opacity: .9;
+  }
+  .nodecell[aria-pressed="true"] { outline: 2px solid var(--ink-900); outline-offset: 1px; }
+  .nodegrid__legend i.iso {
+    background: repeating-linear-gradient(45deg, var(--surface-sunken) 0 4px, var(--line) 4px 8px);
+    border: 1px solid var(--line-strong);
+  }
+  .nodegrid__legend i.solid-line { background: var(--surface); border: 1px solid var(--line); }
+  .nodegrid__pool-meta { display: none; }
+  @media (max-width: 1050px) { .nodegrid { grid-template-columns: minmax(0, 1fr); } }
+
+  /* ---------- 容量与碎片 ---------- */
+  .poolblk {
+    display: grid;
+    grid-template-columns: 168px minmax(0, 1fr);
+    gap: 5px var(--sp-4);
+    align-items: center;
+  }
+  .poolblk + .poolblk { border-top: 1px solid var(--line-soft); padding-top: var(--sp-3); margin-top: var(--sp-3); }
+  .poolblk__id { grid-column: 1; grid-row: 1 / span 3; }
+  .poolblk__name { font-family: var(--font-num); font-size: var(--text-meta); color: var(--ink-800); }
+  .poolblk .capacity { grid-column: 2; grid-row: 1; }
+  .poolblk .capacity__val { width: auto; min-width: 112px; white-space: nowrap; }
+  .poolblk .fragbar { grid-column: 2; grid-row: 2; }
+  .poolblk__frag { grid-column: 2; grid-row: 3; }
+
+  /* 存储块：名称与数值同行，容量条独占整行，保证刻度线可辨 */
+  .storeblk + .storeblk { border-top: 1px solid var(--line-soft); padding-top: var(--sp-3); margin-top: var(--sp-3); }
+  .storeblk .capacity__val { width: auto; white-space: nowrap; }
+
+  .captrack { position: relative; flex: 1 1 auto; }
+  .captrack .capacity__track { width: 100%; }
+  .captick { position: absolute; top: -3px; bottom: -3px; width: 1px; background: var(--ink-400); opacity: .6; }
+  .captick--mean { background: repeating-linear-gradient(180deg, var(--ink-500) 0 3px, transparent 3px 6px); opacity: 1; }
+  .captick--limit { background: var(--risk); opacity: .85; }
+
+  /* 碎片图谱：一段 = 一段连续资源，1 卡空洞以细灰条显形 */
+  .fragbar { display: flex; gap: 2px; height: 8px; }
+  .fragbar > span { min-width: 3px; border-radius: 2px; }
+  .fragbar__used { background: var(--compute); }
+  .fragbar__free { background: var(--compute-soft); }
+  .fragbar__frag { background: var(--line-strong); }
+  .fragbar__bad  { background: repeating-linear-gradient(45deg, var(--surface-sunken) 0 3px, var(--line-strong) 3px 6px); }
+
+  .fragkey { display: flex; flex-wrap: wrap; gap: var(--sp-4); font-size: var(--text-micro); color: var(--ink-500); }
+  .fragkey i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; margin-right: 5px; vertical-align: -1px; }
+
+  /* ---------- 阶段条图标尺寸 ---------- */
+  .strip__dot svg { width: 11px; height: 11px; }
+
+  /* ---------- 数据表：固定列宽 + 单行省略，杜绝横向越界与折行 ---------- */
+  .dg--fixed { table-layout: fixed; }
+  .dg--fixed td, .dg--fixed th { overflow: hidden; text-overflow: ellipsis; }
+  .dg--fixed td { white-space: nowrap; }
+  /* 首列承载「任务名 + 申请单号」两行，避免为追溯号牺牲整列宽度 */
+  .dg--fixed td:first-child { white-space: normal; }
+  .dg--fixed .dg-id { display: block; font-family: var(--font-num); font-size: var(--text-micro); color: var(--ink-400); }
+</style>
+</head>
+<body data-module="compute" data-page="R-01" data-title="资源看板"
+      data-search="搜索节点、卡位或实例" data-ledger-title="算力与消耗上下文">
+<div class="shell" id="shell">
+  <nav class="rail" id="rail" aria-label="模块导航"></nav>
+
+  <div class="main">
+    <header class="band" id="band"></header>
+
+    <div class="mid">
+      <!-- 筛选列：算力池 / 厂商 / 健康 / 机房 + 我的实例快捷入口 -->
+      <aside class="filter" aria-label="资源筛选">
+        <div class="filter__group">
+          <h3>算力池</h3>
+          <label class="filter__opt"><input type="checkbox" checked> ascend-910b-01<span class="cnt">32</span></label>
+          <label class="filter__opt"><input type="checkbox" checked> ascend-910b-02<span class="cnt">32</span></label>
+          <label class="filter__opt"><input type="checkbox" checked> nvidia-h800-01<span class="cnt">16</span></label>
+          <label class="filter__opt"><input type="checkbox" checked> nvidia-a100-01<span class="cnt">8</span></label>
+        </div>
+        <div class="filter__group">
+          <h3>芯片厂商</h3>
+          <label class="filter__opt"><input type="checkbox" checked> 昇腾 910B<span class="cnt">64</span></label>
+          <label class="filter__opt"><input type="checkbox" checked> NVIDIA H800 / A100<span class="cnt">24</span></label>
+        </div>
+        <div class="filter__group">
+          <h3>节点健康状态</h3>
+          <label class="filter__opt"><input type="checkbox" checked> 空闲<span class="cnt">21</span></label>
+          <label class="filter__opt"><input type="checkbox" checked> 占用中<span class="cnt">61</span></label>
+          <label class="filter__opt"><input type="checkbox" checked> 高负载<span class="cnt">4</span></label>
+          <label class="filter__opt"><input type="checkbox" checked> 故障<span class="cnt">1</span></label>
+          <label class="filter__opt"><input type="checkbox" checked> 已隔离<span class="cnt">1</span></label>
+        </div>
+        <div class="filter__group">
+          <h3>机房区域</h3>
+          <label class="filter__opt"><input type="checkbox" checked> 内蒙 A 区<span class="cnt">48</span></label>
+          <label class="filter__opt"><input type="checkbox" checked> 内蒙 B 区<span class="cnt">32</span></label>
+          <label class="filter__opt"><input type="checkbox" checked> 廊坊 A 区<span class="cnt">8</span></label>
+        </div>
+        <div class="filter__group">
+          <h3>我的实例</h3>
+          <a class="filter__nav" href="compute-overview.html">运行中<span class="cnt num-sm">6</span></a>
+          <a class="filter__nav" href="compute-overview.html">排队中<span class="cnt num-sm">2</span></a>
+          <a class="filter__nav" href="compute-overview.html">已停止<span class="cnt num-sm">3</span></a>
+          <a class="filter__nav" href="compute-overview.html">7 天内到期<span class="cnt num-sm">1</span></a>
+        </div>
+      </aside>
+
+      <main class="stage" id="stage">
+        <div class="selected-bar">
+          <span>算力池：全部 4 个</span><span class="dot-sep">·</span>
+          <span>芯片厂商：昇腾 + NVIDIA</span><span class="dot-sep">·</span>
+          <span>健康状态：全部</span>
+          <button class="btn btn--sm btn--ghost">清空筛选</button>
+          <span class="total">在池 88 卡 · 已分配 65 · 空闲 21 · 采集于 14:35</span>
+        </div>
+
+        <!-- ============================================================
+             1. 算力池片卡：第一视图（资源、容量与健康状态同卡呈现）
+             ============================================================ -->
+        <section class="card">
+          <div class="card__head">
+            <h2>算力池概览</h2>
+            <span class="chip chip--compute"><i class="chip__dot"></i>健康空闲 21</span>
+            <span class="chip chip--compute"><i class="chip__dot"></i>占用中 61</span>
+            <span class="chip chip--spend"><i class="chip__dot"></i>高负载 4</span>
+            <span class="chip chip--risk"><i class="chip__dot"></i>故障 1</span>
+            <span class="chip chip--neutral"><i class="chip__dot"></i>已隔离 1</span>
+            <span class="spacer"></span>
+            <button class="btn btn--sm" data-receipt>节点台账</button>
+          </div>
+          <div class="card__body">
+            <div class="nodegrid" id="nodeGrid"></div>
+
+            <div class="nodegrid__legend mt-3">
+              <span><i class="solid-line"></i>空闲 21</span>
+              <span><i style="background:var(--compute);border:1px solid var(--compute-strong)"></i>占用中 61</span>
+              <span><i style="background:var(--spend);border:1px solid var(--spend-strong)"></i>高负载 4（格内白点）</span>
+              <span><i style="background:var(--risk);border:1px solid var(--risk-strong)"></i>故障 1（格内 !）</span>
+              <span><i class="iso"></i>已隔离 1（斜纹）</span>
+            </div>
+
+            <div class="row mt-3">
+              <p class="t-micro" id="gridPick">点击卡位下钻实例详情 · 支持 Tab 聚焦后按 Enter 选择卡位</p>
+              <span class="spacer"></span>
+              <button class="btn btn--sm" id="gridDrill" type="button">下钻实例详情</button>
+            </div>
+            <p class="t-micro mt-2">色觉辅助：占用青绿 · 高负载琥珀加白点 · 故障朱红加叹号 · 已隔离斜纹；异常不靠颜色单独区分（10.6）。</p>
+          </div>
+        </section>
+
+        <!-- ============================================================
+             4. KPI 行：GPU 与 NPU 利用率必须并列呈现
+             ============================================================ -->
+        <div class="grid grid--4 mt-5">
+          <div class="card kpi kpi--accent-compute">
+            <div class="kpi__label">算力池总卡数</div>
+            <div class="kpi__value"><span class="num-xl">88</span><span class="kpi__unit">张加速卡</span></div>
+            <div class="kpi__foot">昇腾 64 · NVIDIA 24 · 4 个算力池 · 空闲 21</div>
+          </div>
+          <div class="card kpi kpi--accent-compute">
+            <div class="kpi__label">GPU 利用率</div>
+            <div class="kpi__value"><span class="num-xl">70.8</span><span class="kpi__unit">%</span></div>
+            <div class="kpi__foot">占用 17 / 24 卡 · H800 13 · A100 4 · 故障 1</div>
+          </div>
+          <div class="card kpi kpi--accent-compute">
+            <div class="kpi__label">NPU 利用率</div>
+            <div class="kpi__value"><span class="num-xl">75.0</span><span class="kpi__unit">%</span></div>
+            <div class="kpi__foot">占用 48 / 64 卡（含高负载 4）· 人工隔离 1</div>
+          </div>
+          <div class="card kpi">
+            <div class="kpi__label">存储水位</div>
+            <div class="kpi__value"><span class="num-xl">58.8</span><span class="kpi__unit">%</span></div>
+            <div class="kpi__foot">381.0 / 648.0 TB · 并行存储 82.0% <span class="variance variance--over">推理缓存 100%</span></div>
+          </div>
+        </div>
+
+        <!-- ============================================================
+             2. 双轨图：Token 柱 + 卡时线，双轴并列 + 分组级时间范围
+             ============================================================ -->
+        <section class="card mt-5">
+          <div class="card__head">
+            <h2>消耗与占用趋势</h2>
+            <span class="chip chip--spend"><i class="chip__dot"></i>Token（左轴）</span>
+            <span class="chip chip--compute"><i class="chip__dot"></i>卡时（右轴）</span>
+            <span class="chip chip--risk"><i class="chip__dot"></i>Token 预警阈值</span>
+            <span class="spacer"></span>
+            <div class="seg" role="group" aria-label="时间范围">
+              <button class="btn btn--sm" type="button" data-range="1" aria-pressed="false" style="width:auto;padding:0 10px">1 天</button>
+              <button class="btn btn--sm" type="button" data-range="7" aria-pressed="true" style="width:auto;padding:0 10px">7 天</button>
+              <button class="btn btn--sm" type="button" data-range="30" aria-pressed="false" style="width:auto;padding:0 10px">30 天</button>
+              <button class="btn btn--sm" type="button" data-range="90" aria-pressed="false" style="width:auto;padding:0 10px">90 天</button>
+              <button class="btn btn--sm" type="button" data-range="custom" aria-pressed="false" style="width:auto;padding:0 10px">自定义</button>
+            </div>
+          </div>
+          <div class="card__body">
+            <div id="chartDual" style="height:176px"></div>
+            <p class="chart__caption" id="dualNote">
+              口径：全平台 88 张加速卡（所有租户汇总）；项目「视觉检索平台」自身双轨余额见下方双轨刻度与右侧账板。
+              朱红虚线为区间 Token 预警阈值，09-22 桶触及阈值。两轨单位不可换算，故双轴并列（10.6）。
+            </p>
+
+            <hr class="divider" style="margin:var(--sp-3) 0">
+
+            <div class="row row--between mb-2">
+              <h3 class="t-section">卡时构成 · 按芯片厂商</h3>
+              <span class="t-micro">堆叠柱为同一区间各桶的卡时合计；灰色虚线为该区间均值。昇腾与 NVIDIA 为两条独立序列，不合并为单值；一次时间范围切换同时驱动本分组两张子图，横轴对齐且下钻不改区间。</span>
+            </div>
+            <div class="row mb-2">
+              <span class="chip chip--compute"><i class="chip__dot"></i>昇腾 910B · 64 卡</span>
+              <span class="chip chip--insight"><i class="chip__dot"></i>NVIDIA · 24 卡</span>
+            </div>
+            <div id="chartCompose" style="height:112px"></div>
+          </div>
+        </section>
+
+        <!-- ============================================================
+             3-a. 容量与水位：总量 / 已分配 / 水位线 + 碎片提示
+             ============================================================ -->
+        <section class="card mt-5">
+          <div class="card__head">
+            <h2>算力池容量与水线</h2>
+            <span class="chip chip--compute"><i class="chip__dot"></i>平台已分配 73.9%</span>
+            <span class="chip chip--spend"><i class="chip__dot"></i>nvidia-h800-01 达 81.3%</span>
+            <span class="spacer"></span>
+            <button class="btn btn--sm">发起碎片整理</button>
+          </div>
+          <div class="card__body">
+            <div class="col" style="gap:0">
+
+              <div class="poolblk">
+                <div class="poolblk__id">
+                  <div class="poolblk__name">ascend-910b-01</div>
+                  <div class="t-micro">昇腾 910B · 64GB HBM · 内蒙 A 区 · 8 节点 ×4 卡</div>
+                </div>
+                <div class="capacity">
+                  <div class="captrack">
+                    <div class="capacity__track"><div class="capacity__fill" style="width:78.1%"></div></div>
+                    <span class="captick captick--mean" style="left:73.9%"></span>
+                    <span class="captick" style="left:80%"></span>
+                    <span class="captick captick--limit" style="left:100%"></span>
+                  </div>
+                  <span class="capacity__val">25 / 32 · 78.1%</span>
+                </div>
+                <div class="fragbar" aria-hidden="true">
+                  <span class="fragbar__used" style="flex:9"></span>
+                  <span class="fragbar__frag" style="flex:1"></span>
+                  <span class="fragbar__used" style="flex:11"></span>
+                  <span class="fragbar__frag" style="flex:1"></span>
+                  <span class="fragbar__used" style="flex:5"></span>
+                  <span class="fragbar__free" style="flex:4"></span>
+                  <span class="fragbar__bad" style="flex:1"></span>
+                </div>
+                <p class="poolblk__frag t-micro">碎片 2 处 · 共 2 卡；连续可调度 4 卡，无法承载 ×8 卡训练实例，可整理出 4 卡整块</p>
+              </div>
+
+              <div class="poolblk">
+                <div class="poolblk__id">
+                  <div class="poolblk__name">ascend-910b-02</div>
+                  <div class="t-micro">昇腾 910B · 64GB HBM · 内蒙 B 区 · 8 节点 ×4 卡</div>
+                </div>
+                <div class="capacity">
+                  <div class="captrack">
+                    <div class="capacity__track"><div class="capacity__fill" style="width:71.9%"></div></div>
+                    <span class="captick captick--mean" style="left:73.9%"></span>
+                    <span class="captick" style="left:80%"></span>
+                    <span class="captick captick--limit" style="left:100%"></span>
+                  </div>
+                  <span class="capacity__val">23 / 32 · 71.9%</span>
+                </div>
+                <div class="fragbar" aria-hidden="true">
+                  <span class="fragbar__used" style="flex:8"></span>
+                  <span class="fragbar__frag" style="flex:1"></span>
+                  <span class="fragbar__used" style="flex:10"></span>
+                  <span class="fragbar__frag" style="flex:1"></span>
+                  <span class="fragbar__used" style="flex:5"></span>
+                  <span class="fragbar__free" style="flex:7"></span>
+                </div>
+                <p class="poolblk__frag t-micro">碎片 2 处 · 共 2 卡；连续可调度 7 卡，可整块交付 ×4 卡推理实例</p>
+              </div>
+
+              <div class="poolblk">
+                <div class="poolblk__id">
+                  <div class="poolblk__name">nvidia-h800-01</div>
+                  <div class="t-micro">NVIDIA H800 · 80GB HBM3 · 内蒙 A 区 · 2 节点 ×8 卡</div>
+                </div>
+                <div class="capacity">
+                  <div class="captrack">
+                    <div class="capacity__track"><div class="capacity__fill" data-state="warn" style="width:81.3%"></div></div>
+                    <span class="captick captick--mean" style="left:73.9%"></span>
+                    <span class="captick" style="left:80%"></span>
+                    <span class="captick captick--limit" style="left:100%"></span>
+                  </div>
+                  <span class="capacity__val">13 / 16 · 81.3%</span>
+                </div>
+                <div class="fragbar" aria-hidden="true">
+                  <span class="fragbar__used" style="flex:13"></span>
+                  <span class="fragbar__free" style="flex:3"></span>
+                </div>
+                <p class="poolblk__frag t-micro">无碎片 · 连续 3 卡；水位越过 80% 预警刻线，新申请进入队列等待</p>
+              </div>
+
+              <div class="poolblk">
+                <div class="poolblk__id">
+                  <div class="poolblk__name">nvidia-a100-01</div>
+                  <div class="t-micro">NVIDIA A100 · 40GB HBM2 · 廊坊 A 区 · 1 节点 ×8 卡</div>
+                </div>
+                <div class="capacity">
+                  <div class="captrack">
+                    <div class="capacity__track"><div class="capacity__fill" style="width:50%"></div></div>
+                    <span class="captick captick--mean" style="left:73.9%"></span>
+                    <span class="captick" style="left:80%"></span>
+                    <span class="captick captick--limit" style="left:100%"></span>
+                  </div>
+                  <span class="capacity__val">4 / 8 · 50.0%</span>
+                </div>
+                <div class="fragbar" aria-hidden="true">
+                  <span class="fragbar__used" style="flex:4"></span>
+                  <span class="fragbar__free" style="flex:1"></span>
+                  <span class="fragbar__bad" style="flex:1"></span>
+                  <span class="fragbar__free" style="flex:2"></span>
+                </div>
+                <p class="poolblk__frag t-micro">碎片 1 处 · 1 卡；另有 1 卡故障冻结，连续可调度仅 2 卡（不足 ×4 卡实例）</p>
+              </div>
+
+            </div>
+
+            <div class="fragkey mt-4">
+              <span><i style="background:var(--compute)"></i>已分配</span>
+              <span><i style="background:var(--compute-soft)"></i>连续空闲（可整块调度）</span>
+              <span><i style="background:var(--line-strong)"></i>碎片（1 卡空洞，不可用）</span>
+              <span><i style="background:repeating-linear-gradient(45deg,var(--surface-sunken) 0 3px,var(--line-strong) 3px 6px)"></i>故障 / 已隔离</span>
+              <span><i style="background:var(--surface);border:1px solid var(--line-strong)"></i>刻线：80% 预警（实线）· 100% 满载（朱红）</span>
+              <span><i style="background:repeating-linear-gradient(180deg,var(--ink-500) 0 3px,transparent 3px 6px)"></i>平台均值 73.9%</span>
+            </div>
+          </div>
+          <div class="card__foot">
+            <span class="t-micro">平台空闲 21 卡中仅 16 卡连续可调度；5 卡为 1 卡碎片（5 处），已由碎片整理调度优先收敛。</span>
+          </div>
+        </section>
+
+        <!-- ============================================================
+             3-b. 双轨刻度（GPU / NPU 各自刻度，禁止折算）+ 存储水位
+             ============================================================ -->
+        <div class="grid grid--2 mt-5">
+
+          <section class="card">
+            <div class="card__head">
+              <h2>卡时双轨刻度</h2>
+              <span class="chip chip--compute"><i class="chip__dot"></i>GPU 与 NPU 各自刻度</span>
+              <span class="spacer"></span>
+              <button class="btn btn--sm" data-receipt>卡时明细</button>
+            </div>
+            <div class="card__body">
+              <div class="dualgauge">
+                <div class="dualgauge__row">
+                  <span class="dualgauge__name">GPU 卡时</span>
+                  <div class="capacity"><div class="capacity__track">
+                    <div class="capacity__fill" style="width:56%"></div>
+                  </div></div>
+                  <span class="dualgauge__val">1 120.0 / 2 000.0</span>
+                </div>
+                <div class="dualgauge__row">
+                  <span class="dualgauge__name">NPU 卡时</span>
+                  <div class="capacity"><div class="capacity__track">
+                    <div class="capacity__fill" style="width:58%"></div>
+                  </div></div>
+                  <span class="dualgauge__val">1 740.0 / 3 000.0</span>
+                </div>
+              </div>
+
+              <div class="row mt-4">
+                <span class="t-meta">合计已用</span>
+                <button class="num-md" data-receipt style="background:none;border:0;padding:0;cursor:pointer;color:inherit">2 860.0</button>
+                <span class="num-sm">/ 5 000.0 卡时</span>
+                <span class="spacer"></span>
+                <span class="chip chip--spend"><i class="chip__dot"></i>冻结 42.0（GPU 12.0 · NPU 30.0）</span>
+              </div>
+
+              <p class="t-micro mt-3">
+                两轨为独立刻度（GPU 上限 2 000.0 · NPU 上限 3 000.0），单位口径不同，禁止折算为单一数字（10.1 / 10.6）。
+              </p>
+
+              <hr class="divider">
+
+              <div class="row">
+                <span class="t-meta">全平台卡时产能（88 卡 × 720h）</span>
+                <span class="spacer"></span>
+                <span class="num-sm">63 360.0 卡时 / 月</span>
+              </div>
+              <p class="t-micro mt-2">其中 GPU 17 280.0 · NPU 46 080.0，按芯片族分别计费与配额，两族不可互相抵扣。</p>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="card__head">
+              <h2>存储水位</h2>
+              <span class="chip chip--compute"><i class="chip__dot"></i>381.0 / 648.0 TB</span>
+            </div>
+            <div class="card__body">
+
+              <div class="storeblk">
+                <div class="row">
+                  <span class="poolblk__name">并行文件存储</span>
+                  <span class="t-micro">训练 / 推理共享 · 条带化</span>
+                  <span class="spacer"></span>
+                  <span class="capacity__val">105.0 / 128.0 TB</span>
+                </div>
+                <div class="capacity mt-2">
+                  <div class="captrack">
+                    <div class="capacity__track"><div class="capacity__fill" data-state="warn" style="width:82%"></div></div>
+                    <span class="captick" style="left:80%"></span>
+                    <span class="captick captick--limit" style="left:100%"></span>
+                  </div>
+                </div>
+                <p class="t-micro mt-2">可用 23.0 TB · 按当前增速约 12 天触及 90%</p>
+              </div>
+
+              <div class="storeblk">
+                <div class="row">
+                  <span class="poolblk__name">对象存储</span>
+                  <span class="t-micro">模型与数据集 · 冷热分层</span>
+                  <span class="spacer"></span>
+                  <span class="capacity__val">268.0 / 512.0 TB</span>
+                </div>
+                <div class="capacity mt-2">
+                  <div class="captrack">
+                    <div class="capacity__track"><div class="capacity__fill" style="width:52.3%"></div></div>
+                    <span class="captick" style="left:80%"></span>
+                    <span class="captick captick--limit" style="left:100%"></span>
+                  </div>
+                </div>
+                <p class="t-micro mt-2">可用 244.0 TB · 冷数据已下沉，未触发分层告警</p>
+              </div>
+
+              <div class="storeblk">
+                <div class="row">
+                  <span class="poolblk__name">推理缓存盘</span>
+                  <span class="t-micro">热点模型缓存 · 节点本地</span>
+                  <span class="spacer"></span>
+                  <span class="capacity__val">8.0 / 8.0 TB</span>
+                </div>
+                <div class="capacity mt-2">
+                  <div class="captrack">
+                    <div class="capacity__track"><div class="capacity__fill" data-state="full" style="width:100%"></div></div>
+                    <span class="captick" style="left:80%"></span>
+                    <span class="captick captick--limit" style="left:100%"></span>
+                  </div>
+                </div>
+                <p class="t-micro mt-2">已满：新模型将回退至并行存储读取，首 token 延迟 +180ms，建议清理 3 个低频模型</p>
+              </div>
+
+            </div>
+            <div class="card__foot">
+              <span class="t-micro">存储为共享资源，不参与卡时计量；水位越过 80% 转琥珀，100% 转朱红。</span>
+            </div>
+          </section>
+
+        </div>
+
+        <!-- ============================================================
+             5. 调度队列概览
+             ============================================================ -->
+        <section class="card mt-5">
+          <div class="card__head">
+            <h2>调度队列概览</h2>
+            <span class="chip chip--compute"><i class="chip__dot"></i>6 条队列 · 在队 66 个任务</span>
+            <span class="chip chip--spend"><i class="chip__dot"></i>被抢占 1</span>
+            <span class="spacer"></span>
+            <span class="t-micro">调度器 v2.4 · 抢占与碎片整理已开启</span>
+            <button class="btn btn--sm">队列详情</button>
+          </div>
+          <div class="dg-wrap" style="border:0;border-radius:0">
+            <table class="dg dg--fixed">
+              <colgroup>
+                <col style="width:140px"><col style="width:130px"><col style="width:96px">
+                <col style="width:74px"><col style="width:74px"><col style="width:78px">
+                <col style="width:100px"><col style="width:86px">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>任务 / 申请单</th><th>芯片规格</th><th>优先级</th>
+                  <th class="num">队列深度</th><th class="num">排队位置</th><th class="num">预计等待</th>
+                  <th>调度状态</th><th class="num">操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="dg-primary">Qwen3-32B 微调<span class="dg-id">ft-0918</span></td>
+                  <td>昇腾 910B <span class="num">×16</span></td>
+                  <td><span class="chip chip--neutral">P0 最高</span></td>
+                  <td class="num">6</td><td class="num">1</td><td class="num">2m</td>
+                  <td><span class="chip chip--compute"><i class="chip__dot"></i>正常调度</span></td>
+                  <td><div class="dg-actions"><button class="btn btn--sm">取消</button></div></td>
+                </tr>
+                <tr>
+                  <td class="dg-primary">视频检查批任务<span class="dg-id">vis-0421</span></td>
+                  <td>昇腾 910B <span class="num">×8</span></td>
+                  <td><span class="chip chip--neutral">P1 高</span></td>
+                  <td class="num">14</td><td class="num">3</td><td class="num">6m</td>
+                  <td><span class="chip chip--compute"><i class="chip__dot"></i>正常调度</span></td>
+                  <td><div class="dg-actions"><button class="btn btn--sm">取消</button></div></td>
+                </tr>
+                <tr>
+                  <td class="dg-primary">H800 推理扩容<span class="dg-id">infer-vis</span></td>
+                  <td>NVIDIA H800 <span class="num">×4</span></td>
+                  <td><span class="chip chip--neutral">P1 高</span></td>
+                  <td class="num">9</td><td class="num">5</td><td class="num">18m</td>
+                  <td><span class="chip chip--compute"><i class="chip__dot"></i>正常调度</span></td>
+                  <td><div class="dg-actions"><button class="btn btn--sm">取消</button></div></td>
+                </tr>
+                <tr>
+                  <td class="dg-primary">InternVL2-26B 评测<span class="dg-id">eval-1102</span></td>
+                  <td>NVIDIA A100 <span class="num">×2</span></td>
+                  <td><span class="chip chip--neutral">P2 中</span></td>
+                  <td class="num">11</td><td class="num">7</td><td class="num">34m</td>
+                  <td><span class="chip chip--spend"><i class="chip__dot"></i>已被抢占</span></td>
+                  <td><div class="dg-actions"><button class="btn btn--sm">重新排队</button></div></td>
+                </tr>
+                <tr>
+                  <td class="dg-primary">写作助手 会话扩容<span class="dg-id">agent-w1</span></td>
+                  <td>NVIDIA H800 <span class="num">×2</span></td>
+                  <td><span class="chip chip--neutral">P2 中</span></td>
+                  <td class="num">4</td><td class="num">2</td><td class="num">4m</td>
+                  <td><span class="chip chip--compute"><i class="chip__dot"></i>正常调度</span></td>
+                  <td><div class="dg-actions"><button class="btn btn--sm">取消</button></div></td>
+                </tr>
+                <tr>
+                  <td class="dg-primary">BGE-M3 向量重建<span class="dg-id">emb-1107</span></td>
+                  <td>昇腾 910B <span class="num">×4</span></td>
+                  <td><span class="chip chip--neutral">P3 低</span></td>
+                  <td class="num">22</td><td class="num">19</td><td class="num">1h 12m</td>
+                  <td><span class="chip chip--neutral"><i class="chip__dot"></i>等待窗口</span></td>
+                  <td><div class="dg-actions"><button class="btn btn--sm">取消</button></div></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card__foot">
+            <span class="t-micro">
+              eval-1102 因 P0 微调任务插队被抢占，冻结卡时继续占额故以琥珀标记；重新排队保留原优先级与排队凭证。
+            </span>
+          </div>
+        </section>
+
+        <!-- ============================================================
+             6. 待处理事项：正在走的资源申请（可撤销窗口）
+             ============================================================ -->
+        <section class="card mt-5">
+          <div class="card__head">
+            <h2>待处理事项</h2>
+            <span class="chip chip--compute"><i class="chip__dot"></i>审批中 1</span>
+            <span class="chip chip--spend"><i class="chip__dot"></i>可撤销 1</span>
+            <span class="chip chip--neutral"><i class="chip__dot"></i>待办 2</span>
+            <span class="spacer"></span>
+            <button class="btn btn--sm">全部资源申请</button>
+          </div>
+          <div class="card__body">
+
+            <div class="row row--wrap mb-3">
+              <span class="t-strong">RES-2026-0918</span>
+              <span class="t-meta">昇腾 910B ×8 · 72.0 卡时 · 项目 视觉检索平台</span>
+              <span class="dot-sep">·</span>
+              <span class="t-meta">提交人 林澜 · 14:12 提交</span>
+            </div>
+
+            <div class="strip">
+              <div class="strip__step" data-state="done">
+                <span class="strip__dot" id="sd1"></span><span class="strip__label">提交</span>
+              </div>
+              <span class="strip__line" data-done="true"></span>
+              <div class="strip__step" data-state="done">
+                <span class="strip__dot" id="sd2"></span><span class="strip__label">配额校验</span>
+              </div>
+              <span class="strip__line" data-done="true"></span>
+              <div class="strip__step" data-state="active">
+                <span class="strip__dot">3</span><span class="strip__label">审批中</span>
+              </div>
+              <span class="strip__line"></span>
+              <div class="strip__step">
+                <span class="strip__dot">4</span><span class="strip__label">编排交付</span>
+              </div>
+              <span class="strip__line"></span>
+              <div class="strip__step">
+                <span class="strip__dot">5</span><span class="strip__label">运行计费</span>
+              </div>
+              <span class="strip__meta">可撤销窗口剩余 4m 12s · 下一阶段（编排交付）预计 12m 内开始</span>
+            </div>
+
+            <hr class="divider">
+
+            <div class="col" style="gap:var(--sp-2)">
+              <div class="row">
+                <span class="t-meta" style="width:132px">RES-2026-0916</span>
+                <span class="t-meta" style="flex:1">NVIDIA H800 ×4 · 36.0 卡时 · 待审批（审批人 算力管理员 张岚）</span>
+                <span class="chip chip--compute"><i class="chip__dot"></i>排队等待 12m</span>
+              </div>
+              <div class="row">
+                <span class="t-meta" style="width:132px">RES-2026-0917</span>
+                <span class="t-meta" style="flex:1">NVIDIA A100 ×2 · 已驳回：显存规格与镜像要求不符（驳回人 张岚）</span>
+                <span class="chip chip--risk"><i class="chip__dot"></i>待修改</span>
+                <button class="btn btn--sm">修改后重新提交</button>
+              </div>
+            </div>
+
+          </div>
+          <div class="card__foot">
+            <div class="row">
+              <span class="t-micro">撤销窗口内取消将全额解冻 72.0 卡时；进入编排交付后需走强制回收流程。</span>
+              <span class="spacer"></span>
+              <button class="btn">撤销申请并解冻</button>
+              <button class="btn btn--primary">查看申请详情</button>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <aside class="ledger" id="ledger" aria-label="算力与消耗上下文"></aside>
+</div>
+
+<template id="band-actions">
+  <select class="select" aria-label="项目切换">
+    <option>视觉检索平台</option><option>合同审查</option><option>标书撰写</option>
+  </select>
+  <button class="btn" data-icon="plus">申请算力</button>
+  <button class="btn btn--primary" data-icon="ledger">资源台账</button>
+</template>
+
+<template id="band-ribbon">
+  <div class="ribbon ribbon--risk">nvidia-a100-01 第 6 卡位检测到 ECC 不可纠正错误，已自动隔离并摘除流量，调度器停止在其上排布新实例
+    <span class="ribbon__more">还有 2 条</span></div>
+</template>
+
+<template id="ledger-extra">
+  <h3>算力池健康</h3>
+  <div class="col" style="gap:var(--sp-2)">
+    <div class="row"><span class="t-micro" style="flex:1">在池加速卡</span><span class="num-sm">88 张</span></div>
+    <div class="row"><span class="t-micro" style="flex:1">已分配 / 空闲</span><span class="num-sm">65 / 21</span></div>
+    <div class="row"><span class="t-micro" style="flex:1">故障 · 已隔离</span><span class="num-sm">1 · 1</span></div>
+    <div class="row"><span class="t-micro" style="flex:1">连续可调度</span><span class="num-sm">16 卡</span></div>
+    <div class="row"><span class="t-micro" style="flex:1">在队任务</span><span class="num-sm">66</span></div>
+  </div>
+</template>
+
+<script src="assets/charts.js"></script>
+<script src="assets/app.js?v=20260924-7"></script>
+<script>
+(function () {
+  'use strict';
+
+  /* ============================================================
+     演示数据：与契约第 7 节自洽（卡时 5 000 / 已用 2 860 / 冻结 42）
+     热格 88 卡 = 空闲 21 + 占用中 61 + 高负载 4 + 故障 1 + 已隔离 1
+     ============================================================ */
+  var POOLS = [
+    { name: 'ascend-910b-01 · 昇腾 910B · 32 卡 · 内蒙 A 区', cardView: true, cards: [
+      'busy','busy','busy','busy','busy','busy','busy','warn',
+      'busy','free',
+      'busy','busy','busy','busy','busy','busy','busy','busy',
+      'warn','busy','busy','free',
+      'busy','busy','busy','busy','busy',
+      'free','free','free','free',
+      'isolated'
+    ] },
+    { name: 'ascend-910b-02 · 昇腾 910B · 32 卡 · 内蒙 B 区', cardView: true, cards: [
+      'busy','busy','busy','busy','warn','busy','busy','busy',
+      'free',
+      'busy','busy','busy','busy','busy','warn','busy','busy','busy','busy',
+      'free',
+      'busy','busy','busy','busy','busy',
+      'free','free','free','free','free','free','free'
+    ] },
+    { name: 'nvidia-h800-01 · NVIDIA H800 · 16 卡 · 内蒙 A 区', cardView: true, cards: [
+      'busy','busy','busy','busy','busy','busy','busy',
+      'busy','busy','busy','busy','busy','busy',
+      'free','free','free'
+    ] },
+    { name: 'nvidia-a100-01 · NVIDIA A100 · 8 卡 · 廊坊 A 区', cardView: true, cards: [
+      'busy','busy','busy','busy','free','fault','free','free'
+    ] }
+  ];
+
+  DSH.chart.nodeGrid(document.getElementById('nodeGrid'), POOLS);
+
+  /* ---------- 每池补一行文字计数：让热格不只靠颜色表达状态（10.7.2） ---------- */
+  var LABEL = { free: '空闲', busy: '占用', warn: '高负载', fault: '故障', isolated: '隔离' };
+  var POOL_META = POOLS.map(function (p) {
+    var c = { free: 0, busy: 0, warn: 0, fault: 0, isolated: 0 };
+    p.cards.forEach(function (s) { c[s] = (c[s] || 0) + 1; });
+    var water = ((c.busy + c.warn) / p.cards.length * 100).toFixed(1);
+    var parts = ['free', 'busy', 'warn', 'fault', 'isolated']
+      .filter(function (k) { return c[k]; })
+      .map(function (k) { return LABEL[k] + ' <span class="num">' + c[k] + '</span>'; });
+    return parts.join(' · ') + ' · 水位 <span class="num">' + water + '%</span>';
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('#nodeGrid .nodegrid__pool'), function (row, i) {
+    row.insertAdjacentHTML('beforeend', '<p class="t-micro nodegrid__pool-meta">' + POOL_META[i] + '</p>');
+  });
+
+  /* ---------- 卡位下钻语义（点击 / 键盘 Enter 皆可） ---------- */
+  var grid = document.getElementById('nodeGrid');
+  var pick = document.getElementById('gridPick');
+  var picked = null;
+
+  grid.addEventListener('click', function (e) {
+    var cell = e.target.closest('.nodecell');
+    if (!cell) return;
+    picked = cell;
+    Array.prototype.forEach.call(grid.querySelectorAll('.nodecell'), function (c) {
+      c.setAttribute('aria-pressed', String(c === cell));
+    });
+    pick.textContent = '已选卡位：' + cell.title + ' —— 按「下钻实例详情」查看该卡位上的实例与事件流';
+  });
+
+  document.getElementById('gridDrill').addEventListener('click', function () {
+    if (!picked) { pick.textContent = '请先选择一个卡位（Tab 聚焦后按 Enter）'; return; }
+    pick.textContent = '下钻 ' + picked.title + '：原型中跳转至 R-06 实例列表并定位该实例';
+  });
+
+  /* ============================================================
+     分组级时间范围：一次切换驱动本分组全部子图（10.6）
+     口径：全平台 88 卡；Token 左轴（k），卡时右轴，两轨不折算
+     ============================================================ */
+  var RANGES = {
+    '1': {
+      note: '区间：近 1 天（4 小时聚合）· 朱红虚线为区间 Token 预警阈值 172k。',
+      labels: ['08:00', '11:00', '14:00', '17:00', '20:00', '23:00'],
+      token: [86, 124, 168, 152, 118, 62],
+      cardhour: [196, 268, 312, 286, 244, 178],
+      limit: 172,
+      ascend: [146, 198, 232, 214, 182, 132],
+      nvidia: [50, 70, 80, 72, 62, 46]
+    },
+    '7': {
+      note: '区间：近 7 天（日聚合）· 朱红虚线为区间 Token 预警阈值 1 000k，09-22 桶触及阈值。',
+      labels: ['09-18', '09-19', '09-20', '09-21', '09-22', '09-23', '09-24'],
+      token: [620, 780, 540, 910, 1020, 880, 760],
+      cardhour: [1520, 1610, 1480, 1690, 1742, 1580, 1620],
+      limit: 1000,
+      ascend: [1110, 1175, 1080, 1234, 1272, 1153, 1183],
+      nvidia: [410, 435, 400, 456, 470, 427, 437]
+    },
+    '30': {
+      note: '区间：近 30 天（5 天聚合）· 朱红虚线为区间 Token 预警阈值 5 000k。',
+      labels: ['08-26', '08-31', '09-05', '09-10', '09-15', '09-20'],
+      token: [4420, 4580, 4360, 4640, 4700, 4510],
+      cardhour: [7850, 7980, 7640, 8120, 8240, 8010],
+      limit: 5000,
+      ascend: [5730, 5825, 5577, 5928, 6015, 5847],
+      nvidia: [2120, 2155, 2063, 2192, 2225, 2163]
+    },
+    '90': {
+      note: '区间：近 90 天（15 天聚合）· 朱红虚线为区间 Token 预警阈值 15 000k。',
+      labels: ['07-01', '07-16', '08-01', '08-16', '09-01', '09-16'],
+      token: [13800, 14250, 13500, 14400, 14700, 13950],
+      cardhour: [23600, 24100, 23200, 24400, 24800, 24050],
+      limit: 15000,
+      ascend: [17228, 17593, 16936, 17812, 18104, 17557],
+      nvidia: [6372, 6507, 6264, 6588, 6696, 6493]
+    },
+    'custom': {
+      note: '区间：自定义 2026-09-01 ~ 2026-09-24（4 天聚合）· 朱红虚线为区间 Token 预警阈值 4 000k。',
+      labels: ['09-01', '09-05', '09-09', '09-13', '09-17', '09-21'],
+      token: [3680, 3840, 3620, 3900, 3960, 3740],
+      cardhour: [6380, 6420, 6350, 6460, 6510, 6440],
+      limit: 4000,
+      ascend: [4657, 4687, 4636, 4716, 4752, 4701],
+      nvidia: [1723, 1733, 1714, 1744, 1758, 1739]
+    }
+  };
+
+  function tok(name) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  }
+
+  var dualEl = document.getElementById('chartDual');
+  var composeEl = document.getElementById('chartCompose');
+  var noteEl = document.getElementById('dualNote');
+
+  function renderRange(key) {
+    var r = RANGES[key];
+    if (!r) return;
+    DSH.chart.dualScale(dualEl, {
+      labels: r.labels, token: r.token, cardhour: r.cardhour, tokenLimit: r.limit
+    });
+    DSH.chart.bars(composeEl, {
+      labels: r.labels,
+      series: [
+        { name: '昇腾', color: tok('--compute'), values: r.ascend },
+        { name: 'NVIDIA', color: tok('--insight'), values: r.nvidia }
+      ]
+    });
+    noteEl.textContent = r.note +
+      ' 口径：全平台 88 张加速卡；项目「视觉检索平台」自身双轨余额见下方双轨刻度与右侧账板。' +
+      '两轨单位不可换算，故双轴并列（10.6）。';
+    Array.prototype.forEach.call(document.querySelectorAll('[data-range]'), function (b) {
+      b.setAttribute('aria-pressed', String(b.dataset.range === key));
+    });
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll('[data-range]'), function (b) {
+    b.addEventListener('click', function () { renderRange(b.dataset.range); });
+  });
+
+  renderRange('7');
+
+  /* ---------- 外壳注入后再补图标（模板无法调用 DSH.icon） ---------- */
+  document.addEventListener('DOMContentLoaded', function () {
+    Array.prototype.forEach.call(document.querySelectorAll('[data-icon]'), function (b) {
+      if (!b.querySelector('svg')) b.insertAdjacentHTML('afterbegin', DSH.icon(b.dataset.icon));
+    });
+    var d1 = document.getElementById('sd1'), d2 = document.getElementById('sd2');
+    if (d1) d1.innerHTML = DSH.icon('check');
+    if (d2) d2.innerHTML = DSH.icon('check');
+  });
+})();
+</script>
+</body>
+</html>

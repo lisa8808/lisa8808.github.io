@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>消耗明细查询 · 控制中心 · 大模型智算平台</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230F1418'/%3E%3Cpath d='M9 21V11l4 6 3-4 4 8' fill='none' stroke='%230B6E7F' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/app.css?v=20260924-4">
+<style>
+/* ============================================================
+   页面专属样式 · C-03 消耗明细查询
+   只用 var(--token)；不覆盖 assets 下任何全局类
+   ============================================================ */
+.rc-result { line-height: 1.55; }
+
+/* 「应用」筛选：类目签独占第二行，行业应用 / 智能体一眼可分 */
+.rc-opt { height: auto; min-height: 30px; padding: 4px 8px 5px; flex-wrap: wrap; align-items: center; }
+.rc-opt__name { white-space: nowrap; }
+.rc-opt__meta { flex: 1 1 100%; display: flex; align-items: center; gap: var(--sp-2); margin-top: 2px; padding-left: 21px; }
+.rc-opt__meta .cnt { margin-left: auto; }
+
+/* 数字是一扇门：明细里的消耗数字都可点开回执 */
+.rc-door {
+  background: none; border: 0; padding: 0; cursor: pointer;
+  font-family: var(--font-num); font-variant-numeric: tabular-nums;
+  font-size: var(--text-meta); font-weight: 500; color: inherit;
+  border-bottom: 1px dashed var(--line-strong);
+}
+.rc-door:hover { color: var(--ink-900); border-bottom-color: var(--ink-500); }
+.rc-door:focus-visible { box-shadow: var(--ring); }
+.rc-door-lg { background: none; border: 0; padding: 0; cursor: pointer; color: inherit; border-bottom: 1px solid transparent; }
+.rc-door-lg:hover { border-bottom-color: var(--line-strong); }
+/* 超阈偏差的第二通道：文字标记符，不靠颜色单独承载异常 */
+.rc-mark { margin-left: 5px; font-size: var(--text-micro); font-weight: 600; color: var(--risk-strong); }
+
+/* 表格：去掉与卡片重复的外框，让吸顶表头贯穿整卡 */
+.rc-flush { border: 0; border-radius: 0; }
+
+/* 分页 */
+.rc-pager { display: flex; align-items: center; gap: var(--sp-2); }
+.rc-page { min-width: 28px; width: auto; padding: 0 8px; justify-content: center; font-family: var(--font-num); }
+.rc-page[aria-current="page"] { font-weight: 600; }
+.rc-flip { display: inline-flex; transform: rotate(180deg); }
+</style>
+</head>
+<body data-module="console" data-page="C-03" data-title="消耗明细查询"
+      data-search="搜索 trace_id、应用、用户">
+<div class="shell" id="shell">
+  <nav class="rail" id="rail" aria-label="模块导航"></nav>
+
+  <div class="main">
+    <header class="band" id="band"></header>
+
+    <div class="mid">
+      <!-- 控制中心：二级导航 + 本页多维筛选（同占筛选列） -->
+      <aside class="filter" aria-label="控制中心导航与筛选">
+        <div class="filter__group">
+          <h3>控制中心</h3>
+          <a class="filter__nav" href="console-usage.html">用量概览</a>
+          <a class="filter__nav" href="console-quota.html">预算与配额管理</a>
+          <a class="filter__nav" href="console-consumption.html" aria-current="page">消耗明细查询</a>
+          <a class="filter__nav" href="console-usage.html">账单与费用</a>
+          <a class="filter__nav" href="console-keys.html">API 密钥</a>
+          <a class="filter__nav" href="console-logs.html">调用日志</a>
+          <a class="filter__nav" href="console-quota.html">告警中心</a>
+        </div>
+
+        <div class="filter__group">
+          <h3>时间范围</h3>
+          <label class="filter__opt"><input type="radio" name="range"> 近 1 小时</label>
+          <label class="filter__opt"><input type="radio" name="range"> 近 24 小时</label>
+          <label class="filter__opt"><input type="radio" name="range" checked> 近 7 天<span class="cnt">09-18~09-24</span></label>
+          <label class="filter__opt"><input type="radio" name="range"> 近 30 天</label>
+          <label class="filter__opt"><input type="radio" name="range"> 自定义区间…</label>
+        </div>
+
+        <div class="filter__group">
+          <h3>模型</h3>
+          <label class="filter__opt" title="Qwen3-32B-Instruct"><input type="checkbox" checked> Qwen3-32B<span class="cnt">11,486</span></label>
+          <label class="filter__opt" title="DeepSeek-V3"><input type="checkbox" checked> DeepSeek-V3<span class="cnt">6,204</span></label>
+          <label class="filter__opt" title="InternVL2-26B"><input type="checkbox" checked> InternVL2-26B<span class="cnt">462</span></label>
+          <label class="filter__opt" title="BGE-M3"><input type="checkbox" checked> BGE-M3<span class="cnt">6,068</span></label>
+        </div>
+
+        <div class="filter__group">
+          <h3>应用</h3>
+          <label class="filter__opt rc-opt"><input type="checkbox" checked>
+            <span class="rc-opt__name">知识问答</span>
+            <span class="rc-opt__meta"><span class="chip chip--insight"><i class="chip__dot"></i>智能体</span><span class="cnt">18,420</span></span>
+          </label>
+          <label class="filter__opt rc-opt"><input type="checkbox" checked>
+            <span class="rc-opt__name">视频检查</span>
+            <span class="rc-opt__meta"><span class="chip chip--insight"><i class="chip__dot"></i>智能体</span><span class="cnt">462</span></span>
+          </label>
+          <label class="filter__opt rc-opt"><input type="checkbox" checked>
+            <span class="rc-opt__name">法务合同审查</span>
+            <span class="rc-opt__meta"><span class="chip chip--quota"><i class="chip__dot"></i>行业应用</span><span class="cnt">1,240</span></span>
+          </label>
+          <label class="filter__opt rc-opt"><input type="checkbox" checked>
+            <span class="rc-opt__name">写作助手</span>
+            <span class="rc-opt__meta"><span class="chip chip--quota"><i class="chip__dot"></i>行业应用</span><span class="cnt">4,086</span></span>
+          </label>
+        </div>
+
+        <div class="filter__group">
+          <h3>项目</h3>
+          <label class="filter__opt"><input type="radio" name="proj" checked> 全部项目<span class="cnt">24,220</span></label>
+          <label class="filter__opt"><input type="radio" name="proj"> 视觉检索平台<span class="cnt">61.8%</span></label>
+          <label class="filter__opt"><input type="radio" name="proj"> 合同审查<span class="cnt">34.2%</span></label>
+          <label class="filter__opt"><input type="radio" name="proj"> 标书撰写<span class="cnt">92.6%</span></label>
+        </div>
+
+        <div class="filter__group">
+          <h3>用户</h3>
+          <label class="filter__opt"><input type="checkbox" checked> 张明<span class="cnt">8,240</span></label>
+          <label class="filter__opt"><input type="checkbox" checked> 李彦<span class="cnt">6,180</span></label>
+          <label class="filter__opt"><input type="checkbox" checked> svc-batch-01<span class="cnt">9,800</span></label>
+        </div>
+
+        <div class="filter__group">
+          <h3>状态</h3>
+          <label class="filter__opt"><input type="radio" name="state" checked> 全部<span class="cnt">24,220</span></label>
+          <label class="filter__opt"><input type="radio" name="state"> 成功<span class="cnt">24,019</span></label>
+          <label class="filter__opt"><input type="radio" name="state"> 失败<span class="cnt">201</span></label>
+        </div>
+      </aside>
+
+      <main class="stage" id="stage">
+        <div class="row row--between mb-4">
+          <span class="t-meta">数据来源 Token 银行计量结果 · 数据截至 14:35（同步延迟 &lt; 1 分钟）</span>
+          <span class="t-micro">租户：华鲲元启 · 租户管理员视图</span>
+        </div>
+
+        <!-- 已选条件条：筛选列的选择在此汇总，可一眼核对口径 -->
+        <div class="selected-bar">
+          <span class="t-micro">已选条件</span>
+          <span class="tag">近 7 天</span>
+          <span class="tag">全部项目</span>
+          <span class="tag">全部应用</span>
+          <span class="tag">4 个模型</span>
+          <span class="tag">全部用户</span>
+          <span class="tag">全部状态</span>
+          <button class="btn btn--sm btn--ghost">清空条件</button>
+          <span class="total">命中 24,220 条</span>
+        </div>
+
+        <!-- 汇总条：双轨计量并列，不折算为单一数字（10.1） -->
+        <div class="grid grid--4">
+          <div class="card kpi kpi--accent-spend">
+            <div class="kpi__label">Token 消耗（筛选结果）</div>
+            <div class="kpi__value">
+              <button class="num-xl rc-door-lg" data-receipt title="查看消耗回执">7.42M</button>
+              <span class="kpi__unit">Token</span>
+            </div>
+            <div class="kpi__foot">占租户总额度 61.8% · 可用 4.39M</div>
+          </div>
+          <div class="card kpi kpi--accent-compute">
+            <div class="kpi__label">卡时消耗（筛选结果）</div>
+            <div class="kpi__value">
+              <button class="num-xl rc-door-lg" data-receipt title="查看消耗回执">2 860.0</button>
+              <span class="kpi__unit">卡时</span>
+            </div>
+            <div class="kpi__foot">占租户总额度 57.2% · 可用 2 098.0</div>
+          </div>
+          <div class="card kpi">
+            <div class="kpi__label">调用次数</div>
+            <div class="kpi__value"><span class="num-xl">24,220</span><span class="kpi__unit">次</span></div>
+            <div class="kpi__foot">成功 24,019 · 失败 201</div>
+          </div>
+          <div class="card kpi kpi--accent-risk">
+            <div class="kpi__label">失败率</div>
+            <div class="kpi__value"><span class="num-xl">0.83%</span></div>
+            <div class="kpi__foot"><span class="chip chip--risk"><i class="chip__dot"></i>限流 4001 · 超时 3004</span></div>
+          </div>
+        </div>
+        <p class="t-micro mt-3 rc-result">Token 与卡时是两套不可换算的计量单位，故并列呈现、不做折算；失败率按筛选区间全量 24,220 次调用计算，下表为本页 12 条样本（含 2 条失败、1 条偏差超 ±20%）。</p>
+
+        <!-- ============ 明细表 ============ -->
+        <div class="card mt-5">
+          <div class="card__head">
+            <h2>消耗明细</h2>
+            <span class="chip chip--compute"><i class="chip__dot"></i>成功 24,019</span>
+            <span class="chip chip--risk"><i class="chip__dot"></i>失败 201</span>
+            <span class="spacer"></span>
+            <span class="t-micro">Token 消耗与卡时数字可点开回执（⌥R 亦可唤起最近一条）</span>
+          </div>
+          <div class="dg-wrap rc-flush">
+            <div class="dg-scroll">
+              <table class="dg">
+                <thead>
+                  <tr>
+                    <th>时间</th>
+                    <th>trace_id</th>
+                    <th>应用</th>
+                    <th>类目</th>
+                    <th>模型</th>
+                    <th>状态</th>
+                    <th class="num">耗时</th>
+                    <th class="num">Token 消耗</th>
+                    <th class="num">卡时</th>
+                    <th class="num">偏差</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="t-mono">14:32:07</td>
+                    <td class="t-mono">tr_8f3a91c4e7</td>
+                    <td class="dg-primary">知识问答</td>
+                    <td><span class="chip chip--insight"><i class="chip__dot"></i>智能体</span></td>
+                    <td>Qwen3-32B-Instruct</td>
+                    <td><span class="chip chip--compute"><i class="chip__dot"></i>成功</span></td>
+                    <td class="num">1,284 ms</td>
+                    <td class="num"><button class="rc-door" data-receipt title="查看消耗回执">1,180</button></td>
+                    <td class="num"><button class="rc-door" data-receipt title="查看消耗回执">0.0</button></td>
+                    <td class="num"><span class="variance variance--under">-4.8%</span></td>
+                  </tr>
+                  <tr>
+                    <td class="t-mono">14:29:51</td>
+                    <td class="t-mono">tr_2c7d0b5a19</td>
+                    <td class="dg-primary">视频检查</td>
+                    <td><span class="chip chip--insight"><i class="chip__dot"></i>智能体</span></td>
+                    <td>InternVL2-26B</td>
+                    <td><span class="chip chip--compute"><i class="chip__dot"></i>成功</span></td>
+                    <td class="num">3,420 ms</td>
+                    <td class="num"><button class="rc-door" data-receipt title="查看消耗回执">18,240</button></td>
+                    <td class="num"><button class="rc-door" data-receipt title="查看消耗回执">0.0</button></td>
+                    <td class="num"><span class="variance variance--over">+21.4%</span><span class="rc-mark">超阈</span></td>
+                  </tr>
+                  <tr>
+                    <td class="t-mono">14:21:36</td>
+                    <td class="t-mono">tr_9e15af0b73</td>
+                    <td class="dg-primary">知识问答</td>
+                    <td><span class="chip chip--insight"><i class="chip__dot"></i>智能体</span></td>
+                    <td>Qwen3-32B-Instruct</td>
+                    <td><span class="chip chip--compute"><i class="chip__dot"></i>成功</span></td>
+                    <td class="num">968 ms</td>
+                    <td class="num"><button class="rc-door" data-receipt title="查看消耗回执">842</button></td>
+                    <td class="num"><button class="rc-door" data-receipt title="查看消耗回执">0.0</button></td>
+                    <td class="num"><span class="variance variance--under">-2.1%</span></td>
+                  </tr>
+                  <tr>
+                    <td class="t-mono">14:12:02</td>
+                    <td class="t-mono">tr_5b8c2d6f41</td>
+                    <td class="dg-primary">法务合同审查</td>
+                    <td><span class="chip chip--quota"><i class="chip__dot"></i>行业应用</span></td>
+                    <td>DeepSeek-V3</td>
+                    <td><span class="chip chip--compute"><i class="chip__dot"></i>成功</span></td>
+                    <td class="num">2,140 ms</td>
+                    <td class="num"><button class="rc-door" data-receipt title="查看消耗回执">12,860</button></td>
+                    <td class="num"><button class="rc-door" data-receipt title="查看消耗回执">0.0</button></td>
+                    <td class="num"><span class="variance variance--under">-5.6%</span></td>
+                  </tr>
+                  <tr>
+                    <td class="t-mono">13:58:47</td>
+                    <td class="t-mono">tr_1a7f3e9d20</td>
+                    <td class="dg-primary">写作助手</td>
+                    <td><span class="chip chip--quota"><i class="chip__dot"></i>行业应用</span></td>
+                    <td>Qwen3-32B-Instruct</td>
+                    <td><span class="chip chip--compute"><i class="chip__dot"></i>成功</span></td>
+                    <td class="num">640 ms</td>
+                    <td class="num"><button class="rc-door" data-receipt title="查看消耗回执">326</button></td>
+                    <td class="num"><button class="rc-door" data-receipt title="查看消耗回执">0.0</button></td>
+                    <td class="num"><span class="variance variance--under">+3.4%</span></td>
+                  </tr>
+                  <tr>
+                    <td class="t-mono">13:47:19</td>
+                    <td class="t-mono">tr_6d20b8c5f3</td>
+                    <td class="dg-primary">知识问答</td>
+                    <td><span class="chip chip--insight"><i class="chip__dot"></i>智能体</span></td>
+                    <td>BGE-M3</td>
+                    <td><span class="chip chip--compute"><i class="chip__dot"></i>成功</span></td>
+                    <td class="num">118 ms</td>
+                    <td class="num"><button class="rc-door" data-receipt title="查看消耗回执">96</button></td>
+                    <td class="num"><button class="rc-door" data-receipt title="查看消耗回执">0.0</button></td>
+                    <td class="num"><span class="variance variance--under">-0.8%</span></td>
+                  </tr>
+                  <tr>
+                    <td class="t-mono">13:07:22</td>
+                    <td class="t-mono">tr_4f9a1c7e85</td>
+                    <td class="dg-primary">视频检查</td>
+                    <td><span class="chip chip--insight"><i class="chip__dot"></i>智能体</span></td>
+                    <td>InternVL2-26B</td>
+                    <td><span class="chip chip--compute"><i class="chip__dot"></i>成功</span></td>
+                    <td class="num">2,860 ms</td>
+                    <td class="num"><button class="rc-door" data-receipt title="查看消耗回执">42,600</button></td>
+                    <td class="num"><button class="rc-door" data-receipt title="查看消耗回执">0.0</button></td>
+                    <td class="num"><span class="variance variance--under">+6.5%</span></td>
+                  </tr>
+                  <tr>
+                    <td class="t-mono">12:44:05</td>
+                    <td class="t-mono">tr_7c3e5a91b2</td>
+                    <td class="dg-primary">知识问答</td>
+                    <td><span class="chip chip--insight"><i class="chip__dot"></i>智能体</span></td>
+                    <td>BGE-M3</td>
+                    <td><span class="chip chip--compute"><i class="chip__dot"></i>成功</span></td>
+                    <td class="num">420 ms</td>
+                    <td class="num"><button class="rc-door" data-receipt title="查看消耗回执">268</button></td>
+                    <td class="num"><button class="rc-door" data-receipt title="查看消耗回执">0.0</button></td>
+                    <td class="num"><span class="variance variance--under">-1.4%</span></td>
+                  </tr>
+                  <tr>
+                    <td class="t-mono">11:48:10</td>
+                    <td class="t-mono">tr_0b6d4f8a37</td>
+                    <td class="dg-primary">模型微调服务</td>
+                    <td><span class="chip chip--neutral">平台产品</span></td>
+                    <td>Qwen3-32B-Instruct</td>
+                    <td><span class="chip chip--compute"><i class="chip__dot"></i>成功</span></td>
+                    <td class="num">4,820 ms</td>
+                    <td class="num"><button class="rc-door" data-receipt title="查看消耗回执">18,200</button></td>
+                    <td class="num"><button class="rc-door" data-receipt title="查看消耗回执">36.5</button></td>
+                    <td class="num"><span class="variance variance--under">-8.8%</span></td>
+                  </tr>
+                  <tr data-state="risk">
+                    <td class="t-mono">11:02:14</td>
+                    <td class="t-mono">tr_3e8b7d0c56</td>
+                    <td class="dg-primary">写作助手</td>
+                    <td><span class="chip chip--quota"><i class="chip__dot"></i>行业应用</span></td>
+                    <td>Qwen3-32B-Instruct</td>
+                    <td><span class="chip chip--risk"><i class="chip__dot"></i>失败</span><span class="t-micro">限流 4001</span></td>
+                    <td class="num">128 ms</td>
+                    <td class="num"><button class="rc-door" data-receipt title="查看消耗回执">0</button></td>
+                    <td class="num"><button class="rc-door" data-receipt title="查看消耗回执">0.0</button></td>
+                    <td class="num"><span class="t-muted">—</span></td>
+                  </tr>
+                  <tr data-state="risk">
+                    <td class="t-mono">10:56:33</td>
+                    <td class="t-mono">tr_a1d5c93f28</td>
+                    <td class="dg-primary">法务合同审查</td>
+                    <td><span class="chip chip--quota"><i class="chip__dot"></i>行业应用</span></td>
+                    <td>DeepSeek-V3</td>
+                    <td><span class="chip chip--risk"><i class="chip__dot"></i>失败</span><span class="t-micro">模型超时 3004</span></td>
+                    <td class="num">30,000 ms</td>
+                    <td class="num"><button class="rc-door" data-receipt title="查看消耗回执">12,400</button></td>
+                    <td class="num"><button class="rc-door" data-receipt title="查看消耗回执">0.0</button></td>
+                    <td class="num"><span class="t-micro">部分计费</span></td>
+                  </tr>
+                  <tr>
+                    <td class="t-mono">09:41:08</td>
+                    <td class="t-mono">tr_c7f204e6b1</td>
+                    <td class="dg-primary">视频检查</td>
+                    <td><span class="chip chip--insight"><i class="chip__dot"></i>智能体</span></td>
+                    <td>InternVL2-26B</td>
+                    <td><span class="chip chip--compute"><i class="chip__dot"></i>成功</span></td>
+                    <td class="num">246 ms</td>
+                    <td class="num"><button class="rc-door" data-receipt title="查看消耗回执">1,840</button></td>
+                    <td class="num"><button class="rc-door" data-receipt title="查看消耗回执">0.0</button></td>
+                    <td class="num"><span class="variance variance--under">-3.9%</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card__foot rc-pager">
+            <span class="t-micro">共 <span class="num">24,220</span> 条 · 本页 <span class="num">1–12</span> 条 · 第 <span class="num">1</span> / <span class="num">2,019</span> 页</span>
+            <span class="spacer"></span>
+            <button class="btn btn--sm btn--icon" aria-label="上一页"><span class="rc-flip" data-icon="chevron"></span></button>
+            <button class="btn btn--sm btn--primary rc-page" data-page="1" aria-current="page">1</button>
+            <button class="btn btn--sm rc-page" data-page="2">2</button>
+            <button class="btn btn--sm rc-page" data-page="3">3</button>
+            <span class="t-micro">…</span>
+            <button class="btn btn--sm rc-page" data-page="2019">2,019</button>
+            <button class="btn btn--sm btn--icon" aria-label="下一页"><span data-icon="chevron"></span></button>
+            <select class="select" aria-label="每页条数">
+              <option>每页 12 条</option>
+              <option>每页 50 条</option>
+              <option>每页 100 条</option>
+            </select>
+          </div>
+        </div>
+
+        <p class="t-meta mt-3">偏差口径＝实际消耗 vs 调用前预估；±20% 以内为青绿（未越界），超出为朱红并加「超阈」标记符；失败调用的 Token 消耗按已产生用量部分计费。</p>
+      </main>
+    </div>
+  </div>
+
+  <aside class="ledger" id="ledger" aria-label="消耗上下文"></aside>
+</div>
+
+<template id="band-actions">
+  <button class="btn" data-icon="down">导出 Excel</button>
+  <select class="select" aria-label="导出时间范围">
+    <option>近 7 天</option>
+    <option>近 24 小时</option>
+    <option>近 30 天</option>
+    <option>当前筛选区间</option>
+  </select>
+</template>
+
+<template id="ledger-extra">
+  <h3>本次筛选口径</h3>
+  <dl class="kv">
+    <dt>时间</dt><dd>近 7 天 · 09-18~09-24</dd>
+    <dt>项目</dt><dd>全部项目</dd>
+    <dt>应用</dt><dd>4 个（2 智能体 / 2 行业应用）</dd>
+    <dt>模型</dt><dd>4 个</dd>
+    <dt>状态</dt><dd>全部（失败 201）</dd>
+  </dl>
+</template>
+
+<script src="assets/charts.js"></script>
+<script src="assets/app.js?v=20260924-7"></script>
+<script>
+(function () {
+  'use strict';
+
+  function init() {
+    /* 图标注水：全站唯一图标来源 DSH.icon() */
+    Array.prototype.forEach.call(document.querySelectorAll('[data-icon]'), function (el) {
+      el.insertAdjacentHTML('afterbegin', DSH.icon(el.getAttribute('data-icon')));
+      el.removeAttribute('data-icon');
+    });
+
+    /* 分页：原型内只切换当前页高亮，不伪造数据 */
+    Array.prototype.forEach.call(document.querySelectorAll('.rc-page[data-page]'), function (b) {
+      b.addEventListener('click', function () {
+        Array.prototype.forEach.call(document.querySelectorAll('.rc-page[data-page]'), function (x) {
+          x.removeAttribute('aria-current');
+          x.classList.remove('btn--primary');
+        });
+        b.setAttribute('aria-current', 'page');
+        b.classList.add('btn--primary');
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+</script>
+</body>
+</html>

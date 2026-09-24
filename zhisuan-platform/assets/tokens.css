@@ -1,0 +1,196 @@
+/* ============================================================
+   大模型智算平台 · 设计令牌
+   来源：《大模型智算平台产品设计规划》V2.1 · 第 10.3 章
+   原则：结构用墨，语义用色 —— 颜色只表达语义，不做装饰
+   ============================================================ */
+
+:root {
+  color-scheme: light;
+
+  /* ---------- 结构墨阶 Ink（一切结构与主操作） ---------- */
+  --ink-900: #0F1418;
+  --ink-800: #1B2229;
+  --ink-700: #2E3841;
+  --ink-600: #4A555F;
+  --ink-500: #6B7681;
+  --ink-400: #8B959E;
+  --ink-300: #AEB7BF;
+
+  /* ---------- 承载面 Surface ---------- */
+  --canvas: #F5F7FA;
+  --surface: #FFFFFF;
+  --surface-sunken: #EEF2F5;
+  --surface-veil: rgba(15, 20, 24, .42);
+  --line: #E1E7EC;
+  --line-soft: #EDF1F4;
+  --line-strong: #CBD4DB;
+
+  /* ---------- 语义色组 Semantic ----------
+     模块不拥有颜色，语义才拥有颜色。
+     “消耗”在任何模块里都是同一个琥珀色。                     */
+  --compute-soft: #E4F4F1;   /* 算力、运行时、健康、节点 */
+  --compute: #0E9E82;
+  --compute-strong: #0A7561;
+  --compute-line: #A8DCD2;
+
+  --spend-soft: #FCF0DD;     /* 消耗、计费、冻结、预估 */
+  --spend: #CE7A15;
+  --spend-strong: #9C5A0B;
+  --spend-line: #EFD2A2;
+
+  --quota-soft: #E6EFFD;     /* 额度、可用、授权、成功 */
+  --quota: #2C6BE0;
+  --quota-strong: #1F4EAE;
+  --quota-line: #B9CFF7;
+
+  --risk-soft: #FCE9E9;      /* 超支、告警、故障、驳回 */
+  --risk: #D6393A;
+  --risk-strong: #A52526;
+  --risk-line: #F2BCBC;
+
+  --insight-soft: #EFEAFD;   /* 分析、次要图表系列、洞察 */
+  --insight: #6B4CDF;
+  --insight-strong: #5133B2;
+  --insight-line: #D0C4F6;
+
+  /* ---------- 品牌标识色（仅标识、指示条、焦点环） ---------- */
+  --brand: #0B6E7F;
+  --ring: 0 0 0 3px rgba(11, 110, 127, .28);
+
+  /* ---------- 排版 ---------- */
+  --font-ui: system-ui, "PingFang SC", "HarmonyOS Sans SC", "Microsoft YaHei", sans-serif;
+  --font-num: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+
+  --num-xl: 34px;   /* 看板主指标 */
+  --num-lg: 22px;   /* 卡片指标、水位条数值 */
+  --num-md: 15px;   /* 表格内数字、成本按钮金额 */
+  --num-sm: 13px;   /* 辅助数字、轴标签 */
+
+  --text-page: 20px;    /* 页面标题 */
+  --text-section: 15px; /* 区块标题 */
+  --text-body: 14px;    /* 正文 */
+  --text-meta: 13px;    /* 元信息 */
+  --text-micro: 12px;   /* 标签、徽标 */
+
+  /* ---------- 形状（圆角偏小 → 精密、技术化） ---------- */
+  --r-1: 4px;
+  --r-2: 8px;
+  --r-3: 12px;
+  --r-full: 999px;
+
+  /* ---------- 阴影 ---------- */
+  --e-1: 0 1px 2px rgba(15, 20, 24, .05);
+  --e-2: 0 8px 24px -12px rgba(15, 20, 24, .16);
+  --e-3: 0 24px 56px -20px rgba(15, 20, 24, .30);
+
+  /* ---------- 动效 ---------- */
+  --t-fast: 120ms;
+  --t: 180ms;
+  --t-slow: 320ms;
+  --ease: cubic-bezier(.2, .8, .2, 1);
+
+  /* ---------- 间距（基数 4px） ---------- */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-12: 48px;
+
+  /* ---------- 控件与行高（密度优先） ---------- */
+  --h-ctl: 32px;
+  --h-ctl-sm: 28px;
+  --h-ctl-lg: 36px;
+  --h-row: 40px;
+  --h-row-sm: 32px;
+
+  /* ---------- 外壳度量（10.3.7） ---------- */
+  --topbar-h: 64px;
+  --subnav-w: 216px;
+  --rail-w: var(--subnav-w);
+  --band-h: 64px;
+  --filter-w: 208px;
+  --ledger-w: 320px;
+  --ledger-w-collapsed: 48px;
+  --stage-min: 880px;
+}
+
+/* ============================================================
+   基础重置与排版
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  background: var(--canvas);
+  color: var(--ink-600);
+  font: 400 var(--text-body)/1.57 var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4, p, figure { margin: 0; }
+
+a { color: inherit; text-decoration: none; }
+
+button, input, select, textarea { font: inherit; color: inherit; }
+
+/* 数字永远是等宽 + 表格数字，保证跨行小数点对齐 */
+.num,
+.num-xl, .num-lg, .num-md, .num-sm,
+[data-num] {
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  letter-spacing: -.01em;
+}
+
+.num-xl { font-size: var(--num-xl); font-weight: 600; line-height: 1.1; color: var(--ink-900); }
+.num-lg { font-size: var(--num-lg); font-weight: 600; line-height: 1.2; color: var(--ink-900); }
+.num-md { font-size: var(--num-md); font-weight: 550; line-height: 1.35; color: var(--ink-800); }
+.num-sm { font-size: var(--num-sm); font-weight: 500; line-height: 1.4; color: var(--ink-500); }
+
+.t-page    { font-size: var(--text-page);    font-weight: 600; line-height: 1.4; color: var(--ink-900); }
+.t-section { font-size: var(--text-section); font-weight: 600; line-height: 1.47; color: var(--ink-800); }
+.t-body    { font-size: var(--text-body);    color: var(--ink-600); }
+.t-meta    { font-size: var(--text-meta);    color: var(--ink-500); }
+.t-micro   { font-size: var(--text-micro);   font-weight: 500; color: var(--ink-500); }
+.t-mono    { font-family: var(--font-num); font-size: var(--text-meta); }
+
+.t-strong { color: var(--ink-900); font-weight: 600; }
+.t-muted  { color: var(--ink-400); }
+
+/* 焦点环：唯一允许的可见焦点表现，禁止 outline:none 裸用 */
+:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+  border-radius: var(--r-1);
+}
+
+::selection { background: var(--quota-line); color: var(--ink-900); }
+
+/* 尊重减弱动效偏好（10.7.2） */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+}
+
+/* 滚动条：低调、不抢视觉 */
+* { scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border: 3px solid transparent;
+  background-clip: content-box;
+  border-radius: var(--r-full);
+}
+*::-webkit-scrollbar-thumb:hover { background: var(--ink-300); background-clip: content-box; }

@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>登录 · 大模型智算平台</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230F1418'/%3E%3Cpath d='M9 21V11l4 6 3-4 4 8' fill='none' stroke='%230B6E7F' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/app.css?v=20260924-4">
+<style>
+/* ============================================================
+   G-01 登录 · 无外壳页面
+   契约第 8 节：无外壳页只校验令牌与溢出，因此本页自建居中式
+   独立布局，不写 .shell / .rail / .band / .ledger。
+   设计语言靠三件事与全站保持一致：
+     1) 墨黑承载块（对应窄轨的 --ink-900 面）
+     2) 品牌色标记块（对应 .rail__brand）与 RailGauge 额度水位环
+     3) 语义色只用于表达语义：账线四段（消耗 / 消耗 / 额度 / 算力）
+   ============================================================ */
+
+body.standalone {
+  display: flex;
+  height: auto;
+  min-height: 100%;
+  background: var(--canvas);
+  position: relative;
+}
+/* 背景网格：只用令牌与透明度，不做彩色装饰 */
+body.standalone::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 56px 56px, 56px 56px;
+  opacity: .5;
+}
+
+.login {
+  position: relative;
+  z-index: 1;
+  margin: auto;
+  width: min(1000px, 100%);
+  display: grid;
+  grid-template-columns: 372px minmax(0, 1fr);
+  border-radius: var(--r-3);
+  overflow: hidden;
+}
+
+/* ---------- 左：品牌与账线（墨面，对应窄轨） ---------- */
+.login__brand {
+  background: var(--ink-900);
+  padding: var(--sp-8) var(--sp-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+  color: rgba(255, 255, 255, .62);
+}
+.login__id { display: flex; align-items: center; gap: var(--sp-3); }
+.login__mark {
+  width: 40px; height: 40px; flex: none;
+  border-radius: var(--r-2);
+  background: var(--brand);
+  color: var(--surface);
+  display: grid; place-items: center;
+  font-weight: 700; font-size: 17px;
+}
+.login__word b { display: block; color: var(--surface); font-size: var(--text-section); font-weight: 600; }
+.login__word i { display: block; font-style: normal; font-size: var(--text-micro); margin-top: 2px; }
+.login__pitch { font-size: var(--text-meta); line-height: 1.7; }
+
+.login__water {
+  display: flex; align-items: center; gap: var(--sp-3);
+  padding: var(--sp-3);
+  border: 1px solid rgba(255, 255, 255, .10);
+  border-radius: var(--r-2);
+}
+.login__water .raingauge { cursor: default; flex: none; }
+.login__watermeta b { display: block; color: var(--surface); font-size: var(--text-micro); font-weight: 600; }
+.login__watermeta i { display: block; font-style: normal; font-size: var(--text-micro); margin-top: 2px; color: rgba(255, 255, 255, .55); }
+
+.login__line { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--sp-2); }
+.login__line li { display: flex; align-items: center; gap: var(--sp-2); font-size: var(--text-micro); }
+.login__line i { width: 6px; height: 6px; border-radius: 50%; flex: none; }
+.login__line i[data-k="spend"]   { background: var(--spend); }
+.login__line i[data-k="quota"]   { background: var(--quota); }
+.login__line i[data-k="compute"] { background: var(--compute); }
+.login__line b { margin-left: auto; color: var(--surface); font-weight: 600; }
+
+.login__note {
+  display: flex; align-items: flex-start; gap: 6px;
+  margin-top: auto; padding-top: var(--sp-4);
+  border-top: 1px solid rgba(255, 255, 255, .10);
+  font-size: var(--text-micro); line-height: 1.6;
+}
+.login__note svg { width: 13px; height: 13px; flex: none; margin-top: 3px; }
+
+/* ---------- 右：登录面板 ---------- */
+.login__panel { padding: var(--sp-8); background: var(--surface); }
+.login__acts { margin-top: var(--sp-5); }
+.login__acts .btn { justify-content: center; }
+.login__or {
+  display: flex; align-items: center; gap: var(--sp-3);
+  margin: var(--sp-5) 0;
+  font-size: var(--text-micro); color: var(--ink-400);
+}
+.login__or::before, .login__or::after { content: ""; flex: 1 1 auto; height: 1px; background: var(--line); }
+.login__or span { flex: none; }
+.login__alt .btn { justify-content: center; }
+
+.login__form { display: grid; gap: var(--sp-3); margin-top: var(--sp-6); padding-top: var(--sp-5); border-top: 1px solid var(--line-soft); }
+.login__sechead { display: flex; align-items: center; gap: var(--sp-2); }
+.login__field { display: grid; gap: 6px; font-size: var(--text-micro); color: var(--ink-500); }
+.login__check { display: flex; align-items: center; gap: 6px; font-size: var(--text-micro); color: var(--ink-500); cursor: pointer; }
+.login__check input { accent-color: var(--ink-900); margin: 0; width: 13px; height: 13px; }
+.login__link { font-size: var(--text-micro); color: var(--ink-600); text-decoration: underline; text-underline-offset: 2px; }
+.login__link:hover { color: var(--ink-900); }
+.login__submit { justify-content: center; }
+
+.login__compliance {
+  display: flex; align-items: flex-start; gap: 6px;
+  margin-top: var(--sp-5); padding-top: var(--sp-4);
+  border-top: 1px solid var(--line-soft);
+  line-height: 1.6;
+}
+.login__compliance svg { width: 13px; height: 13px; flex: none; margin-top: 3px; color: var(--ink-400); }
+
+/* 右下角版本与内网地址 */
+.login__version {
+  position: fixed; right: var(--sp-6); bottom: var(--sp-4); z-index: 1;
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .login { grid-template-columns: minmax(0, 1fr); }
+  .login__brand { padding: var(--sp-6); gap: var(--sp-4); }
+  .login__note { margin-top: var(--sp-4); }
+  .login__panel { padding: var(--sp-6); }
+}
+</style>
+</head>
+<body class="standalone" data-page="G-01">
+
+<!-- 居中卡片：左品牌账线，右登录面板。主操作只有一枚墨黑实心按钮（SSO）。 -->
+<div class="login card">
+
+  <aside class="login__brand">
+    <div class="login__id">
+      <span class="login__mark" aria-hidden="true">智</span>
+      <span class="login__word">
+        <b>大模型智算平台</b>
+        <i>华鲲元启 · 企业内网部署</i>
+      </span>
+    </div>
+
+    <p class="login__pitch">额度可计量、算力可调度、动作有成本。每一次调用都先给预估价，结算之后留回执。</p>
+
+    <div class="login__water">
+      <div class="raingauge" id="loginGauge" role="img" aria-label="视觉检索平台 Token 水位 61.8%"></div>
+      <span class="login__watermeta">
+        <b>视觉检索平台</b>
+        <i class="num-sm">4.39M 可用 · 共 12.00M Token</i>
+      </span>
+    </div>
+
+    <ul class="login__line">
+      <li><i data-k="spend" aria-hidden="true"></i>预估<b class="num-sm">≈1.2k Token</b></li>
+      <li><i data-k="spend" aria-hidden="true"></i>冻结<b class="num-sm">186.0k</b></li>
+      <li><i data-k="quota" aria-hidden="true"></i>结算<b class="num-sm">4.39M 可用</b></li>
+      <li><i data-k="compute" aria-hidden="true"></i>回执<b class="num-sm">14:32 已出</b></li>
+    </ul>
+
+    <p class="login__note"><span data-icon="shield"></span>内网隔离部署 · 数据不出域 · 全部调用留痕可审计</p>
+  </aside>
+
+  <section class="login__panel">
+    <p class="t-micro">华鲲元启 · 企业统一身份（SSO）</p>
+    <h1 class="t-page mt-2">登录</h1>
+    <p class="t-meta mt-2">使用企业 SSO 免密登录，账号与权限由统一身份平台签发，本平台不保存你的密码。</p>
+
+    <!-- 主操作：企业 SSO（墨黑实心，全宽）。品牌青不用于按钮。 -->
+    <div class="login__acts">
+      <a class="btn btn--primary btn--lg w-full" href="home.html"><span data-icon="key"></span>企业 SSO 登录</a>
+    </div>
+
+    <div class="login__or"><span>或</span></div>
+
+    <div class="login__alt grid grid--2">
+      <button class="btn" type="button"><span data-icon="user"></span>账号密码登录</button>
+      <button class="btn" type="button"><span data-icon="grid"></span>企业微信扫码</button>
+    </div>
+
+    <form class="login__form" onsubmit="return false">
+      <div class="login__sechead">
+        <span class="t-micro">账号密码登录</span>
+        <span class="spacer"></span>
+        <span class="t-micro">仅办公网内可用</span>
+      </div>
+
+      <label class="login__field">
+        <span>账号</span>
+        <input class="input w-full" type="text" name="account" autocomplete="username"
+               placeholder="企业工号或邮箱">
+      </label>
+
+      <label class="login__field">
+        <span>密码</span>
+        <input class="input w-full" type="password" name="password" autocomplete="current-password"
+               placeholder="内网域账号密码">
+      </label>
+
+      <div class="row row--between">
+        <label class="login__check"><input type="checkbox" checked>记住我（仅本机 7 天）</label>
+        <a class="login__link" href="#">忘记密码</a>
+      </div>
+
+      <button class="btn w-full login__submit" type="submit">登录</button>
+      <p class="t-micro">账号密码方式连续 5 次失败将锁定 10 分钟；内网环境推荐优先使用企业 SSO。</p>
+    </form>
+
+    <p class="login__compliance t-micro"><span data-icon="shield"></span>本平台部署于企业内网隔离区，数据不出域；全部调用经 Token 银行计量并与审计日志关联，可追溯到人、到应用、到 trace。</p>
+  </section>
+</div>
+
+<p class="login__version t-micro"><span class="num-sm">v2.1.0</span> · 内网地址 <span class="num-sm">https://zhisuan.hkyq.internal</span></p>
+
+<!-- 无外壳页面不引入 app.js；图标与额度水位环复用 charts.js 的同一套实现 -->
+<script src="assets/charts.js"></script>
+<script>
+  /* 图标只用 DSH.icon()，不用 emoji */
+  Array.prototype.forEach.call(document.querySelectorAll('[data-icon]'), function (el) {
+    el.insertAdjacentHTML('afterbegin', DSH.icon(el.getAttribute('data-icon')));
+  });
+  /* 复用外壳窄轨底部的 RailGauge：同一令牌、同一组件，无外壳页面仍在同一套设计语言里 */
+  DSH.chart.ring(document.getElementById('loginGauge'), 0.618, 'watch');
+</script>
+</body>
+</html>

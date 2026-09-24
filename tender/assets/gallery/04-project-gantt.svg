@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+  <rect width="1200" height="800" fill="#fff"/>
+  <text x="80" y="76" font-family="Arial" font-size="34" font-weight="700" fill="#0f172a">项目实施进度计划</text>
+  <g font-family="Arial" font-size="16" fill="#475569">
+    <line x1="320" y1="120" x2="320" y2="680" stroke="#cbd5e1"/><line x1="500" y1="120" x2="500" y2="680" stroke="#e2e8f0"/><line x1="680" y1="120" x2="680" y2="680" stroke="#e2e8f0"/><line x1="860" y1="120" x2="860" y2="680" stroke="#e2e8f0"/><line x1="1040" y1="120" x2="1040" y2="680" stroke="#e2e8f0"/>
+    <text x="300" y="105">W1</text><text x="480" y="105">W2</text><text x="660" y="105">W3</text><text x="840" y="105">W4</text><text x="1020" y="105">W5</text>
+  </g>
+  <g font-family="Arial" font-size="17" fill="#334155">
+    <text x="80" y="165">需求调研</text><rect x="320" y="145" width="110" height="28" rx="14" fill="#025dff"/>
+    <text x="80" y="235">方案设计</text><rect x="410" y="215" width="160" height="28" rx="14" fill="#2563eb"/>
+    <text x="80" y="305">开发实施</text><rect x="550" y="285" width="260" height="28" rx="14" fill="#16a34a"/>
+    <text x="80" y="375">系统联调</text><rect x="760" y="355" width="130" height="28" rx="14" fill="#f59e0b"/>
+    <text x="80" y="445">测试验收</text><rect x="850" y="425" width="120" height="28" rx="14" fill="#ef4444"/>
+    <text x="80" y="515">上线运维</text><rect x="930" y="495" width="150" height="28" rx="14" fill="#64748b"/>
+  </g>
+  <g fill="#fff" font-family="Arial" font-size="13"><text x="338" y="164">2周</text><text x="432" y="234">3周</text><text x="578" y="304">8周</text><text x="784" y="374">4周</text><text x="866" y="444">2周</text><text x="944" y="514">持续</text></g>
+  <g stroke="#025dff" stroke-width="3" fill="none"><path d="M430 159 L550 229"/><path d="M710 299 L760 369"/><path d="M890 439 L930 509"/></g>
+  <rect x="80" y="570" width="1000" height="100" rx="16" fill="#f8fafc"/>
+  <text x="110" y="610" font-family="Arial" font-size="18" fill="#0f172a">关键里程碑</text>
+  <text x="110" y="642" font-family="Arial" font-size="16" fill="#475569">需求冻结 · 架构评审 · 代码提测 · UAT 通过 · 正式割接</text>
+</svg>

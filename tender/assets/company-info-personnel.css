@@ -1,0 +1,8 @@
+.page-actions{align-items:center;justify-content:space-between}
+.page-actions h2{margin:0;color:#344054;font-size:16px;font-weight:600;line-height:24px}
+.personnel-content{padding-top:28px}
+.personnel-intro{align-items:center;margin-bottom:18px;padding:0}
+.personnel-intro h1{margin:0;color:#344054;font-size:16px;font-weight:600;line-height:24px}
+.personnel-stat{flex-direction:row;align-items:center;gap:8px;padding:0;border:0;background:transparent}
+.personnel-stat b{font-size:16px;line-height:24px}
+.personnel-stat span{font-size:13px;line-height:20px}

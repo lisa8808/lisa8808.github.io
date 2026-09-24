@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f6fafe" />
+    <title>新增企业 - AI投标助手</title>
+    <link rel="stylesheet" href="./assets/company-create.css" />
+    <link rel="stylesheet" href="./assets/company-document-gallery.css" />
+    <link rel="stylesheet" href="./assets/shared-brand-header.css" />
+    <script defer src="./assets/company-document-gallery.js"></script>
+    <script defer src="./assets/company-create.js"></script>
+    <script defer src="./assets/shared-brand-header.js?v=20260911-unnamed-project"></script>
+  </head>
+  <body data-page="company-create">
+    <div class="app">
+      <header class="topbar"><button class="brand" type="button" data-back aria-label="返回企业信息"><span class="brand-content"><span class="brand-logo-crop"><img src="./assets/list-huakun-tender-logo-cczIqQ47.png" alt="华鲲元启" /></span><span class="brand-dot">·</span><span class="brand-product">AI投标助手</span></span></button><button class="profile" type="button"><img class="avatar-image" src="./assets/figma/avatar.svg" alt="" /><span>易天行</span><svg class="profile-chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M12.5 6.25 8.25 10.27 4 6.25" /></svg></button></header>
+      <div class="breadcrumb"><button type="button" data-back>企业信息</button><span>/</span><strong>新增企业</strong></div>
+      <main class="form-page"><form id="companyForm" novalidate>
+        <header class="page-heading"><h1>新增企业</h1><p>完善企业资料后，可在标书撰写中直接使用。</p></header>
+        <section class="form-section"><h2>企业基础信息</h2><div class="form-grid basic-grid">
+          <div class="upload-field license-upload"><label for="license"><span class="required">营业执照</span><span class="upload-box" data-document-gallery="license"><svg viewBox="0 0 24 24"><path d="M12 15V4m0 0L8 8m4-4 4 4M5 15v5h14v-5" /></svg><strong id="licenseName">上传营业执照</strong><small>支持 jpg、jpeg、bmp、png，大小不超过 5MB</small></span></label><input id="license" type="file" accept="image/*" /></div>
+          <label class="field"><span class="required">企业名称</span><input name="name" placeholder="请输入企业名称" /></label>
+          <label class="field"><span class="required">营业执照注册号/统一社会信用代码</span><input name="creditCode" placeholder="请输入注册号或统一社会信用代码" /></label>
+          <label class="field"><span class="required">注册地址</span><input name="address" placeholder="请输入注册地址" /></label>
+          <label class="field"><span class="required">注册资本</span><input name="capital" placeholder="请输入注册资本" /></label>
+          <label class="field"><span class="required">营业期限开始日期</span><input name="startDate" type="date" /></label>
+          <label class="field"><span class="required">营业期限结束日期</span><div class="date-with-check"><input name="endDate" id="endDate" type="date" /><label class="check"><input id="longTerm" type="checkbox" />长期有效</label></div></label>
+          <label class="field"><span>企业联系电话</span><input name="phone" placeholder="请输入联系电话" /></label>
+          <label class="field"><span class="required">成立时间</span><input name="establishedDate" type="date" /></label>
+          <label class="field"><span>登记机关</span><input name="authority" placeholder="请输入登记机关" /></label>
+          <label class="field"><span>企业邮箱</span><input name="email" type="email" placeholder="请输入企业邮箱" /></label>
+          <label class="field"><span class="required">企业类型</span><select name="businessType"><option value="">请选择企业类型</option><option>有限责任公司</option><option>股份有限公司</option><option>事业单位</option><option>其他</option></select></label>
+          <label class="field"><span>企业性质</span><input name="nature" placeholder="请输入企业性质" /></label>
+          <label class="field full-field"><span>经营范围</span><textarea name="scope" rows="3" placeholder="请输入经营范围"></textarea></label>
+        </div></section>
+        <section class="form-section"><h2>企业法人信息</h2><div class="form-grid legal-grid">
+          <div class="upload-field"><label for="idFront"><span class="required">法人个人信息页</span><span class="id-upload-box" data-document-gallery="idFront"><svg viewBox="0 0 24 24"><path d="M12 15V4m0 0L8 8m4-4 4 4M5 15v5h14v-5" /></svg><strong id="idFrontName">上传身份证人像面</strong><small>支持 jpg、jpeg、bmp、png，大小不超过 5MB</small></span></label><input id="idFront" type="file" accept="image/*" /></div>
+          <div class="upload-field"><label for="idBack"><span class="required">法人国徽页</span><span class="id-upload-box" data-document-gallery="idBack"><svg viewBox="0 0 24 24"><path d="M12 15V4m0 0L8 8m4-4 4 4M5 15v5h14v-5" /></svg><strong id="idBackName">上传身份证国徽面</strong><small>支持 jpg、jpeg、bmp、png，大小不超过 5MB</small></span></label><input id="idBack" type="file" accept="image/*" /></div>
+          <label class="field"><span class="required">法人姓名</span><input name="legalRepresentative" placeholder="请输入法人姓名" /></label>
+          <label class="field"><span class="required">法人身份证号</span><input name="idNumber" maxlength="18" placeholder="请输入法人身份证号" /></label>
+        </div></section>
+        <section class="form-section"><h2>企业账户信息</h2><div class="form-grid account-grid">
+          <label class="field"><span class="required">银行账户名</span><input name="accountName" placeholder="请输入银行账户名" /></label><label class="field"><span class="required">银行账号</span><input name="accountNumber" placeholder="请输入银行账号" /></label><label class="field"><span class="required">开户行名称</span><input name="bankName" placeholder="请输入开户行名称" /></label><label class="field"><span class="required">开户行行号</span><input name="bankCode" placeholder="请输入开户行行号" /></label>
+        </div></section>
+        <footer class="form-footer"><button type="button" class="secondary-button" data-back>取消</button><button type="submit" class="primary-button">提交</button></footer>
+      </form></main>
+    </div>
+    <div class="success-backdrop" id="successModal" hidden><section class="success-modal" role="dialog" aria-modal="true" aria-labelledby="successTitle"><span class="success-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 12 4.5 4.5L19 7" /></svg></span><h2 id="successTitle">企业信息已保存</h2><p>企业已成功建档，是否继续完善企业资料？</p><footer><button type="button" class="secondary-button" id="cancelContinue">取消</button><button type="button" class="primary-button" id="continueProfile">继续完善企业资料</button></footer></section></div>
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+  </body>
+</html>

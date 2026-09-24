@@ -1,0 +1,677 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>预算与配额管理 · 控制中心 · 大模型智算平台</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230F1418'/%3E%3Cpath d='M9 21V11l4 6 3-4 4 8' fill='none' stroke='%230B6E7F' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/app.css?v=20260924-4">
+<style>
+/* ============================================================
+   页面专属样式 · C-02 预算与配额管理
+   只用 var(--token)；不覆盖 assets 下任何全局类
+   ============================================================ */
+[hidden] { display: none !important; }
+
+/* 数字是一扇门：KPI 主数字可点开消耗回执（悬停才出下划线，不做装饰） */
+.qm-door {
+  background: none; border: 0; padding: 0; font: inherit; cursor: pointer;
+  color: inherit; border-bottom: 1px solid transparent;
+}
+.qm-door:hover { border-bottom-color: var(--line-strong); }
+
+/* 筛选列：配额口径事实行 */
+.qm-facts { display: flex; flex-direction: column; gap: 6px; }
+.qm-fact { display: flex; align-items: baseline; gap: var(--sp-2); font-size: var(--text-meta); color: var(--ink-600); }
+.qm-fact .num { margin-left: auto; color: var(--ink-800); }
+.qm-fact--over .num { color: var(--risk-strong); font-weight: 600; }
+
+/* 阈值滑块 */
+.qm-range-row { display: grid; grid-template-columns: 1fr 56px; align-items: center; gap: var(--sp-4); }
+.qm-range {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 4px; margin: 0; border-radius: var(--r-full);
+  background: var(--surface-sunken); cursor: pointer;
+}
+.qm-range::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%;
+  background: var(--ink-900); border: 2px solid var(--surface); box-shadow: var(--e-1); cursor: grab;
+}
+.qm-range::-moz-range-thumb {
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--ink-900); border: 2px solid var(--surface); box-shadow: var(--e-1); cursor: grab;
+}
+.qm-range:focus { outline: none; box-shadow: var(--ring); }
+.qm-range__out { text-align: right; }
+
+/* 通知对象 */
+.qm-checks { display: flex; flex-wrap: wrap; gap: var(--sp-2) var(--sp-5); }
+.qm-check { display: inline-flex; align-items: center; gap: 6px; font-size: var(--text-meta); color: var(--ink-700); cursor: pointer; }
+.qm-check input { width: 14px; height: 14px; margin: 0; accent-color: var(--ink-900); }
+.qm-check .t-micro { color: var(--ink-400); }
+
+/* 矩阵工具栏 */
+.qm-toolbar { display: flex; align-items: center; gap: var(--sp-2); flex-wrap: wrap; }
+.qm-toolbar .search .input { width: 200px; }
+
+/* 矩阵：差异高亮与行内编辑 */
+.qm-scroll-full { max-height: none; }
+.qm-matrix td:first-child { font-family: var(--font-ui); text-align: left; }
+.qm-matrix tr[data-over="true"] td:first-child { box-shadow: inset 3px 0 0 var(--risk); }
+.qm-matrix .qm-group td {
+  height: 34px; background: var(--surface-sunken); text-align: left;
+  font-family: var(--font-ui); font-size: var(--text-micro); font-weight: 600;
+  color: var(--ink-500); letter-spacing: .03em;
+}
+.qm-groupline { display: flex; align-items: center; gap: var(--sp-2); flex-wrap: wrap; }
+.qm-name { display: inline-flex; align-items: center; gap: var(--sp-2); white-space: nowrap; }
+.qm-cell { display: flex; align-items: center; gap: var(--sp-2); }
+.qm-edit {
+  flex: 1 1 auto; min-width: 0; width: 100%; height: 26px; padding: 0 6px;
+  border: 1px solid transparent; border-radius: var(--r-1); background: transparent;
+  font-family: var(--font-num); font-variant-numeric: tabular-nums;
+  font-size: var(--text-meta); font-weight: inherit; color: inherit; text-align: right;
+}
+.qm-edit:hover { border-color: var(--line-strong); background: var(--surface); }
+.qm-edit:focus { outline: none; border-color: var(--brand); background: var(--surface); box-shadow: var(--ring); }
+/* 改动的第二通道：徽标恒定存在，底色在超额行让位给朱红 */
+.qm-delta {
+  flex: none; padding: 0 4px; line-height: 16px; white-space: nowrap;
+  font-family: var(--font-num); font-size: 10px; font-weight: 600;
+  color: var(--spend-strong); background: var(--spend-soft);
+  border: 1px solid var(--spend-line); border-radius: var(--r-1);
+}
+.qm-facts-note { line-height: 1.5; }
+/* CostButton 是主操作，禁止被同行的说明文字挤到换行 */
+.qm-flex-none { flex: none; }
+</style>
+</head>
+<body data-module="console" data-page="C-02" data-title="预算与配额管理">
+<div class="shell" id="shell">
+  <nav class="rail" id="rail" aria-label="模块导航"></nav>
+
+  <div class="main">
+    <header class="band" id="band"></header>
+
+    <div class="mid">
+      <!-- 控制中心：二级导航占用筛选列（写法照抄 console-usage.html，aria-current 落在本页） -->
+      <aside class="filter" aria-label="控制中心导航">
+        <div class="filter__group">
+          <h3>控制中心</h3>
+          <a class="filter__nav" href="console-usage.html">用量概览</a>
+          <a class="filter__nav" href="console-quota.html" aria-current="page">预算与配额管理</a>
+          <a class="filter__nav" href="console-consumption.html">消耗明细查询</a>
+          <a class="filter__nav" href="console-usage.html">账单与费用</a>
+          <a class="filter__nav" href="console-keys.html">API 密钥</a>
+          <a class="filter__nav" href="console-logs.html">调用日志</a>
+          <a class="filter__nav" href="console-quota.html">告警中心</a>
+        </div>
+
+        <div class="filter__group">
+          <h3>阈值生效范围</h3>
+          <label class="filter__opt"><input type="radio" name="scope" checked> 全租户（华鲲元启）</label>
+          <label class="filter__opt"><input type="radio" name="scope"> 仅当前项目</label>
+          <label class="filter__opt"><input type="radio" name="scope"> 按项目分别配置</label>
+        </div>
+
+        <div class="filter__group">
+          <h3>配额口径</h3>
+          <div class="qm-facts">
+            <span class="qm-fact">项目级 Token 小计<span class="num">12.60M</span></span>
+            <span class="qm-fact">父级 Token 上限<span class="num">12.00M</span></span>
+            <span class="qm-fact qm-fact--over">Token 缺口<span class="num">600.0k</span></span>
+            <span class="qm-fact">项目级 卡时小计<span class="num">5 200.0</span></span>
+            <span class="qm-fact">父级 卡时上限<span class="num">5 000.0</span></span>
+            <span class="qm-fact qm-fact--over">卡时缺口<span class="num">200.0</span></span>
+            <span class="qm-fact qm-fact--over">超限行<span class="num">2</span></span>
+          </div>
+          <p class="t-micro mt-3 qm-facts-note">子级配额之和不得超过父级上限；超限行保存后会被 Token 银行整批拒绝。</p>
+        </div>
+      </aside>
+
+      <main class="stage" id="stage">
+        <div class="row row--between mb-4">
+          <span class="t-meta">数据来源 Token 银行计量结果 · 数据截至 14:35（同步延迟 &lt; 1 分钟）</span>
+          <span class="t-micro">租户：华鲲元启 · 租户管理员视图</span>
+        </div>
+
+        <!-- 预算与配额的四个前提数字：父级上限 / 双轨已用 / 待保存改动 -->
+        <div class="grid grid--4">
+          <div class="card kpi kpi--accent-quota">
+            <div class="kpi__label">父级上限（租户合同额度）</div>
+            <div class="kpi__value"><span class="num-xl">12.00M</span><span class="kpi__unit">Token</span></div>
+            <div class="kpi__foot">卡时上限 5 000.0 · 双轨并列不折算</div>
+          </div>
+          <div class="card kpi kpi--accent-spend">
+            <div class="kpi__label">Token 已用</div>
+            <div class="kpi__value">
+              <button class="num-xl qm-door" data-receipt title="查看消耗回执">7.42M</button>
+              <span class="kpi__unit">Token</span>
+            </div>
+            <div class="levelbar levelbar--sm mt-3"><div class="levelbar__track">
+              <div class="levelbar__seg levelbar__seg--used" style="width:61.83%"></div>
+              <div class="levelbar__seg levelbar__seg--frozen" style="width:1.55%"></div>
+              <div class="levelbar__seg levelbar__seg--avail" style="width:36.62%"></div>
+            </div></div>
+            <div class="kpi__foot">已用 61.8% · 冻结 186.0k · 可用 4.39M</div>
+          </div>
+          <div class="card kpi kpi--accent-compute">
+            <div class="kpi__label">卡时已用</div>
+            <div class="kpi__value">
+              <button class="num-xl qm-door" data-receipt title="查看消耗回执">2 860.0</button>
+              <span class="kpi__unit">卡时</span>
+            </div>
+            <div class="levelbar levelbar--sm mt-3"><div class="levelbar__track">
+              <div class="levelbar__seg levelbar__seg--used" style="width:57.2%"></div>
+              <div class="levelbar__seg levelbar__seg--frozen" style="width:0.84%"></div>
+              <div class="levelbar__seg levelbar__seg--avail" style="width:41.96%"></div>
+            </div></div>
+            <div class="kpi__foot">已用 57.2% · 冻结 42.0 · 可用 2 098.0</div>
+          </div>
+          <div class="card kpi kpi--accent-risk">
+            <div class="kpi__label">待保存改动</div>
+            <div class="kpi__value"><span class="num-xl" id="qmChangedKpi">3</span><span class="kpi__unit">处</span></div>
+            <div class="kpi__foot">超限行 <span class="num" id="qmOverRows">2</span> 行 · 保存后由 Token 银行整批校验</div>
+          </div>
+        </div>
+
+        <!-- ============ 预算告警阈值 ============ -->
+        <div class="card mt-5">
+          <div class="card__head">
+            <h2>预算告警阈值</h2>
+            <span class="chip chip--spend"><i class="chip__dot"></i>预警 <span id="qmWarnChip">80%</span></span>
+            <span class="chip chip--risk"><i class="chip__dot"></i>严重 <span id="qmCritChip">100%</span></span>
+            <span class="spacer"></span>
+            <span class="t-micro">生效范围：全租户（华鲲元启）</span>
+            <button class="btn" data-icon="check">保存阈值</button>
+          </div>
+          <div class="card__body">
+            <div class="grid grid--2">
+              <div>
+                <div class="row">
+                  <span class="t-strong">预警阈值</span>
+                  <span class="t-micro">达到即通知，并驱动 RailGauge 转预警色（琥珀）</span>
+                </div>
+                <div class="qm-range-row mt-3">
+                  <input class="qm-range" id="qmWarnRange" type="range" min="50" max="95" step="5" value="80" aria-label="预警阈值百分比">
+                  <output class="num-md qm-range__out" id="qmWarnOut" for="qmWarnRange">80%</output>
+                </div>
+              </div>
+              <div>
+                <div class="row">
+                  <span class="t-strong">严重阈值</span>
+                  <span class="t-micro">越线即写入告警中心（CTR-007），并同步运维监控</span>
+                </div>
+                <div class="qm-range-row mt-3">
+                  <input class="qm-range" id="qmCritRange" type="range" min="80" max="100" step="5" value="100" aria-label="严重阈值百分比">
+                  <output class="num-md qm-range__out" id="qmCritOut" for="qmCritRange">100%</output>
+                </div>
+              </div>
+            </div>
+
+            <!-- 阈值与水位同轴：刻线随滑块移动，避免"阈值为多少"需要心算 -->
+            <div class="levelbar mt-5">
+              <div class="levelbar__track">
+                <div class="levelbar__seg levelbar__seg--used" style="width:61.83%"></div>
+                <div class="levelbar__seg levelbar__seg--frozen" style="width:1.55%"></div>
+                <div class="levelbar__seg levelbar__seg--avail" style="width:36.62%"></div>
+              </div>
+              <div class="levelbar__tick" id="qmTickWarn" style="left:80%"></div>
+              <div class="levelbar__tick levelbar__tick--limit" id="qmTickCrit" style="left:100%"></div>
+              <div class="levelbar__legend">
+                <span><i style="background:var(--ink-700)"></i>已用 7.42M（61.8%）</span>
+                <span><i style="background:var(--spend)"></i>冻结 186.0k</span>
+                <span><i style="background:var(--quota)"></i>可用 4.39M</span>
+                <span><i style="background:var(--ink-400)"></i>预警刻线 <span id="qmTickWarnLabel">80%</span></span>
+                <span><i style="background:var(--risk)"></i>严重刻线 <span id="qmTickCritLabel">100%</span></span>
+              </div>
+            </div>
+
+            <hr class="divider">
+
+            <div class="row row--between">
+              <div>
+                <div class="t-micro mb-2">通知对象（多选）</div>
+                <div class="qm-checks">
+                  <label class="qm-check"><input type="checkbox" checked> 租户管理员<span class="t-micro">站内信 + 短信</span></label>
+                  <label class="qm-check"><input type="checkbox" checked> 项目负责人<span class="t-micro">站内信</span></label>
+                  <label class="qm-check"><input type="checkbox" checked> 企业微信<span class="t-micro">群机器人</span></label>
+                </div>
+              </div>
+              <span class="t-micro">阈值触达后同屏最多提示 1 条告警带，其余折叠为「还有 N 条」</span>
+            </div>
+          </div>
+          <div class="card__foot t-micro">阈值由控制中心配置、Token 银行执行；本平台不参与额度计算，仅下发阈值与通知意图。</div>
+        </div>
+
+        <!-- ============ 配额分配矩阵 DiffMatrix ============ -->
+        <div class="card mt-5">
+          <div class="card__head">
+            <h2>配额分配矩阵</h2>
+            <span class="chip chip--spend"><i class="chip__dot"></i>琥珀底＝本次改动（单元格级）</span>
+            <span class="chip chip--risk"><i class="chip__dot"></i>朱红行＝超出父级上限（行级）</span>
+            <span class="spacer"></span>
+            <span class="t-micro">一格既改动又超限时，朱红铺底、改动改用琥珀徽标「改」标识</span>
+          </div>
+          <div class="card__body">
+            <div class="qm-toolbar mb-4">
+              <label class="search"><span data-icon="search"></span>
+                <input class="input" type="search" placeholder="搜索项目 / 模型 / 应用" aria-label="搜索配额对象">
+              </label>
+              <button class="btn" data-icon="bolt">批量填充</button>
+              <button class="btn" data-icon="close" id="qmUndo">撤销改动</button>
+              <span class="spacer"></span>
+              <span class="t-micro">维度</span>
+              <div class="seg" role="group" aria-label="切换配额维度">
+                <button aria-pressed="true" style="width:auto;padding:0 10px">全部</button>
+                <button aria-pressed="false" style="width:auto;padding:0 10px">按项目</button>
+                <button aria-pressed="false" style="width:auto;padding:0 10px">按模型</button>
+                <button aria-pressed="false" style="width:auto;padding:0 10px">按应用</button>
+              </div>
+              <span class="chip chip--spend" id="qmChanged">3 处改动待保存</span>
+              <button class="btn btn--primary" data-icon="check">保存改动</button>
+            </div>
+
+            <div class="dg-wrap">
+              <div class="dg-scroll qm-scroll-full">
+                <table class="matrix qm-matrix" id="quotaMatrix">
+                  <colgroup>
+                    <col style="width:28%"><col style="width:26%"><col style="width:10%"><col style="width:10%"><col style="width:26%">
+                  </colgroup>
+                  <thead>
+                    <tr>
+                      <th>项目 / 模型 / 应用</th>
+                      <th>Token 配额</th>
+                      <th>QPS</th>
+                      <th>并发</th>
+                      <th>卡时配额</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- —— 项目级 —— -->
+                    <tr class="qm-group">
+                      <td colspan="5">
+                        <div class="qm-groupline">
+                          <span>项目级分配 · 父级＝租户合同额度 <span class="num">12.00M</span> Token / <span class="num">5 000.0</span> 卡时</span>
+                          <span class="spacer"></span>
+                          <span>小计 <span class="num" id="qmSumProjTk">12.60M</span> Token / <span class="num" id="qmSumProjCh">5 200.0</span> 卡时</span>
+                          <span class="chip chip--risk" id="qmProjOver"><i class="chip__dot"></i>超父级 <span id="qmProjGap">600.0k Token / 200.0 卡时</span></span>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><span class="qm-name">视觉检索平台 <span class="chip chip--neutral">项目</span></span></td>
+                      <td class="num" id="qmVisTokenCell">
+                        <div class="qm-cell"><input class="qm-edit" id="qmVisToken" data-kind="proj-token" data-orig="6000000" value="6,000,000" aria-label="视觉检索平台 Token 配额"></div>
+                      </td>
+                      <td class="num"><div class="qm-cell"><input class="qm-edit" data-orig="80" value="80" aria-label="视觉检索平台 QPS 配额"></div></td>
+                      <td class="num"><div class="qm-cell"><input class="qm-edit" data-orig="40" value="40" aria-label="视觉检索平台 并发配额"></div></td>
+                      <td class="num" data-changed="true">
+                        <div class="qm-cell"><input class="qm-edit" id="qmVisCardhour" data-kind="proj-cardhour" data-orig="2200" value="2,400" aria-label="视觉检索平台 卡时配额" title="原值 2,200"><span class="qm-delta">改 +200</span></div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><span class="qm-name">合同审查 <span class="chip chip--neutral">项目</span></span></td>
+                      <td class="num"><div class="qm-cell"><input class="qm-edit" data-kind="proj-token" data-orig="3000000" value="3,000,000" aria-label="合同审查 Token 配额"></div></td>
+                      <td class="num"><div class="qm-cell"><input class="qm-edit" data-orig="40" value="40" aria-label="合同审查 QPS 配额"></div></td>
+                      <td class="num"><div class="qm-cell"><input class="qm-edit" data-orig="20" value="20" aria-label="合同审查 并发配额"></div></td>
+                      <td class="num"><div class="qm-cell"><input class="qm-edit" data-kind="proj-cardhour" data-orig="1200" value="1,200" aria-label="合同审查 卡时配额"></div></td>
+                    </tr>
+                    <tr id="qmRowBiaoshu" data-over="true">
+                      <td><span class="qm-name">标书撰写 <span class="chip chip--neutral">项目</span> <span class="chip chip--risk"><i class="chip__dot"></i>超限</span></span></td>
+                      <td class="num"><div class="qm-cell"><input class="qm-edit" data-kind="proj-token" data-orig="3600000" value="3,600,000" aria-label="标书撰写 Token 配额"></div></td>
+                      <td class="num"><div class="qm-cell"><input class="qm-edit" data-orig="40" value="40" aria-label="标书撰写 QPS 配额"></div></td>
+                      <td class="num"><div class="qm-cell"><input class="qm-edit" data-orig="20" value="20" aria-label="标书撰写 并发配额"></div></td>
+                      <td class="num" data-changed="true">
+                        <div class="qm-cell"><input class="qm-edit" data-kind="proj-cardhour" data-orig="1400" value="1,600" aria-label="标书撰写 卡时配额" title="原值 1,400"><span class="qm-delta">改 +200</span></div>
+                      </td>
+                    </tr>
+
+                    <!-- —— 模型级（项目「视觉检索平台」内） —— -->
+                    <tr class="qm-group">
+                      <td colspan="5">
+                        <div class="qm-groupline">
+                          <span>模型级分配 · 父级＝项目「视觉检索平台」<span class="num" id="qmCapModelTk">6.00M</span> Token / <span class="num" id="qmCapModelCh">2 400.0</span> 卡时</span>
+                          <span class="spacer"></span>
+                          <span>小计 <span class="num" id="qmSumModelTk">5.70M</span> Token / <span class="num" id="qmSumModelCh">2 600.0</span> 卡时</span>
+                          <span class="chip chip--risk" id="qmModelOver"><i class="chip__dot"></i>超父级 <span id="qmModelGap">200.0 卡时</span></span>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><span class="qm-name">Qwen3-32B-Instruct <span class="chip chip--neutral">模型</span></span></td>
+                      <td class="num" data-changed="true">
+                        <div class="qm-cell"><input class="qm-edit" data-kind="model-token" data-orig="2000000" value="2,400,000" aria-label="Qwen3-32B-Instruct Token 配额" title="原值 2,000,000"><span class="qm-delta">改 +400,000</span></div>
+                      </td>
+                      <td class="num"><div class="qm-cell"><input class="qm-edit" data-orig="120" value="120" aria-label="Qwen3-32B-Instruct QPS 配额"></div></td>
+                      <td class="num"><div class="qm-cell"><input class="qm-edit" data-orig="60" value="60" aria-label="Qwen3-32B-Instruct 并发配额"></div></td>
+                      <td class="num"><div class="qm-cell"><input class="qm-edit" data-kind="model-cardhour" data-orig="1200" value="1,200" aria-label="Qwen3-32B-Instruct 卡时配额"></div></td>
+                    </tr>
+                    <tr>
+                      <td><span class="qm-name">DeepSeek-V3 <span class="chip chip--neutral">模型</span></span></td>
+                      <td class="num"><div class="qm-cell"><input class="qm-edit" data-kind="model-token" data-orig="1800000" value="1,800,000" aria-label="DeepSeek-V3 Token 配额"></div></td>
+                      <td class="num"><div class="qm-cell"><input class="qm-edit" data-orig="60" value="60" aria-label="DeepSeek-V3 QPS 配额"></div></td>
+                      <td class="num"><div class="qm-cell"><input class="qm-edit" data-orig="30" value="30" aria-label="DeepSeek-V3 并发配额"></div></td>
+                      <td class="num"><div class="qm-cell"><input class="qm-edit" data-kind="model-cardhour" data-orig="0" value="0" aria-label="DeepSeek-V3 卡时配额"></div></td>
+                    </tr>
+                    <tr id="qmRowIntern" data-over="true">
+                      <td><span class="qm-name">InternVL2-26B <span class="chip chip--neutral">模型</span> <span class="chip chip--risk"><i class="chip__dot"></i>超限</span></span></td>
+                      <td class="num"><div class="qm-cell"><input class="qm-edit" data-kind="model-token" data-orig="900000" value="900,000" aria-label="InternVL2-26B Token 配额"></div></td>
+                      <td class="num"><div class="qm-cell"><input class="qm-edit" data-orig="40" value="40" aria-label="InternVL2-26B QPS 配额"></div></td>
+                      <td class="num"><div class="qm-cell"><input class="qm-edit" data-orig="24" value="24" aria-label="InternVL2-26B 并发配额"></div></td>
+                      <td class="num"><div class="qm-cell"><input class="qm-edit" data-kind="model-cardhour" data-orig="1400" value="1,400" aria-label="InternVL2-26B 卡时配额"></div></td>
+                    </tr>
+                    <tr>
+                      <td><span class="qm-name">BGE-M3 <span class="chip chip--neutral">模型</span></span></td>
+                      <td class="num"><div class="qm-cell"><input class="qm-edit" data-kind="model-token" data-orig="600000" value="600,000" aria-label="BGE-M3 Token 配额"></div></td>
+                      <td class="num"><div class="qm-cell"><input class="qm-edit" data-orig="200" value="200" aria-label="BGE-M3 QPS 配额"></div></td>
+                      <td class="num"><div class="qm-cell"><input class="qm-edit" data-orig="80" value="80" aria-label="BGE-M3 并发配额"></div></td>
+                      <td class="num"><div class="qm-cell"><input class="qm-edit" data-kind="model-cardhour" data-orig="0" value="0" aria-label="BGE-M3 卡时配额"></div></td>
+                    </tr>
+
+                    <!-- —— 应用级 —— -->
+                    <tr class="qm-group">
+                      <td colspan="5">
+                        <div class="qm-groupline">
+                          <span>应用级分配 · 父级＝应用分配池（独立于项目配额）<span class="num">1.20M</span> Token / <span class="num">400.0</span> 卡时</span>
+                          <span class="spacer"></span>
+                          <span>小计 <span class="num">960.0k</span> Token / <span class="num">260.0</span> 卡时</span>
+                          <span class="chip chip--compute"><i class="chip__dot"></i>未越界</span>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><span class="qm-name">知识问答 <span class="chip chip--insight">智能体</span></span></td>
+                      <td class="num"><div class="qm-cell"><input class="qm-edit" data-orig="420000" value="420,000" aria-label="知识问答 Token 配额"></div></td>
+                      <td class="num"><div class="qm-cell"><input class="qm-edit" data-orig="20" value="20" aria-label="知识问答 QPS 配额"></div></td>
+                      <td class="num"><div class="qm-cell"><input class="qm-edit" data-orig="10" value="10" aria-label="知识问答 并发配额"></div></td>
+                      <td class="num"><div class="qm-cell"><input class="qm-edit" data-orig="0" value="0" aria-label="知识问答 卡时配额"></div></td>
+                    </tr>
+                    <tr>
+                      <td><span class="qm-name">法务合同审查 <span class="chip chip--quota">行业应用</span></span></td>
+                      <td class="num"><div class="qm-cell"><input class="qm-edit" data-orig="360000" value="360,000" aria-label="法务合同审查 Token 配额"></div></td>
+                      <td class="num"><div class="qm-cell"><input class="qm-edit" data-orig="12" value="12" aria-label="法务合同审查 QPS 配额"></div></td>
+                      <td class="num"><div class="qm-cell"><input class="qm-edit" data-orig="6" value="6" aria-label="法务合同审查 并发配额"></div></td>
+                      <td class="num"><div class="qm-cell"><input class="qm-edit" data-orig="0" value="0" aria-label="法务合同审查 卡时配额"></div></td>
+                    </tr>
+                    <tr>
+                      <td><span class="qm-name">视频检查 <span class="chip chip--insight">智能体</span></span></td>
+                      <td class="num"><div class="qm-cell"><input class="qm-edit" data-orig="180000" value="180,000" aria-label="视频检查 Token 配额"></div></td>
+                      <td class="num"><div class="qm-cell"><input class="qm-edit" data-orig="8" value="8" aria-label="视频检查 QPS 配额"></div></td>
+                      <td class="num"><div class="qm-cell"><input class="qm-edit" data-orig="6" value="6" aria-label="视频检查 并发配额"></div></td>
+                      <td class="num"><div class="qm-cell"><input class="qm-edit" data-orig="260" value="260" aria-label="视频检查 卡时配额"></div></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="card__foot">
+            <span class="t-micro">支持行内编辑与键盘操作：Tab 切换单元格 · ↑↓ 调整数值 · Enter 确认 · Esc 撤销本格 · ⌘K 命令面板 · ⌥L 展开账板 · ⌥R 最近回执。</span>
+          </div>
+        </div>
+
+        <!-- 配额来源说明（数据来源唯一，控制中心不自行计算） -->
+        <p class="t-meta mt-3">配额来源说明：控制中心只产生「配置与下发意图」，配额最终以 Token 银行的记账结果为准 —— 本平台不自行计算额度，也不缓存可用量；矩阵中的小计、缺口均由 Token 银行返回。</p>
+
+        <!-- ============ 父子约束 + 下发链路 ============ -->
+        <div class="grid grid--2 mt-5">
+          <div class="card">
+            <div class="card__head">
+              <h2>父子约束</h2>
+              <span class="chip chip--risk"><i class="chip__dot"></i>子级之和超出父级</span>
+            </div>
+            <div class="card__body">
+              <p class="t-body">同级配额之和不得超过父级上限：项目级受租户合同额度约束，模型级与应用级受所属项目（或应用池）约束。保存时越界，Token 银行会整批拒绝并返回缺口，不做部分生效。</p>
+
+              <div class="dualgauge mt-4">
+                <div class="dualgauge__row"><span class="dualgauge__name">项目级 Token</span>
+                  <div class="capacity"><div class="capacity__track"><div class="capacity__fill" data-state="full" style="width:100%"></div></div></div>
+                  <span class="dualgauge__val">12.60M / 12.00M</span></div>
+                <div class="dualgauge__row"><span class="dualgauge__name">项目级 卡时</span>
+                  <div class="capacity"><div class="capacity__track"><div class="capacity__fill" data-state="full" style="width:100%"></div></div></div>
+                  <span class="dualgauge__val">5 200.0 / 5 000.0</span></div>
+                <div class="dualgauge__row"><span class="dualgauge__name">模型级 卡时</span>
+                  <div class="capacity"><div class="capacity__track"><div class="capacity__fill" data-state="full" style="width:100%"></div></div></div>
+                  <span class="dualgauge__val">2 600.0 / 2 400.0</span></div>
+              </div>
+
+              <div class="preview mt-5">
+                <div class="preview__head"><span data-icon="bolt"></span>保存前模拟（预估前置）</div>
+                <div class="preview__body">
+                  <div class="preview__sim">
+                    <span>项目级卡时小计</span>
+                    <span class="num t-muted" id="qmSimChFrom">4 800.0</span>
+                    <span class="preview__arrow">→</span>
+                    <span class="preview__after num" id="qmSimChTo">5 200.0</span>
+                    <span class="t-micro">（本次卡时 2 处改动 +400.0）</span>
+                  </div>
+                  <div class="preview__warn"><span data-icon="bolt"></span>保存后将新增 1 行超限：标书撰写 · 项目级卡时小计超父级 200.0。模型级卡时超限为 09-23 已生效改动遗留，本次未修复。</div>
+                  <div class="row">
+                    <span class="t-micro">不可部分保存；如先扩容再保存，可走额度追加流程。</span>
+                    <span class="spacer"></span>
+                    <button class="costbtn qm-flex-none" data-state="short" type="button">
+                      <span class="costbtn__label">申请追加配额</span>
+                      <span class="costbtn__est">缺口 200.0 卡时</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card__foot t-micro">父级上限来自租户合同额度（Token 12.00M / 卡时 5 000.0），由 Token 银行维护，控制中心不可上调。</div>
+          </div>
+
+          <div class="card">
+            <div class="card__head">
+              <h2>配额下发链路</h2>
+              <span class="chip chip--compute"><i class="chip__dot"></i>近 7 天 4 次下发全部成功</span>
+            </div>
+            <div class="card__body">
+              <div class="strip">
+                <div class="strip__step" data-state="done"><span class="strip__dot">1</span><span class="strip__label">控制中心配置</span></div>
+                <span class="strip__line" data-done="true"></span>
+                <div class="strip__step" data-state="done"><span class="strip__dot">2</span><span class="strip__label">Token 银行校验</span></div>
+                <span class="strip__line" data-done="true"></span>
+                <div class="strip__step" data-state="active"><span class="strip__dot">3</span><span class="strip__label">运行时生效</span></div>
+              </div>
+              <p class="t-micro mt-3">保存后 30 分钟内可在本页整批回滚；回滚窗口内 Token 银行按原配额放行，窗口关闭后生成不可撤销的配额变更回执。</p>
+
+              <hr class="divider">
+
+              <div class="t-micro mb-2">最近配额变更</div>
+              <table class="dg dg--compact">
+                <thead><tr><th>时间</th><th>对象</th><th>变更</th><th>结果</th></tr></thead>
+                <tbody>
+                  <tr>
+                    <td class="t-mono">09-24 14:20</td>
+                    <td class="dg-primary">视觉检索平台</td>
+                    <td class="num">卡时 2,200 → 2,400</td>
+                    <td><span class="chip chip--spend"><i class="chip__dot"></i>待保存</span></td>
+                  </tr>
+                  <tr>
+                    <td class="t-mono">09-24 14:20</td>
+                    <td class="dg-primary">标书撰写</td>
+                    <td class="num">卡时 1,400 → 1,600</td>
+                    <td><span class="chip chip--spend"><i class="chip__dot"></i>待保存</span></td>
+                  </tr>
+                  <tr>
+                    <td class="t-mono">09-24 14:20</td>
+                    <td class="dg-primary">Qwen3-32B-Instruct</td>
+                    <td class="num">Token 2.00M → 2.40M</td>
+                    <td><span class="chip chip--spend"><i class="chip__dot"></i>待保存</span></td>
+                  </tr>
+                  <tr>
+                    <td class="t-mono">09-23 17:02</td>
+                    <td class="dg-primary">InternVL2-26B</td>
+                    <td class="num">卡时 1,200 → 1,400</td>
+                    <td><span class="chip chip--compute"><i class="chip__dot"></i>已生效</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="card__foot t-micro">配额变更与调用日志同源留痕，可在「调用日志 · 审计」按 trace_id 反查（CTR-006）。</div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <aside class="ledger" id="ledger" aria-label="消耗上下文"></aside>
+</div>
+
+<template id="band-actions">
+  <select class="select" aria-label="配额视图">
+    <option>租户视图（华鲲元启）</option>
+    <option>项目视图 · 视觉检索平台</option>
+    <option>项目视图 · 合同审查</option>
+    <option>项目视图 · 标书撰写</option>
+  </select>
+  <button class="btn" data-icon="down">导出配额表</button>
+</template>
+
+<template id="band-ribbon">
+  <div class="ribbon ribbon--spend">项目「标书撰写」卡时配额已用 92.6%，接近上限（预警阈值 80% 已触达）
+    <span class="ribbon__more">还有 1 条</span></div>
+</template>
+
+<script src="assets/charts.js"></script>
+<script src="assets/app.js?v=20260924-7"></script>
+<script>
+(function () {
+  'use strict';
+
+  function init() {
+    /* 图标注水：全站唯一图标来源 DSH.icon()，不使用 emoji、不引入任何图标库 */
+    Array.prototype.forEach.call(document.querySelectorAll('[data-icon]'), function (el) {
+      el.insertAdjacentHTML('afterbegin', DSH.icon(el.getAttribute('data-icon')));
+      el.removeAttribute('data-icon');
+    });
+
+    var matrix = document.getElementById('quotaMatrix');
+    if (!matrix) return;
+
+    var TK_PROJ_CAP = 12000000, CH_PROJ_CAP = 5000;
+
+    function numOf(inp) { return Number(String(inp.value).replace(/[^\d.\-]/g, '')) || 0; }
+    function intFmt(v) { return v.toLocaleString('en-US'); }
+    function chFmt(v) { return v.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).replace(/,/g, ' '); }
+    function tkFmt(v) { return (v / 1e6).toFixed(2) + 'M'; }
+    function kJ(v) {
+      var a = Math.abs(v);
+      if (a >= 1e6) return (v / 1e6).toFixed(2) + 'M';
+      if (a >= 1e3) return (v / 1e3).toFixed(1) + 'k';
+      return String(Math.round(v * 10) / 10);
+    }
+    function sum(kind) {
+      var s = 0;
+      Array.prototype.forEach.call(matrix.querySelectorAll('.qm-edit[data-kind="' + kind + '"]'), function (i) { s += numOf(i); });
+      return s;
+    }
+    function txt(id, t) { var e = document.getElementById(id); if (e) e.textContent = t; }
+    function hide(id, h) { var e = document.getElementById(id); if (e) e.hidden = !!h; }
+    function byId(id) { return document.getElementById(id); }
+
+    /* 一处超限 = 一条父子关系被打破：小计 > 父级。改一格即重算，避免"改了不知道越界" */
+    function sync() {
+      var projTk = sum('proj-token'), projCh = sum('proj-cardhour');
+      var modelTk = sum('model-token'), modelCh = sum('model-cardhour');
+      var visTk = numOf(byId('qmVisToken')), visCh = numOf(byId('qmVisCardhour'));
+
+      txt('qmSumProjTk', tkFmt(projTk));
+      txt('qmSumProjCh', chFmt(projCh));
+      txt('qmSumModelTk', tkFmt(modelTk));
+      txt('qmSumModelCh', chFmt(modelCh));
+      txt('qmCapModelTk', tkFmt(visTk));
+      txt('qmCapModelCh', chFmt(visCh));
+
+      var projGap = [];
+      if (projTk > TK_PROJ_CAP) projGap.push(kJ(projTk - TK_PROJ_CAP) + ' Token');
+      if (projCh > CH_PROJ_CAP) projGap.push(chFmt(projCh - CH_PROJ_CAP) + ' 卡时');
+      txt('qmProjGap', projGap.join(' / ') || '—');
+      hide('qmProjOver', projGap.length === 0);
+
+      var modelGap = [];
+      if (modelTk > visTk) modelGap.push(kJ(modelTk - visTk) + ' Token');
+      if (modelCh > visCh) modelGap.push(chFmt(modelCh - visCh) + ' 卡时');
+      txt('qmModelGap', modelGap.join(' / ') || '—');
+      hide('qmModelOver', modelGap.length === 0);
+
+      var rb = byId('qmRowBiaoshu');
+      if (rb) { if (projGap.length) rb.setAttribute('data-over', 'true'); else rb.removeAttribute('data-over'); }
+      var ri = byId('qmRowIntern');
+      if (ri) { if (modelGap.length) ri.setAttribute('data-over', 'true'); else ri.removeAttribute('data-over'); }
+
+      txt('qmOverRows', String(matrix.querySelectorAll('tbody tr[data-over="true"]').length));
+
+      var origCh = 0;
+      Array.prototype.forEach.call(matrix.querySelectorAll('.qm-edit[data-kind="proj-cardhour"]'), function (i) {
+        origCh += Number(i.getAttribute('data-orig')) || 0;
+      });
+      txt('qmSimChFrom', chFmt(origCh));
+      txt('qmSimChTo', chFmt(projCh));
+
+      var n = matrix.querySelectorAll('td[data-changed="true"]').length;
+      txt('qmChanged', n + ' 处改动待保存');
+      txt('qmChangedKpi', String(n));
+    }
+
+    /* 行内编辑：改一格 → 该格进"改动"通道 → 重算父子约束 */
+    matrix.addEventListener('input', function (e) {
+      var inp = e.target;
+      if (!inp || !inp.classList || !inp.classList.contains('qm-edit')) return;
+      var td = inp.closest('td');
+      var d = numOf(inp) - (Number(inp.getAttribute('data-orig')) || 0);
+      var cell = td.querySelector('.qm-cell');
+      var pill = td.querySelector('.qm-delta');
+      if (d === 0) {
+        td.removeAttribute('data-changed');
+        if (pill) pill.parentNode.removeChild(pill);
+      } else {
+        td.setAttribute('data-changed', 'true');
+        if (!pill) { pill = document.createElement('span'); pill.className = 'qm-delta'; cell.appendChild(pill); }
+        pill.textContent = '改 ' + (d > 0 ? '+' : '−') + intFmt(Math.abs(d));
+      }
+      sync();
+    });
+
+    var undo = byId('qmUndo');
+    if (undo) undo.addEventListener('click', function () {
+      Array.prototype.forEach.call(matrix.querySelectorAll('.qm-edit'), function (inp) {
+        var td = inp.closest('td');
+        inp.value = intFmt(Number(inp.getAttribute('data-orig')) || 0);
+        td.removeAttribute('data-changed');
+        var pill = td.querySelector('.qm-delta');
+        if (pill) pill.parentNode.removeChild(pill);
+        inp.removeAttribute('title');
+      });
+      sync();
+    });
+
+    /* 告警阈值：严重不得低于预警；刻线与水位条同轴 */
+    var warn = byId('qmWarnRange'), crit = byId('qmCritRange');
+    if (warn && crit) {
+      var syncRange = function (from) {
+        var w = Number(warn.value), c = Number(crit.value);
+        if (w > c) { if (from === 'crit') w = c; else c = w; warn.value = w; crit.value = c; }
+        txt('qmWarnOut', w + '%'); txt('qmCritOut', c + '%');
+        txt('qmWarnChip', w + '%'); txt('qmCritChip', c + '%');
+        txt('qmTickWarnLabel', w + '%'); txt('qmTickCritLabel', c + '%');
+        var tw = byId('qmTickWarn'), tc = byId('qmTickCrit');
+        if (tw) tw.style.left = w + '%';
+        if (tc) tc.style.left = c + '%';
+      };
+      warn.addEventListener('input', function () { syncRange('warn'); });
+      crit.addEventListener('input', function () { syncRange('crit'); });
+      syncRange('warn');
+    }
+
+    sync();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+</script>
+</body>
+</html>

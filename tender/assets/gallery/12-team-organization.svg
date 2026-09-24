@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+  <rect width="1200" height="800" fill="#f8fafc"/>
+  <text x="70" y="76" font-family="Arial" font-size="34" font-weight="700" fill="#0f172a">项目团队组织架构</text>
+  <rect x="480" y="120" width="240" height="90" rx="18" fill="#025dff"/><text x="540" y="160" font-family="Arial" font-size="20" fill="#fff">项目总监</text><text x="545" y="188" font-family="Arial" font-size="15" fill="#dbeafe">PMP · 15 年经验</text>
+  <g stroke="#64748b" stroke-width="5" fill="none"><path d="M600 210 L600 260 L220 260 L220 310"/><path d="M600 210 L600 260 L600 310"/><path d="M600 210 L600 260 L980 260 L980 310"/></g>
+  <g fill="#fff" stroke="#cbd5e1" font-family="Arial" font-size="17">
+    <rect x="120" y="310" width="200" height="90" rx="16"/><text x="155" y="350">技术实施组</text><text x="155" y="378">5 人 · 开发/集成</text>
+    <rect x="500" y="310" width="200" height="90" rx="16"/><text x="535" y="350">测试验证组</text><text x="535" y="378">2 人 · 性能/安全</text>
+    <rect x="880" y="310" width="200" height="90" rx="16"/><text x="915" y="350">运维保障组</text><text x="915" y="378">2 人 · 7×24</text>
+  </g>
+  <g stroke="#94a3b8" stroke-width="4" fill="none"><path d="M220 400 L220 460"/><path d="M600 400 L600 460"/><path d="M980 400 L980 460"/></g>
+  <g fill="#fff" stroke="#cbd5e1" font-family="Arial" font-size="15">
+    <rect x="120" y="460" width="200" height="70" rx="14"/><text x="155" y="500">架构师 1 人</text><text x="155" y="520">开发工程师 4 人</text>
+    <rect x="500" y="460" width="200" height="70" rx="14"/><text x="535" y="500">测试工程师 1 人</text><text x="535" y="520">安全工程师 1 人</text>
+    <rect x="880" y="460" width="200" height="70" rx="14"/><text x="915" y="500">运维工程师 2 人</text><text x="915" y="520">驻场支持</text>
+  </g>
+  <rect x="120" y="590" width="960" height="110" rx="18" fill="#fff"/>
+  <text x="150" y="630" font-family="Arial" font-size="19" fill="#0f172a">关键岗位要求</text>
+  <text x="150" y="664" font-family="Arial" font-size="16" fill="#475569">5 年以上同类项目经验 · 核心成员驻场 · 重要变更双人复核</text>
+</svg>

@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f8fafc"/><stop offset="1" stop-color="#e2e8f0"/></linearGradient>
+    <linearGradient id="rack" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#334155"/><stop offset="1" stop-color="#1e293b"/></linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%"><feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#0f172a" flood-opacity=".18"/></filter>
+  </defs>
+  <rect width="1200" height="800" fill="url(#bg)"/>
+  <text x="70" y="78" font-family="Arial" font-size="34" font-weight="700" fill="#0f172a">AI 服务器整机架构</text>
+  <text x="70" y="112" font-family="Arial" font-size="18" fill="#475569">鲲鹏 920 计算节点 · 8 通道 DDR4 · 双路 100GE</text>
+  <g filter="url(#shadow)">
+    <rect x="130" y="150" width="430" height="560" rx="22" fill="url(#rack)"/>
+    <rect x="150" y="170" width="390" height="520" rx="14" fill="#0f172a" opacity=".55"/>
+  </g>
+  <g font-family="Arial" font-size="14" fill="#e2e8f0">
+    <rect x="165" y="190" width="360" height="42" rx="8" fill="#1d4ed8"/><text x="182" y="217">Node 01 · Kunpeng 920 · 64C / 256G</text>
+    <rect x="165" y="244" width="360" height="42" rx="8" fill="#166534"/><text x="182" y="271">Node 02 · Kunpeng 920 · 64C / 256G</text>
+    <rect x="165" y="298" width="360" height="42" rx="8" fill="#1d4ed8"/><text x="182" y="325">Node 03 · AI 推理 · Atlas 300I</text>
+    <rect x="165" y="352" width="360" height="42" rx="8" fill="#166534"/><text x="182" y="379">Node 04 · AI 训练 · Atlas 800I</text>
+    <rect x="165" y="406" width="360" height="42" rx="8" fill="#334155"/><text x="182" y="433">交换模块 · 2 × 100GE</text>
+    <rect x="165" y="460" width="360" height="42" rx="8" fill="#334155"/><text x="182" y="487">存储阵列 · 12 × NVMe SSD</text>
+    <rect x="165" y="514" width="360" height="42" rx="8" fill="#334155"/><text x="182" y="541">电源模块 · 2 × 2000W 冗余</text>
+    <rect x="165" y="568" width="360" height="42" rx="8" fill="#334155"/><text x="182" y="595">管理模块 · BMC / HMM</text>
+  </g>
+  <g fill="#22c55e"><circle cx="500" cy="211" r="5"/><circle cx="500" cy="265" r="5"/><circle cx="500" cy="319" r="5"/><circle cx="500" cy="373" r="5"/><circle cx="500" cy="427" r="5"/><circle cx="500" cy="481" r="5"/><circle cx="500" cy="535" r="5"/><circle cx="500" cy="589" r="5"/></g>
+  <g stroke="#64748b" stroke-width="8" fill="none"><path d="M560 300 C660 300 660 400 740 400"/><path d="M560 420 C680 420 680 480 740 480"/><path d="M560 540 C660 540 660 560 740 560"/></g>
+  <g font-family="Arial" font-size="18" fill="#334155">
+    <rect x="740" y="350" width="330" height="110" rx="16" fill="#fff" stroke="#cbd5e1"/><text x="770" y="394">100GE Spine-Leaf 网络</text><text x="770" y="424">低时延 · 无阻塞</text>
+    <rect x="740" y="490" width="330" height="110" rx="16" fill="#fff" stroke="#cbd5e1"/><text x="770" y="534">分布式存储集群</text><text x="770" y="564">三副本 · 纠删码</text>
+    <rect x="740" y="630" width="330" height="90" rx="16" fill="#fff" stroke="#cbd5e1"/><text x="770" y="668">智能管理平台</text><text x="770" y="694">能耗 / 告警 / 固件</text>
+  </g>
+  <g stroke="#025dff" stroke-width="3" fill="#025dff"><circle cx="120" cy="700" r="7"/><text x="145" y="707" font-family="Arial" font-size="15">机柜尺寸 42U，支持前后风道分离</text></g>
+</svg>

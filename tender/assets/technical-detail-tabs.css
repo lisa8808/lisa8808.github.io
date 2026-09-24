@@ -1,0 +1,4 @@
+/* 仅用于技术部分 Active 详情页。 */
+body.technical-mode-page #result-panel .result-tabs {
+  margin-left: 0;
+}

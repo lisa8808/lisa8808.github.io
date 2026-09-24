@@ -1,0 +1,2756 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="dark" data-platform="macos">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="码多多桌面工作台交互演示">
+  <title>码多多 2.0</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 20px;
+      --space-6: 24px;
+      --space-8: 32px;
+      --space-10: 40px;
+      --radius-xs: 4px;
+      --radius-sm: 6px;
+      --radius-control: 8px;
+      --radius-modal: 12px;
+      --radius-composer: 24px;
+      --radius-pill: 999px;
+      --sidebar-width: 260px;
+      --sidebar-collapsed: 56px;
+      --content-max: 768px;
+      --preview-width: 440px;
+      --titlebar-height: 48px;
+      --color-bg-canvas: #ffffff;
+      --color-bg-sidebar: #f9f9f9;
+      --color-bg-surface: #ffffff;
+      --color-bg-surface-hover: #f4f4f4;
+      --color-bg-surface-active: #ececec;
+      --color-bg-disabled: #f4f4f4;
+      --color-text-primary: #0d0d0d;
+      --color-text-secondary: #4b4b4b;
+      --color-text-tertiary: #676767;
+      --color-text-disabled: #9b9b9b;
+      --color-text-project: #2f2f2f;
+      --color-text-task: #2f2f2f;
+      --color-text-task-active: #1f1f1f;
+      --color-icon-primary: #2f2f2f;
+      --color-icon-secondary: #676767;
+      --color-border-subtle: #ececec;
+      --color-border-default: #d9d9d9;
+      --color-border-strong: #b4b4b4;
+      --color-primary: #0d0d0d;
+      --color-primary-hover: #2f2f2f;
+      --color-primary-active: #000000;
+      --color-on-primary: #ffffff;
+      --color-accent: #10a37f;
+      --color-accent-hover: #0d8f70;
+      --color-accent-soft: #eaf7f1;
+      --color-success: #16865c;
+      --color-warning: #c77800;
+      --color-warning-soft: #fff6e5;
+      --color-danger: #d13b3b;
+      --color-danger-soft: #fdeeee;
+      --color-info: #2f6feb;
+      --color-info-soft: #edf3fe;
+      --color-bg-streaming: #ffffff;
+      --color-bg-streaming-highlight: #edf3fe;
+      --color-bg-streaming-detail: #f3f6fb;
+      --color-bg-website-page: #f7f9fc;
+      --color-bg-website-section: #ffffff;
+      --color-bg-website-tag: #ffffff;
+      --color-border-website: #dce2eb;
+      --color-border-website-soft: #e3e7ed;
+      --color-border-website-tag: #c9d4e2;
+      --color-text-website-heading: #101722;
+      --color-text-website-body: #69768a;
+      --color-text-website-tag: #34506f;
+      --color-bg-coding-live: #f7f9fc;
+      --color-bg-coding-block: #ffffff;
+      --color-border-coding-block: #dce3eb;
+      --color-focus-ring: #2f6feb;
+      --color-overlay: #00000066;
+      --shadow-1: 0 1px 2px #0000000d;
+      --shadow-popover: 0 4px 12px #0000001a;
+      --shadow-modal: 0 8px 24px #00000024;
+      --motion-fast: 100ms ease-out;
+      --motion-menu: 140ms cubic-bezier(.2,.8,.2,1);
+      --motion-panel: 200ms cubic-bezier(.2,.8,.2,1);
+      --font-sans-mac: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+      --font-sans-win: "Segoe UI Variable Text", "Segoe UI", "Microsoft YaHei UI", Arial, sans-serif;
+      --font-mono-mac: "SFMono-Regular", "SF Mono", Menlo, Monaco, monospace;
+      --font-mono-win: "Cascadia Mono", Consolas, "Courier New", monospace;
+      --font-sans: var(--font-sans-mac);
+      --font-mono: var(--font-mono-mac);
+    }
+
+    html[data-platform="macos"] {
+      --titlebar-height: 52px;
+      --font-sans: var(--font-sans-mac);
+      --font-mono: var(--font-mono-mac);
+      font-family: var(--font-sans);
+    }
+    html[data-platform="windows"] {
+      --font-sans: var(--font-sans-win);
+      --font-mono: var(--font-mono-win);
+      font-family: var(--font-sans);
+    }
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --color-bg-canvas: #212121;
+      --color-bg-sidebar: #171717;
+      --color-bg-surface: #2f2f2f;
+      --color-bg-surface-hover: #3a3a3a;
+      --color-bg-surface-active: #454545;
+      --color-bg-disabled: #242424;
+      --color-text-primary: #f5f5f5;
+      --color-text-secondary: #bdbdbd;
+      --color-text-tertiary: #9b9b9b;
+      --color-text-disabled: #676767;
+      --color-text-project: #e2e2e2;
+      --color-text-task: #e2e2e2;
+      --color-text-task-active: #ffffff;
+      --color-icon-primary: #ececec;
+      --color-icon-secondary: #9b9b9b;
+      --color-border-subtle: #3a3a3a;
+      --color-border-default: #4a4a4a;
+      --color-border-strong: #676767;
+      --color-primary: #ffffff;
+      --color-primary-hover: #ececec;
+      --color-primary-active: #d9d9d9;
+      --color-on-primary: #0d0d0d;
+      --color-accent: #19c39a;
+      --color-accent-hover: #22d3a7;
+      --color-accent-soft: #12382b;
+      --color-success: #3ecf8e;
+      --color-warning: #f5a524;
+      --color-warning-soft: #402e12;
+      --color-danger: #f05a5a;
+      --color-danger-soft: #421c1c;
+      --color-info: #6ea8fe;
+      --color-info-soft: #172d4f;
+      --color-bg-streaming: #262626;
+      --color-bg-streaming-highlight: #262b32;
+      --color-bg-streaming-detail: #20252c;
+      --color-bg-website-page: #080c12;
+      --color-bg-website-section: #0d1420;
+      --color-bg-website-tag: #111925;
+      --color-border-website: #263244;
+      --color-border-website-soft: #223044;
+      --color-border-website-tag: #29394f;
+      --color-text-website-heading: #eaf3ff;
+      --color-text-website-body: #9dadc2;
+      --color-text-website-tag: #8fcfff;
+      --color-bg-coding-live: #080c12;
+      --color-bg-coding-block: #111925;
+      --color-border-coding-block: #29394f;
+      --color-focus-ring: #8ab4ff;
+      --color-overlay: #00000099;
+      --shadow-popover: 0 4px 12px #00000066;
+      --shadow-modal: 0 8px 24px #00000080;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; }
+    body {
+      margin: 0;
+      min-width: 360px;
+      min-height: 420px;
+      background: var(--color-bg-canvas);
+      color: var(--color-text-primary);
+      font-size: 14px;
+      line-height: 20px;
+      letter-spacing: 0;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+    }
+    button, input, textarea, select { font: inherit; letter-spacing: 0; }
+    button { color: inherit; }
+    button:disabled, input:disabled, textarea:disabled { cursor: default; }
+    img { display: block; max-width: 100%; }
+    svg { display: block; }
+    [hidden] { display: none !important; }
+    ::selection { background: color-mix(in srgb, var(--color-info) 22%, transparent); }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--color-text-tertiary) 36%, transparent); border-radius: var(--radius-pill); }
+    ::-webkit-scrollbar-track { background: transparent; }
+
+    :focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 2px var(--color-bg-canvas), 0 0 0 4px var(--color-focus-ring);
+    }
+
+    .svg-sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+    .icon { width: 18px; height: 18px; flex: 0 0 18px; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+    .icon-16 { width: 16px; height: 16px; flex-basis: 16px; }
+    .icon-20 { width: 20px; height: 20px; flex-basis: 20px; }
+
+    .app-shell {
+      width: 100vw;
+      height: 100vh;
+      display: grid;
+      grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+      overflow: hidden;
+      background: var(--color-bg-canvas);
+      transition: grid-template-columns var(--motion-panel);
+    }
+    .app-shell.sidebar-collapsed { grid-template-columns: var(--sidebar-collapsed) minmax(0, 1fr); }
+
+    .sidebar {
+      min-width: 0;
+      height: 100vh;
+      display: grid;
+      grid-template-rows: var(--titlebar-height) auto minmax(0, 1fr) auto;
+      overflow: hidden;
+      background: var(--color-bg-sidebar);
+      border-right: 1px solid var(--color-border-subtle);
+      position: relative;
+      z-index: 210;
+    }
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: 0 var(--space-3);
+      min-width: 0;
+      -webkit-app-region: drag;
+    }
+    html[data-platform="macos"] .sidebar-header { padding-left: var(--space-3); }
+    .brand-lockup { display: flex; align-items: center; gap: var(--space-2); min-width: 0; flex: 1; }
+    .brand-logo { width: 28px; height: 28px; border-radius: var(--radius-control); flex: 0 0 28px; box-shadow: var(--shadow-1); }
+    .brand-name { font-size: 15px; line-height: 20px; font-weight: 600; white-space: nowrap; }
+    .sidebar-header .icon-button { -webkit-app-region: no-drag; }
+
+    .sidebar-tools { padding: var(--space-2) var(--space-3) var(--space-3); }
+    .search-field { position: relative; display: block; }
+    .search-field .icon { position: absolute; left: 10px; top: 9px; color: var(--color-icon-secondary); pointer-events: none; }
+    .search-input {
+      width: 100%; height: 36px; padding: 0 32px 0 34px;
+      border: 1px solid transparent; border-radius: var(--radius-control);
+      background: var(--color-bg-surface-hover); color: var(--color-text-primary);
+    }
+    .search-input::placeholder { color: var(--color-text-tertiary); }
+    .search-input:hover { border-color: var(--color-border-default); }
+    .search-input:focus { border-color: var(--color-focus-ring); outline: none; box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-focus-ring) 18%, transparent); }
+    .key-hint { position: absolute; right: 8px; top: 8px; height: 20px; min-width: 20px; padding: 0 5px; border: 1px solid var(--color-border-default); border-radius: var(--radius-xs); color: var(--color-text-tertiary); font-size: 11px; line-height: 18px; text-align: center; }
+
+    .sidebar-scroll { min-height: 0; overflow: auto; overscroll-behavior: contain; padding: 0 var(--space-2) var(--space-4); }
+    .section-label { margin: var(--space-2) var(--space-2) var(--space-1); color: var(--color-text-tertiary); font-size: 12px; line-height: 16px; }
+    .project-group { margin-bottom: var(--space-2); }
+    .project-group[data-collapsed="true"] .session-row { display: none; }
+    .project-heading { display: grid; grid-template-columns: minmax(0, 1fr) 32px; align-items: center; gap: 2px; border-radius: var(--radius-control); }
+    .project-heading .nav-row { min-width: 0; }
+    .nav-row, .session-row {
+      width: 100%; min-height: 36px; border: 0; border-radius: var(--radius-control); background: transparent;
+      display: flex; align-items: center; gap: 10px; padding: 6px 10px; text-align: left; cursor: pointer;
+      font-family: var(--font-sans); line-height: 20px;
+      transition: background var(--motion-fast), color var(--motion-fast);
+    }
+    .nav-row:hover, .session-row:hover { background: var(--color-bg-surface-hover); }
+    .nav-row { color: var(--color-text-project); font-size: 14px; font-weight: 400; }
+    .nav-row .project-label, .session-row .session-label { min-width: 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .session-row { padding-left: 38px; font-size: 14px; }
+    .nav-row .project-label,
+    .session-row:not([aria-current="page"]) .session-label { color: var(--color-text-project); font-size: 14px; font-weight: 400; }
+    .session-row[aria-current="page"] { background: var(--color-bg-surface-active); color: var(--color-text-task-active); font-weight: 500; }
+    .session-row.is-renaming { color: var(--color-text-tertiary); }
+    .session-row.is-renaming::before { content: ""; width: 12px; height: 12px; flex: 0 0 12px; border: 1.5px solid var(--color-border-strong); border-top-color: var(--color-info); border-radius: 50%; animation: spin .8s linear infinite; }
+    .row-action { position: relative; z-index: 1; visibility: visible; opacity: 1; width: 32px; height: 32px; border: 0; border-radius: var(--radius-sm); background: transparent; color: var(--color-icon-secondary); display: grid; place-items: center; padding: 0; cursor: pointer; }
+    .row-action:hover { background: var(--color-bg-surface-active); color: var(--color-icon-primary); }
+    .empty-projects { padding: var(--space-4) var(--space-2); color: var(--color-text-tertiary); font-size: 12px; text-align: center; }
+
+    .sidebar-footer { border-top: 1px solid var(--color-border-subtle); padding: var(--space-2); }
+    .license-summary { display: flex; align-items: center; gap: var(--space-2); padding: 6px 10px 4px; color: var(--color-text-secondary); font-size: 12px; }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--color-success); flex: 0 0 7px; }
+    .status-dot.warning { background: var(--color-warning); }
+    .status-dot.offline { background: var(--color-danger); }
+    .settings-button { width: 100%; min-height: 36px; border: 0; border-radius: var(--radius-control); background: transparent; display: flex; align-items: center; gap: 10px; padding: 7px 10px; cursor: pointer; }
+    .settings-button:hover { background: var(--color-bg-surface-hover); }
+    .settings-button span { flex: 1; text-align: left; }
+    .trial-badge { border-radius: var(--radius-pill); background: var(--color-accent-soft); color: var(--color-success); padding: 1px 7px; font-size: 11px; line-height: 18px; }
+
+    .sidebar-collapsed .brand-name,
+    .sidebar-collapsed .sidebar-tools,
+    .sidebar-collapsed .section-label,
+    .sidebar-collapsed .project-label,
+    .sidebar-collapsed .session-row,
+    .sidebar-collapsed .row-action,
+    .sidebar-collapsed .license-summary,
+    .sidebar-collapsed .settings-button span,
+    .sidebar-collapsed .trial-badge { display: none; }
+    .sidebar-collapsed .sidebar-header { padding: 0; justify-content: center; }
+    .sidebar-collapsed .brand-lockup { flex: 0 0 28px; }
+    .sidebar-collapsed .sidebar-header .icon-button { display: none; }
+    .sidebar-collapsed .nav-row, .sidebar-collapsed .settings-button { justify-content: center; padding-inline: 0; }
+    .sidebar-collapsed .sidebar-scroll { padding-inline: 8px; }
+
+    .workspace { min-width: 0; height: 100vh; display: grid; grid-template-rows: var(--titlebar-height) minmax(0, 1fr); overflow: hidden; }
+    .context-bar {
+      min-width: 0; border-bottom: 1px solid var(--color-border-subtle); background: var(--color-bg-canvas);
+      display: flex; align-items: center; gap: var(--space-2); padding: 0 var(--space-4); -webkit-app-region: drag;
+    }
+    .context-bar > * { -webkit-app-region: no-drag; }
+    .mobile-menu-button { display: none; }
+    .context-title { min-width: 0; flex: 1; }
+    .context-title strong { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; line-height: 18px; font-weight: 600; }
+    .context-title span { display: block; margin-top: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--color-text-tertiary); font-size: 11px; line-height: 14px; }
+    .context-actions { display: flex; align-items: center; gap: var(--space-1); }
+    .connection { display: flex; align-items: center; gap: 6px; color: var(--color-text-tertiary); font-size: 12px; padding: 0 6px; white-space: nowrap; }
+
+    .workspace-body { min-height: 0; min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr); position: relative; overflow: hidden; }
+    .conversation-panel { min-width: 0; min-height: 0; display: grid; grid-template-rows: minmax(0, 1fr) auto; background: var(--color-bg-canvas); }
+    .conversation-scroll { min-width: 0; min-height: 0; overflow: auto; overscroll-behavior: contain; scroll-behavior: smooth; }
+    .conversation-column { width: min(calc(100% - 48px), var(--content-max)); margin: 0 auto; padding: var(--space-8) 0 120px; }
+    .empty-state { min-height: calc(100vh - 250px); display: grid; align-content: center; justify-items: center; text-align: center; padding: var(--space-6) 0; }
+    .empty-logo { width: 48px; height: 48px; border-radius: 12px; margin-bottom: var(--space-5); box-shadow: var(--shadow-1); transform-origin: center; animation: launch-logo-breathe 3.2s cubic-bezier(.45,0,.55,1) infinite; will-change: transform, filter, box-shadow; }
+    .empty-state h1 { max-width: 560px; margin: 0; font-size: 24px; line-height: 32px; font-weight: 600; }
+    .empty-state > p { max-width: 520px; margin: var(--space-2) 0 var(--space-6); color: var(--color-text-secondary); font-size: 14px; line-height: 20px; }
+    .suggestions { width: min(100%, 600px); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-2); }
+    .suggestion {
+      min-height: 48px; border: 1px solid var(--color-border-default); border-radius: var(--radius-control); background: transparent;
+      display: flex; align-items: center; gap: 10px; padding: 10px 12px; color: var(--color-text-project); text-align: left; cursor: pointer;
+      font-family: var(--font-sans); font-size: 14px; line-height: 20px; font-weight: 400;
+      transition: background var(--motion-fast), border-color var(--motion-fast), color var(--motion-fast);
+    }
+    .suggestion .icon, .suggestion span { color: currentColor; }
+    .suggestion:hover { background: var(--color-bg-surface-hover); border-color: var(--color-border-strong); color: var(--color-text-project); }
+
+    .messages { display: grid; gap: var(--space-6); }
+    .message { position: relative; }
+    .message.user { display: flex; justify-content: flex-end; }
+    .user-bubble { max-width: 76%; padding: 10px 14px; border-radius: 18px 18px 4px 18px; background: var(--color-bg-surface-active); color: var(--color-text-primary); font-size: 15px; line-height: 24px; font-weight: 400; white-space: pre-wrap; }
+    .assistant-message { max-width: 100%; }
+    .message-meta { display: flex; align-items: center; gap: 8px; margin-bottom: var(--space-2); color: var(--color-text-secondary); font-size: 12px; }
+    .assistant-mark { width: 24px; height: 24px; border-radius: var(--radius-sm); }
+    .model-tag, .mode-tag { display: inline-flex; align-items: center; height: 20px; padding: 0 6px; border-radius: var(--radius-xs); background: var(--color-bg-surface-hover); color: var(--color-text-secondary); font-size: 11px; }
+    .assistant-copy { font-size: 15px; line-height: 24px; }
+    .assistant-copy p { margin: 0 0 var(--space-3); }
+    .assistant-copy p:last-child { margin-bottom: 0; }
+    .assistant-copy h2 { margin: var(--space-5) 0 var(--space-2); font-size: 18px; line-height: 26px; font-weight: 600; }
+    .assistant-copy h3 { margin: var(--space-4) 0 var(--space-2); font-size: 15px; line-height: 22px; font-weight: 600; }
+    .assistant-copy ul { margin: var(--space-2) 0 var(--space-3); padding-left: var(--space-5); }
+    .assistant-copy li { margin: var(--space-1) 0; }
+    .answer-list { margin: var(--space-3) 0; border-top: 1px solid var(--color-border-subtle); }
+    .answer-row { min-height: 48px; display: grid; grid-template-columns: 104px minmax(0,1fr); gap: var(--space-3); align-items: start; padding: 10px 0; border-bottom: 1px solid var(--color-border-subtle); }
+    .answer-row strong { font-size: 13px; font-weight: 600; }
+    .answer-row span { color: var(--color-text-secondary); font-size: 13px; line-height: 20px; }
+    .priority-list { display: grid; gap: var(--space-2); margin: var(--space-3) 0; }
+    .priority-item { padding: 10px 12px; border-left: 3px solid var(--color-border-strong); background: var(--color-bg-surface-hover); border-radius: 0 var(--radius-control) var(--radius-control) 0; }
+    .priority-item.primary { border-left-color: var(--color-info); background: var(--color-info-soft); }
+    .priority-item strong { display: block; font-size: 13px; }
+    .priority-item span { display: block; margin-top: 2px; color: var(--color-text-secondary); font-size: 12px; line-height: 18px; }
+    .tool-list { display: grid; gap: var(--space-1); margin: var(--space-3) 0; }
+    .tool-row { min-height: 36px; display: flex; align-items: center; gap: 10px; padding: 6px 10px; border-left: 2px solid var(--color-accent); background: var(--color-bg-surface-hover); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; color: var(--color-text-secondary); font-size: 13px; }
+    .tool-row strong { color: var(--color-text-primary); font-weight: 500; }
+    .preview-link {
+      min-width: 0; overflow: hidden; border: 0; padding: 0; background: transparent;
+      color: var(--color-info); font: inherit; text-align: left; text-decoration: underline;
+      text-decoration-thickness: 1px; text-underline-offset: 3px; text-overflow: ellipsis;
+      white-space: nowrap; cursor: pointer; transition: color var(--motion-fast);
+    }
+    .preview-link:hover { color: color-mix(in srgb, var(--color-info) 78%, var(--color-text-primary)); }
+    .file-link { display: inline-flex; align-items: center; gap: 6px; font-weight: 500; }
+    .confirmation-panel {
+      display: flex; align-items: center; justify-content: space-between; gap: var(--space-3);
+      margin-top: var(--space-4); padding: 12px; border: 1px solid var(--color-border-default);
+      border-radius: var(--radius-control); background: var(--color-bg-surface-hover);
+    }
+    .confirmation-panel > span { color: var(--color-text-secondary); font-size: 12px; line-height: 18px; }
+    .confirmation-button {
+      flex: 0 0 auto; min-height: 34px; display: inline-flex; align-items: center; gap: 7px;
+      border: 1px solid var(--color-primary); border-radius: var(--radius-control);
+      padding: 7px 12px; background: var(--color-primary); color: var(--color-on-primary);
+      font: inherit; font-size: 13px; font-weight: 500; cursor: pointer;
+      transition: background var(--motion-fast), border-color var(--motion-fast), transform 80ms ease-out;
+    }
+    .confirmation-button:hover { background: var(--color-primary-hover); border-color: var(--color-primary-hover); }
+    .confirmation-button:active { transform: scale(.98); }
+    .confirmation-button:disabled, .confirmation-button.is-confirmed {
+      border-color: var(--color-success); background: var(--color-success-soft); color: var(--color-success);
+      cursor: default; transform: none;
+    }
+    .message-actions { display: flex; gap: var(--space-1); margin-top: var(--space-2); opacity: 0; transition: opacity var(--motion-fast); }
+    .message:hover .message-actions, .message:focus-within .message-actions { opacity: 1; }
+    .thinking { display: flex; align-items: center; gap: var(--space-3); min-height: 48px; padding: 10px 0; color: var(--color-text-secondary); }
+    .spinner { width: 18px; height: 18px; border: 2px solid var(--color-border-default); border-top-color: var(--color-accent); border-radius: 50%; animation: spin .8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .generation-status { padding: var(--space-4); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-control); background: var(--color-bg-surface-hover); }
+    .generation-head { display: flex; align-items: center; gap: var(--space-3); }
+    .generation-head .spinner { flex: 0 0 20px; width: 20px; height: 20px; }
+    .generation-copy { min-width: 0; flex: 1; }
+    .generation-copy strong { display: block; font-size: 14px; line-height: 20px; }
+    .generation-copy span { display: block; margin-top: 2px; color: var(--color-text-tertiary); font-size: 12px; line-height: 18px; }
+    .generation-steps { display: grid; gap: 7px; margin-top: var(--space-4); }
+    .generation-step { min-height: 32px; display: flex; align-items: center; gap: var(--space-2); padding: 5px 8px; border-left: 2px solid var(--color-border-default); color: var(--color-text-tertiary); font-size: 12px; transition: background var(--motion-fast), border-color var(--motion-fast), color var(--motion-fast); }
+    .generation-step::before { content: ""; width: 6px; height: 6px; border: 1px solid currentColor; border-radius: 50%; }
+    .generation-step[data-state="active"] { border-left-color: var(--color-info); background: var(--color-info-soft); color: var(--color-info); }
+    .generation-step[data-state="active"]::before { background: currentColor; animation: pulse-dot 1s ease-in-out infinite; }
+    .generation-step[data-state="done"] { border-left-color: var(--color-success); color: var(--color-success); }
+    .generation-step[data-state="done"]::before { background: currentColor; }
+    .generation-step[data-state="paused"] { border-left-color: var(--color-warning); background: var(--color-warning-soft); color: var(--color-warning); }
+    .thinking.is-paused, .generation-status.is-paused .generation-head > .icon { color: var(--color-warning); }
+    @keyframes pulse-dot { 50% { opacity: .35; transform: scale(.72); } }
+    .streaming-message .streaming-surface { padding: 14px 16px; border: 1px solid var(--color-border-subtle); border-radius: var(--radius-modal); background: var(--color-bg-streaming); box-shadow: var(--shadow-1); }
+    .streaming-message.highlight .streaming-surface { border-color: color-mix(in srgb, var(--color-info) 28%, var(--color-border-subtle)); background: var(--color-bg-streaming-highlight); }
+    .streaming-thinking { display: flex; align-items: center; gap: var(--space-3); min-height: 52px; }
+    .streaming-thinking .spinner { flex: 0 0 24px; width: 24px; height: 24px; border-color: color-mix(in srgb, var(--color-info) 20%, var(--color-border-default)); border-top-color: var(--color-info); }
+    .streaming-copy { min-width: 0; flex: 1; }
+    .streaming-copy strong { display: block; color: var(--color-text-primary); font-size: 14px; line-height: 21px; }
+    .streaming-copy p { margin: 3px 0 0; color: var(--color-text-secondary); font-size: 12px; line-height: 18px; }
+    .streaming-analysis { margin: 0; color: var(--color-text-primary); font-size: 14px; line-height: 23px; }
+    .stream-direction { margin-top: var(--space-3); padding: 9px 11px; border-left: 2px solid var(--color-info); background: var(--color-bg-streaming-detail); }
+    .stream-direction strong { display: block; font-size: 12px; line-height: 18px; }
+    .stream-direction span { display: block; margin-top: 2px; color: var(--color-text-secondary); font-size: 12px; line-height: 18px; }
+    .stream-caret { display: inline-block; width: 2px; height: 1em; margin-left: 3px; vertical-align: -2px; background: var(--color-info); animation: cursor-blink .78s steps(1) infinite; }
+    .stream-pause-note { display: flex; align-items: center; gap: 7px; margin-top: var(--space-3); color: var(--color-warning); font-size: 12px; line-height: 18px; }
+
+    .composer-region { padding: 0 var(--space-4) max(var(--space-3), env(safe-area-inset-bottom)); background: var(--color-bg-canvas); position: relative; z-index: 100; }
+    .attachment-chip { width: min(100%, var(--content-max)); margin: 0 auto var(--space-2); display: flex; align-items: center; gap: var(--space-2); min-height: 32px; padding: 4px 8px 4px 10px; border: 1px solid var(--color-border-default); border-radius: var(--radius-control); color: var(--color-text-secondary); font-size: 12px; }
+    .attachment-chip span { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .composer {
+      width: min(100%, var(--content-max)); min-height: 104px; margin: 0 auto; padding: 12px;
+      border: 1px solid var(--color-border-default); border-radius: var(--radius-composer); background: var(--color-bg-surface); box-shadow: var(--shadow-1);
+      display: grid; grid-template-rows: minmax(44px, auto) 36px; gap: var(--space-2);
+      transition: border-color var(--motion-fast), box-shadow var(--motion-fast);
+    }
+    .composer:hover { border-color: var(--color-border-strong); }
+    .composer:focus-within { border-color: var(--color-focus-ring); box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-focus-ring) 18%, transparent); }
+    .composer textarea { width: 100%; min-height: 44px; max-height: 160px; resize: none; overflow: auto; appearance: none; border: 0; outline: none; box-shadow: none; background: transparent; color: var(--color-text-primary); font-size: 15px; line-height: 24px; font-weight: 400; padding: 0 4px; }
+    .composer textarea:focus,
+    .composer textarea:focus-visible { border: 0; outline: none; box-shadow: none; }
+    .composer textarea::placeholder { color: var(--color-text-tertiary); }
+    .composer-toolbar { display: flex; align-items: center; gap: var(--space-1); min-width: 0; }
+    .toolbar-spacer { flex: 1; min-width: var(--space-2); }
+    .model-menu-wrap { position: relative; }
+    .model-button { max-width: 190px; height: 32px; border: 0; border-radius: var(--radius-control); background: var(--color-bg-surface-hover); display: flex; align-items: center; gap: 6px; padding: 0 9px; color: var(--color-text-secondary); font-size: 12px; cursor: pointer; }
+    .model-button:hover { background: var(--color-bg-surface-active); color: var(--color-text-primary); }
+    .model-button span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .menu-popover { position: absolute; right: 0; bottom: calc(100% + 8px); width: 264px; padding: 4px; border: 1px solid var(--color-border-subtle); border-radius: var(--radius-control); background: var(--color-bg-surface); box-shadow: var(--shadow-popover); z-index: 400; animation: pop-in var(--motion-menu); }
+    @keyframes pop-in { from { opacity: 0; transform: translateY(4px) scale(.98); } }
+    .menu-label { padding: 7px 8px 5px; color: var(--color-text-tertiary); font-size: 11px; line-height: 14px; }
+    .menu-item { width: 100%; min-height: 40px; border: 0; border-radius: var(--radius-sm); background: transparent; display: flex; align-items: center; gap: 10px; padding: 6px 8px; text-align: left; cursor: pointer; }
+    .menu-item:hover { background: var(--color-bg-surface-hover); }
+    .menu-item:disabled { color: var(--color-text-disabled); }
+    .menu-item-copy { min-width: 0; flex: 1; }
+    .menu-item-copy strong { display: block; font-size: 13px; line-height: 18px; font-weight: 500; }
+    .menu-item-copy small { display: block; color: var(--color-text-tertiary); font-size: 11px; line-height: 14px; }
+
+    .icon-button { width: 36px; height: 36px; border: 0; border-radius: var(--radius-control); background: transparent; display: inline-grid; place-items: center; padding: 0; color: var(--color-icon-secondary); cursor: pointer; transition: background var(--motion-fast), color var(--motion-fast), transform 80ms ease-out; }
+    .icon-button.mobile-menu-button { display: none; }
+    .icon-button:hover { background: var(--color-bg-surface-hover); color: var(--color-icon-primary); }
+    .icon-button:active { transform: scale(.96); }
+    .icon-button.small { width: 32px; height: 32px; }
+    .icon-button.active { background: var(--color-bg-surface-active); color: var(--color-icon-primary); }
+    .icon-button:disabled { background: transparent; color: var(--color-text-disabled); cursor: not-allowed; opacity: .55; transform: none; }
+    .project-add-menu {
+      position: fixed; z-index: 520; width: 188px; padding: 4px;
+      border: 1px solid var(--color-border-subtle); border-radius: var(--radius-control);
+      background: var(--color-bg-surface); box-shadow: var(--shadow-popover);
+      animation: pop-in var(--motion-menu);
+    }
+    .project-add-menu .menu-item { min-height: 42px; }
+    .project-add-menu .menu-item > .icon {
+      width: 28px; height: 28px; flex: 0 0 28px; padding: 5px;
+      border-radius: var(--radius-sm); background: var(--color-bg-surface-hover);
+    }
+    .send-button { width: 36px; height: 36px; border: 0; border-radius: 50%; background: var(--color-primary); color: var(--color-on-primary); display: grid; place-items: center; padding: 0; cursor: pointer; transition: background var(--motion-fast), transform 80ms ease-out; }
+    .send-button:hover { background: var(--color-primary-hover); }
+    .send-button:active { background: var(--color-primary-active); transform: scale(.96); }
+    .send-button:disabled { background: var(--color-border-default); color: var(--color-text-disabled); }
+    .send-button.is-generating { background: var(--color-text-primary); color: var(--color-bg-surface); }
+    .send-button.is-generating:hover { background: var(--color-text-secondary); }
+
+    .preview-scrim { display: none; position: absolute; inset: 0; background: var(--color-overlay); z-index: 190; }
+    .preview-pane { position: relative; min-width: 0; min-height: 0; background: var(--color-bg-sidebar); border-left: 1px solid var(--color-border-subtle); display: grid; grid-template-rows: 52px minmax(0,1fr); overflow: hidden; }
+    .workspace-body:not(.preview-visible) .preview-pane,
+    .preview-pane[hidden] { display: none; }
+    .preview-resizer {
+      position: absolute; inset-block: 0; left: 0; z-index: 5; width: 9px;
+      cursor: col-resize; touch-action: none;
+    }
+    .preview-resizer::before {
+      content: ""; position: absolute; inset-block: 0; left: 0; width: 2px;
+      background: transparent; transition: background var(--motion-fast), width var(--motion-fast);
+    }
+    .preview-resizer:hover::before,
+    .preview-resizer:focus-visible::before,
+    body.preview-resizing .preview-resizer::before { width: 3px; background: var(--color-info); }
+    body.preview-resizing { cursor: col-resize; user-select: none; }
+    .preview-header { display: flex; align-items: center; gap: var(--space-2); padding: 0 var(--space-3); border-bottom: 1px solid var(--color-border-subtle); }
+    .preview-header strong { min-width: 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; font-weight: 500; }
+    .preview-body { min-height: 0; overflow: auto; overscroll-behavior: contain; padding: var(--space-4); }
+    .phone-preview { width: min(100%, 300px); min-height: 560px; margin: 0 auto; border: 1px solid var(--color-border-default); border-radius: 28px; background: var(--color-bg-canvas); overflow: hidden; box-shadow: var(--shadow-1); }
+    .phone-status { height: 28px; padding: 7px 16px 0; display: flex; justify-content: space-between; color: var(--color-text-secondary); font-size: 10px; }
+    .phone-hero { padding: 16px; border-bottom: 1px solid var(--color-border-subtle); }
+    .phone-hero .eyebrow { color: var(--color-accent); font-size: 11px; font-weight: 600; }
+    .phone-hero h2 { margin: 8px 0 4px; font-size: 20px; line-height: 28px; }
+    .phone-hero p { margin: 0; color: var(--color-text-secondary); font-size: 12px; line-height: 18px; }
+    .preview-tabs { display: grid; grid-template-columns: repeat(3,1fr); border-bottom: 1px solid var(--color-border-subtle); }
+    .preview-tabs span { padding: 10px 4px; text-align: center; color: var(--color-text-secondary); font-size: 11px; }
+    .preview-tabs span:first-child { color: var(--color-accent); font-weight: 600; box-shadow: inset 0 -2px var(--color-accent); }
+    .article-list { padding: 8px 14px 56px; }
+    .article-item { padding: 14px 0; border-bottom: 1px solid var(--color-border-subtle); }
+    .article-item small { color: var(--color-accent); font-size: 10px; }
+    .article-item h3 { margin: 6px 0; font-size: 13px; line-height: 20px; }
+    .article-item p { margin: 0; color: var(--color-text-tertiary); font-size: 10px; line-height: 16px; }
+
+    .preview-browser { min-height: 100%; border: 1px solid var(--color-border-default); border-radius: var(--radius-control); background: var(--color-bg-canvas); overflow: hidden; box-shadow: var(--shadow-1); }
+    .preview-browser-bar { min-height: 36px; display: flex; align-items: center; gap: var(--space-2); padding: 7px 10px; border-bottom: 1px solid var(--color-border-subtle); background: var(--color-bg-sidebar); }
+    .preview-browser-dots { display: flex; gap: 4px; }
+    .preview-browser-dots span { width: 7px; height: 7px; border-radius: 50%; background: var(--color-border-strong); }
+    .preview-browser-url { min-width: 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--color-text-tertiary); font-family: var(--font-mono); font-size: 9px; text-align: center; }
+    .website-page { min-height: 640px; background: var(--color-bg-website-page); color: var(--color-text-website-heading); }
+    .website-nav { min-height: 48px; display: flex; align-items: center; gap: 12px; padding: 0 14px; border-bottom: 1px solid #263244; background: #0a0f16; color: #9aa8bb; font-size: 10px; }
+    .website-logo { margin-right: auto; display: inline-flex; align-items: center; gap: 7px; color: #f7fbff; font-family: var(--font-mono); font-size: 11px; font-weight: 700; white-space: nowrap; }
+    .website-logo::before { content: ""; width: 9px; height: 9px; border: 2px solid #64e9ff; box-shadow: 0 0 10px #64e9ff80; transform: rotate(45deg); }
+    .website-live { display: inline-flex; align-items: center; gap: 5px; margin-left: 2px; color: #78f2b3; font-family: var(--font-mono); font-size: 8px; }
+    .website-live::before { content: ""; width: 5px; height: 5px; background: currentColor; box-shadow: 0 0 7px currentColor; animation: pulse-dot 1.4s ease-in-out infinite; }
+    .website-nav > span:not(.website-live) { display: none; }
+    .website-hero { position: relative; overflow: hidden; padding: 28px 18px 22px; border-bottom: 1px solid #253247; background: #0a0f16; color: #f7fbff; }
+    .website-hero::after { content: ""; position: absolute; top: 0; right: 20px; width: 1px; height: 100%; background: #64e9ff33; box-shadow: -72px 0 #4c7dff24, -144px 0 #78f2b31f; }
+    .website-kicker { position: relative; z-index: 1; color: #64e9ff; font-family: var(--font-mono); font-size: 9px; font-weight: 600; }
+    .website-hero h2 { position: relative; z-index: 1; max-width: min(440px, 92%); margin: 10px 0 8px; font-size: 24px; line-height: 31px; }
+    .website-hero > p { position: relative; z-index: 1; margin: 0; color: #b6c2d2; font-size: 11px; line-height: 18px; }
+    .website-actions { position: relative; z-index: 1; display: flex; gap: var(--space-2); margin-top: var(--space-4); }
+    .website-actions span { min-height: 30px; display: inline-flex; align-items: center; padding: 0 10px; border: 1px solid #3c4c63; border-radius: var(--radius-sm); color: #d5deea; font-size: 10px; }
+    .website-actions .primary { border-color: #64e9ff; background: #64e9ff; color: #071016; box-shadow: 0 0 18px #64e9ff3d; font-weight: 700; }
+    .tech-console { position: relative; z-index: 1; margin-top: 18px; overflow: hidden; border: 1px solid #2b3b51; border-radius: var(--radius-control); background: #06090e; box-shadow: 0 12px 24px #00000040, inset 0 0 24px #4c7dff0d; }
+    .tech-console-head { min-height: 28px; display: flex; align-items: center; gap: 5px; padding: 0 9px; border-bottom: 1px solid #202c3c; color: #73839a; font-family: var(--font-mono); font-size: 8px; }
+    .tech-console-head i { width: 5px; height: 5px; border-radius: 50%; background: #4c7dff; }
+    .tech-console-head i:nth-child(2) { background: #64e9ff; }
+    .tech-console-head i:nth-child(3) { margin-right: 4px; background: #78f2b3; }
+    .tech-code { padding: 10px; color: #9dadc2; font-family: var(--font-mono); font-size: 8px; line-height: 15px; }
+    .tech-code div { display: flex; gap: 8px; }
+    .tech-code b { min-width: 14px; color: #46556a; font-weight: 400; }
+    .tech-code .cyan { color: #64e9ff; }
+    .tech-code .green { color: #78f2b3; }
+    .tech-code .blue { color: #7da2ff; }
+    .tech-cursor { display: inline-block; width: 5px; height: 10px; margin-left: 3px; vertical-align: -1px; background: #64e9ff; animation: cursor-blink .85s steps(1) infinite; }
+    @keyframes cursor-blink { 50% { opacity: 0; } }
+    .website-signal { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); border-bottom: 1px solid var(--color-border-website); background: var(--color-bg-website-section); }
+    .website-signal div { min-width: 0; padding: 12px 10px; border-right: 1px solid var(--color-border-website-soft); }
+    .website-signal div:last-child { border-right: 0; }
+    .website-signal strong { display: block; color: var(--color-text-website-heading); font-family: var(--font-mono); font-size: 15px; }
+    .website-signal span { display: block; margin-top: 3px; color: var(--color-text-website-body); font-size: 8px; }
+    .website-tags { display: flex; flex-wrap: wrap; gap: 6px; padding: 16px 16px 6px; }
+    .website-tags span { padding: 4px 7px; border: 1px solid var(--color-border-website-tag); border-radius: var(--radius-xs); background: var(--color-bg-website-tag); color: var(--color-text-website-tag); font-family: var(--font-mono); font-size: 8px; }
+    .website-points { padding: 8px 16px 24px; }
+    .website-point { position: relative; padding: 13px 0 13px 14px; border-bottom: 1px solid var(--color-border-website); }
+    .website-point::before { content: ""; position: absolute; left: 0; top: 17px; width: 6px; height: 6px; border: 1px solid #4c7dff; background: var(--color-bg-website-section); transform: rotate(45deg); }
+    .website-point strong { display: block; color: var(--color-text-website-heading); font-size: 11px; }
+    .website-point p { margin: 4px 0 0; color: var(--color-text-website-body); font-size: 10px; line-height: 16px; }
+    .preview-generating { position: relative; min-height: 100%; display: grid; align-content: center; justify-items: center; overflow: hidden; padding: 24px; background: #080c12; color: #eaf3ff; text-align: center; }
+    .preview-generating::before { content: ""; position: absolute; left: 0; right: 0; top: 18%; height: 1px; background: #64e9ff; box-shadow: 0 0 14px #64e9ff; opacity: .55; animation: preview-scan 2.2s ease-in-out infinite; }
+    @keyframes preview-scan { 0%,100% { transform: translateY(0); opacity: .15; } 50% { transform: translateY(360px); opacity: .7; } }
+    .preview-core { position: relative; width: 84px; height: 84px; display: grid; place-items: center; border: 1px solid #3a4d69; background: #0d1420; box-shadow: 0 0 0 8px #4c7dff0d, 0 0 32px #4c7dff2e; transform: rotate(45deg); }
+    .preview-core::before, .preview-core::after { content: ""; position: absolute; inset: 11px; border: 1px solid #64e9ff80; }
+    .preview-core::after { inset: 25px; border-color: #78f2b3; background: #78f2b326; animation: core-pulse 1.4s ease-in-out infinite; }
+    @keyframes core-pulse { 50% { opacity: .35; transform: scale(.72); } }
+    .preview-generating h3 { position: relative; margin: 34px 0 6px; font-family: var(--font-mono); font-size: 14px; line-height: 20px; }
+    .preview-generating p { position: relative; margin: 0; color: #8595aa; font-family: var(--font-mono); font-size: 9px; line-height: 16px; }
+    .preview-progress { position: relative; width: min(100%,220px); height: 3px; margin-top: 18px; overflow: hidden; background: #1e2a3a; }
+    .preview-progress span { display: block; height: 100%; width: 20%; background: #64e9ff; box-shadow: 0 0 10px #64e9ff; transition: width 500ms cubic-bezier(.2,.8,.2,1); }
+    .coding-preview { min-height: 100%; overflow: hidden; border: 1px solid #26364c; border-radius: var(--radius-control); background: #080c12; color: #c4d1e3; box-shadow: var(--shadow-1); }
+    .coding-preview-head { min-height: 36px; display: flex; align-items: center; gap: 8px; padding: 0 10px; border-bottom: 1px solid #26364c; background: #111925; font-family: var(--font-mono); font-size: 9px; }
+    .coding-preview-head strong { color: #eaf3ff; font-weight: 600; }
+    .coding-preview-head span { margin-left: auto; color: #78f2b3; }
+    .coding-workbench { display: grid; grid-template-columns: 86px minmax(0,1fr); min-height: 420px; }
+    .coding-files { padding: 10px 7px; border-right: 1px solid #223044; background: #0d131d; }
+    .coding-files strong { display: block; margin: 0 5px 8px; color: #64758d; font-family: var(--font-mono); font-size: 8px; }
+    .coding-files span { display: block; padding: 6px 7px; border-radius: 3px; color: #8191a8; font-family: var(--font-mono); font-size: 8px; }
+    .coding-files span.active { background: #1a2636; color: #64e9ff; }
+    .coding-editor { min-width: 0; }
+    .coding-tab { min-height: 30px; display: flex; align-items: center; padding: 0 10px; border-bottom: 1px solid #223044; color: #8fa0b6; font-family: var(--font-mono); font-size: 8px; }
+    .coding-code { min-height: 250px; padding: 10px; font-family: var(--font-mono); font-size: 8px; line-height: 15px; }
+    .coding-line { display: grid; grid-template-columns: 20px minmax(0,1fr); gap: 8px; opacity: .4; animation: code-line-in .45s ease-out forwards; }
+    .coding-line:nth-child(2) { animation-delay: .15s; }
+    .coding-line:nth-child(3) { animation-delay: .3s; }
+    .coding-line:nth-child(4) { animation-delay: .45s; }
+    .coding-line:nth-child(5) { animation-delay: .6s; }
+    .coding-line:nth-child(6) { animation-delay: .75s; }
+    @keyframes code-line-in { to { opacity: 1; } }
+    .coding-line b { color: #3f4d61; font-weight: 400; text-align: right; }
+    .coding-line .tag { color: #7da2ff; }
+    .coding-line .text { color: #d9e4f3; }
+    .coding-line .attr { color: #78f2b3; }
+    .coding-caret { display: inline-block; width: 5px; height: 10px; margin-left: 3px; vertical-align: -1px; background: #64e9ff; animation: cursor-blink .85s steps(1) infinite; }
+    .coding-stage-status { padding: 10px 12px; border-top: 1px solid #223044; background: #0d131d; }
+    .coding-stage-status strong { display: block; color: #eaf3ff; font-size: 10px; }
+    .coding-stage-status span { display: block; margin-top: 3px; color: #73839a; font-family: var(--font-mono); font-size: 8px; }
+    .coding-stage-status i { display: block; height: 3px; margin-top: 8px; background: #1d2a3b; }
+    .coding-stage-status i::after { content: ""; display: block; width: var(--coding-progress); height: 100%; background: #64e9ff; box-shadow: 0 0 10px #64e9ff; transition: width 900ms ease; }
+    .coding-live-preview { margin: 0 10px 10px; overflow: hidden; border: 1px solid #29394f; border-radius: 5px; background: var(--color-bg-coding-live); color: var(--color-text-website-heading); }
+    .coding-live-nav { min-height: 26px; display: flex; align-items: center; gap: 8px; padding: 0 8px; background: #0a0f16; color: #8290a4; font-size: 7px; }
+    .coding-live-nav strong { margin-right: auto; color: #ffffff; }
+    .coding-live-hero { padding: 15px 12px; background: #0a0f16; color: #ffffff; }
+    .coding-live-hero small { color: #64e9ff; font-size: 7px; }
+    .coding-live-hero h3 { max-width: 260px; margin: 6px 0; font-size: 14px; line-height: 19px; }
+    .coding-live-hero p { margin: 0; color: #9dadc2; font-size: 8px; line-height: 13px; }
+    .coding-live-blocks { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; padding: 8px; }
+    .coding-live-blocks i { height: 34px; border: 1px solid var(--color-border-coding-block); border-radius: 3px; background: var(--color-bg-coding-block); }
+    .work-preview { min-height: 100%; padding: 18px; background: var(--color-bg-canvas); }
+    .work-preview time { color: var(--color-text-tertiary); font-size: 11px; }
+    .work-preview h2 { margin: 6px 0 18px; font-size: 22px; line-height: 30px; }
+    .work-overview { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: var(--space-2); padding-bottom: var(--space-4); border-bottom: 1px solid var(--color-border-subtle); }
+    .work-stat strong { display: block; font-size: 18px; }
+    .work-stat span { color: var(--color-text-tertiary); font-size: 9px; }
+    .work-timeline { margin-top: var(--space-4); }
+    .work-timeline article { display: grid; grid-template-columns: 42px minmax(0,1fr); gap: var(--space-2); padding: 11px 0; border-bottom: 1px solid var(--color-border-subtle); }
+    .work-timeline time { color: var(--color-info); font-weight: 600; }
+    .work-timeline strong { display: block; font-size: 11px; }
+    .work-timeline p { margin: 2px 0 0; color: var(--color-text-secondary); font-size: 9px; line-height: 15px; }
+    .jingguan-page { min-height: 660px; background: #f3f6fa; color: #182230; }
+    .jingguan-topbar { min-height: 48px; display: flex; align-items: center; gap: 10px; padding: 0 14px; background: #17212f; color: #ffffff; }
+    .jingguan-brand { margin-right: auto; display: flex; align-items: center; gap: 8px; font-size: 12px; }
+    .jingguan-brand::before { content: "J"; width: 24px; height: 24px; display: grid; place-items: center; border-radius: 5px; background: #1976d2; font-size: 12px; font-weight: 700; }
+    .jingguan-topbar span { color: #aeb9c8; font-size: 9px; }
+    .jingguan-layout { display: grid; grid-template-columns: 92px minmax(0,1fr); min-height: 612px; }
+    .jingguan-nav { padding: 12px 8px; border-right: 1px solid #dfe5ec; background: #ffffff; }
+    .jingguan-nav span { display: block; padding: 8px; border-radius: 5px; color: #637083; font-size: 9px; }
+    .jingguan-nav span.active { background: #eaf3fc; color: #1976d2; font-weight: 700; }
+    .jingguan-main { min-width: 0; padding: 14px; }
+    .jingguan-heading { display: flex; align-items: end; justify-content: space-between; gap: 10px; }
+    .jingguan-heading h2 { margin: 0; font-size: 18px; }
+    .jingguan-heading p { margin: 4px 0 0; color: #718096; font-size: 9px; }
+    .jingguan-heading button { border: 0; border-radius: 5px; padding: 7px 9px; background: #1976d2; color: #ffffff; font-size: 9px; }
+    .jingguan-stats { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; margin-top: 12px; }
+    .jingguan-stat { padding: 11px; border: 1px solid #e0e6ed; border-radius: 6px; background: #ffffff; }
+    .jingguan-stat span { display: block; color: #7a8798; font-size: 8px; }
+    .jingguan-stat strong { display: block; margin-top: 4px; color: #17212f; font-size: 17px; }
+    .jingguan-stat small { color: #2e9c63; font-size: 8px; }
+    .jingguan-grid { display: grid; gap: 8px; margin-top: 8px; }
+    .jingguan-panel { padding: 12px; border: 1px solid #e0e6ed; border-radius: 6px; background: #ffffff; }
+    .jingguan-panel h3 { margin: 0 0 10px; font-size: 10px; }
+    .jingguan-bars { height: 84px; display: flex; align-items: end; gap: 8px; border-bottom: 1px solid #dfe5ec; }
+    .jingguan-bars i { flex: 1; min-width: 12px; border-radius: 3px 3px 0 0; background: #1976d2; opacity: .78; }
+    .jingguan-bars i:nth-child(2), .jingguan-bars i:nth-child(5) { background: #5aa7ed; }
+    .jingguan-ai { display: flex; gap: 8px; align-items: center; padding: 9px; border: 1px solid #cfe2f7; border-radius: 5px; background: #f4f9ff; }
+    .jingguan-ai strong { display: block; color: #155da2; font-size: 9px; }
+    .jingguan-ai span { color: #6b7b8e; font-size: 8px; }
+    .document-preview { min-height: 100%; padding: 22px; border: 1px solid var(--color-border-default); border-radius: var(--radius-control); background: var(--color-bg-canvas); box-shadow: var(--shadow-1); }
+    .document-preview .document-kicker { color: var(--color-info); font-size: 10px; font-weight: 700; }
+    .document-preview h2 { margin: 7px 0 4px; font-size: 20px; line-height: 28px; }
+    .document-preview .document-meta { margin: 0 0 18px; color: var(--color-text-tertiary); font-size: 10px; }
+    .document-preview section { padding: 14px 0; border-top: 1px solid var(--color-border-subtle); }
+    .document-preview h3 { margin: 0 0 7px; font-size: 12px; }
+    .document-preview p, .document-preview li { color: var(--color-text-secondary); font-size: 10px; line-height: 17px; }
+    .document-preview ul { margin: 0; padding-left: 16px; }
+    .external-preview { min-height: 100%; display: grid; grid-template-rows: auto minmax(520px,1fr); overflow: hidden; border: 1px solid var(--color-border-default); border-radius: var(--radius-control); background: var(--color-bg-canvas); box-shadow: var(--shadow-1); }
+    .external-preview-bar { min-width: 0; min-height: 38px; display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-bottom: 1px solid var(--color-border-subtle); background: var(--color-bg-sidebar); }
+    .external-preview-dots { display: flex; gap: 4px; }
+    .external-preview-dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--color-border-strong); }
+    .external-preview-url { min-width: 0; flex: 1; overflow: hidden; color: var(--color-info); font-family: var(--font-mono); font-size: 10px; text-align: center; text-overflow: ellipsis; white-space: nowrap; }
+    .external-preview-url:hover { color: var(--color-primary-hover); }
+    .external-preview iframe { width: 100%; min-height: 520px; height: 100%; border: 0; background: #ffffff; }
+
+    @media (min-width: 1080px) {
+      .workspace-body.preview-visible { grid-template-columns: minmax(0, 1fr) var(--preview-width); }
+    }
+    @media (max-width: 1079px) {
+      .preview-pane { position: absolute; inset-block: 0; right: 0; width: min(480px, calc(100% - 48px)); z-index: 200; transform: translateX(100%); transition: transform var(--motion-panel); box-shadow: -8px 0 24px #0000001a; }
+      .workspace-body.preview-visible .preview-pane { transform: translateX(0); }
+      .workspace-body.preview-visible .preview-scrim { display: block; }
+      .preview-resizer { display: none; }
+    }
+    .preview-pane.preview-fullscreen {
+      position: fixed; inset: 0; z-index: 500; width: auto;
+      border-left: 0; box-shadow: none; transform: none;
+    }
+    body.preview-fullscreen-active .preview-scrim { display: none !important; }
+    .preview-pane.preview-fullscreen .preview-resizer { display: none; }
+    .preview-pane.preview-fullscreen .preview-body { padding: 0; background: var(--color-bg-canvas); }
+    .preview-pane.preview-fullscreen .preview-browser,
+    .preview-pane.preview-fullscreen .external-preview,
+    .preview-pane.preview-fullscreen .coding-preview {
+      min-height: 100%; border: 0; border-radius: 0; box-shadow: none;
+    }
+    @media (min-width: 800px) {
+      .preview-pane.preview-fullscreen .website-nav { min-height: 64px; padding-inline: 48px; }
+      .preview-pane.preview-fullscreen .website-nav > span:not(.website-live) { display: inline; }
+      .preview-pane.preview-fullscreen .website-hero { padding: 64px 7vw 48px; }
+      .preview-pane.preview-fullscreen .website-hero h2 { max-width: 760px; font-size: 44px; line-height: 54px; }
+      .preview-pane.preview-fullscreen .website-hero > p { max-width: 720px; font-size: 14px; line-height: 23px; }
+      .preview-pane.preview-fullscreen .website-actions span { min-height: 38px; padding-inline: 16px; font-size: 12px; }
+      .preview-pane.preview-fullscreen .tech-console { max-width: 920px; margin-top: 28px; }
+      .preview-pane.preview-fullscreen .website-signal div { padding: 22px 7vw; }
+      .preview-pane.preview-fullscreen .website-signal strong { font-size: 22px; }
+      .preview-pane.preview-fullscreen .website-signal span { font-size: 10px; }
+      .preview-pane.preview-fullscreen .website-tags,
+      .preview-pane.preview-fullscreen .website-points { width: min(100%, 1120px); margin-inline: auto; }
+      .preview-pane.preview-fullscreen .website-tags { padding-top: 28px; }
+      .preview-pane.preview-fullscreen .website-point { padding-block: 18px; }
+      .preview-pane.preview-fullscreen .website-point::before { top: 22px; }
+      .preview-pane.preview-fullscreen .website-point strong { font-size: 14px; }
+      .preview-pane.preview-fullscreen .website-point p { font-size: 12px; line-height: 19px; }
+    }
+
+    .sidebar-overlay { display: none; position: fixed; inset: 0; background: var(--color-overlay); z-index: 200; }
+
+    .modal-layer { position: fixed; inset: 0; z-index: 600; display: grid; place-items: center; padding: var(--space-4); background: var(--color-overlay); animation: fade-in 180ms cubic-bezier(.2,.8,.2,1); }
+    @keyframes fade-in { from { opacity: 0; } }
+    .dialog { width: min(520px, calc(100vw - 32px)); max-height: min(80vh, calc(100vh - 64px)); display: grid; grid-template-rows: auto minmax(0,1fr) auto; border: 1px solid var(--color-border-subtle); border-radius: var(--radius-modal); background: var(--color-bg-surface); box-shadow: var(--shadow-modal); overflow: hidden; animation: dialog-in 180ms cubic-bezier(.2,.8,.2,1); }
+    @keyframes dialog-in { from { opacity: 0; transform: translateY(8px) scale(.98); } }
+    .dialog-header { display: flex; align-items: flex-start; gap: var(--space-3); padding: var(--space-5) var(--space-6) var(--space-4); }
+    .dialog-title { min-width: 0; flex: 1; }
+    .dialog-title h2 { margin: 0; font-size: 16px; line-height: 24px; font-weight: 600; }
+    .dialog-title p { margin: 2px 0 0; color: var(--color-text-secondary); font-size: 13px; line-height: 18px; }
+    .dialog-body { min-height: 0; overflow: auto; padding: 0 var(--space-6) var(--space-6); }
+    .dialog-footer { display: flex; justify-content: flex-end; gap: var(--space-2); padding: var(--space-4) var(--space-6); border-top: 1px solid var(--color-border-subtle); }
+    .form-field { display: grid; gap: 6px; margin-bottom: var(--space-4); }
+    .form-field label { font-size: 13px; line-height: 18px; font-weight: 500; }
+    .form-field input, .form-field select { width: 100%; height: 36px; border: 1px solid var(--color-border-default); border-radius: var(--radius-control); background: var(--color-bg-surface); color: var(--color-text-primary); padding: 0 12px; }
+    .form-field input:hover, .form-field select:hover { border-color: var(--color-border-strong); }
+    .form-field input:focus, .form-field select:focus { border-color: var(--color-focus-ring); outline: none; box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-focus-ring) 18%, transparent); }
+    .field-help, .field-error { margin: 0; color: var(--color-text-tertiary); font-size: 12px; line-height: 16px; }
+    .field-error { color: var(--color-danger); }
+    .text-button { min-height: 36px; min-width: 72px; border: 1px solid transparent; border-radius: var(--radius-control); background: transparent; padding: 0 12px; font-size: 13px; font-weight: 500; cursor: pointer; transition: background var(--motion-fast), border-color var(--motion-fast); }
+    .text-button.secondary { border-color: var(--color-border-default); background: var(--color-bg-surface); }
+    .text-button.secondary:hover { background: var(--color-bg-surface-hover); border-color: var(--color-border-strong); }
+    .text-button.primary { background: var(--color-primary); color: var(--color-on-primary); }
+    .text-button.primary:hover { background: var(--color-primary-hover); }
+    .text-button.primary:disabled { background: var(--color-border-default); color: var(--color-text-disabled); }
+
+    .settings-dialog { width: min(880px, calc(100vw - 32px)); height: min(680px, calc(100vh - 64px)); max-height: none; grid-template-rows: auto minmax(0,1fr); }
+    .settings-dialog .dialog-header { border-bottom: 1px solid var(--color-border-subtle); }
+    .settings-layout { min-height: 0; display: grid; grid-template-columns: 184px minmax(0,1fr); overflow: hidden; }
+    .settings-nav { min-height: 0; overflow: auto; padding: var(--space-3); background: var(--color-bg-sidebar); border-right: 1px solid var(--color-border-subtle); }
+    .settings-nav button { width: 100%; min-height: 36px; border: 0; border-radius: var(--radius-control); background: transparent; display: flex; align-items: center; gap: 10px; padding: 7px 10px; text-align: left; cursor: pointer; }
+    .settings-nav button:hover { background: var(--color-bg-surface-hover); }
+    .settings-nav button[aria-selected="true"] { background: var(--color-bg-surface-active); font-weight: 500; }
+    .settings-content { min-height: 0; overflow: auto; padding: var(--space-6); }
+    .settings-section { max-width: 640px; }
+    .settings-section h3 { margin: 0; font-size: 20px; line-height: 28px; font-weight: 600; }
+    .settings-section > p { margin: 4px 0 var(--space-6); color: var(--color-text-secondary); }
+    .setting-group { border-top: 1px solid var(--color-border-subtle); }
+    .setting-row { min-height: 64px; display: flex; align-items: center; gap: var(--space-4); padding: 12px 0; border-bottom: 1px solid var(--color-border-subtle); }
+    .setting-copy { min-width: 0; flex: 1; }
+    .setting-copy strong { display: block; font-size: 14px; font-weight: 500; }
+    .setting-copy small { display: block; margin-top: 2px; color: var(--color-text-tertiary); font-size: 12px; line-height: 16px; }
+    .segmented { display: inline-flex; gap: 2px; padding: 3px; border-radius: var(--radius-control); background: var(--color-bg-surface-hover); }
+    .segmented label { min-height: 30px; display: inline-flex; align-items: center; gap: 6px; padding: 0 9px; border-radius: var(--radius-sm); color: var(--color-text-secondary); font-size: 12px; cursor: pointer; }
+    .segmented input { position: absolute; opacity: 0; pointer-events: none; }
+    .segmented label:has(input:checked) { background: var(--color-bg-surface); color: var(--color-text-primary); box-shadow: var(--shadow-1); }
+    .segmented label:has(input:focus-visible) { box-shadow: 0 0 0 2px var(--color-focus-ring); }
+    .switch { width: 40px; min-width: 40px; height: 32px; display: grid; place-items: center; position: relative; cursor: pointer; }
+    .switch input { position: absolute; opacity: 0; }
+    .switch-track { width: 36px; height: 20px; padding: 2px; border-radius: var(--radius-pill); background: var(--color-border-strong); transition: background var(--motion-fast); }
+    .switch-thumb { width: 16px; height: 16px; border-radius: 50%; background: #ffffff; box-shadow: var(--shadow-1); transition: transform var(--motion-fast); }
+    .switch input:checked + .switch-track { background: var(--color-accent); }
+    .switch input:checked + .switch-track .switch-thumb { transform: translateX(16px); }
+    .switch input:focus-visible + .switch-track { box-shadow: 0 0 0 2px var(--color-bg-canvas), 0 0 0 4px var(--color-focus-ring); }
+    .model-list { border-top: 1px solid var(--color-border-subtle); }
+    .model-row { min-height: 68px; display: flex; align-items: center; gap: var(--space-3); border-bottom: 1px solid var(--color-border-subtle); }
+    .model-symbol { width: 32px; height: 32px; display: grid; place-items: center; border-radius: var(--radius-control); background: var(--color-info-soft); color: var(--color-info); font-size: 11px; font-weight: 600; }
+    .model-row.disabled { color: var(--color-text-disabled); }
+    .usage-meter { height: 8px; border-radius: var(--radius-pill); background: var(--color-bg-surface-active); overflow: hidden; }
+    .usage-meter span { display: block; height: 100%; width: 52%; border-radius: inherit; background: var(--color-accent); }
+    .shortcut-list { margin: 0; }
+    .shortcut-row { min-height: 48px; display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); border-bottom: 1px solid var(--color-border-subtle); }
+    kbd { min-width: 26px; height: 26px; display: inline-grid; place-items: center; padding: 0 7px; border: 1px solid var(--color-border-default); border-bottom-width: 2px; border-radius: var(--radius-sm); background: var(--color-bg-surface-hover); color: var(--color-text-secondary); font-family: inherit; font-size: 12px; }
+
+    .toast-region { position: fixed; top: calc(var(--titlebar-height) + 12px); left: 50%; z-index: 500; width: min(420px, calc(100vw - 32px)); transform: translateX(-50%); display: grid; gap: var(--space-2); pointer-events: none; }
+    .toast { min-height: 48px; display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border: 1px solid var(--color-border-subtle); border-radius: var(--radius-control); background: var(--color-bg-surface); box-shadow: var(--shadow-popover); pointer-events: auto; animation: toast-in 160ms ease-out; }
+    @keyframes toast-in { from { opacity: 0; transform: translateY(-6px); } }
+    .toast.success .toast-icon { color: var(--color-success); }
+    .toast.error .toast-icon { color: var(--color-danger); }
+    .toast.info .toast-icon { color: var(--color-info); }
+    .toast-copy { min-width: 0; flex: 1; }
+    .toast-copy strong { display: block; font-size: 13px; line-height: 18px; font-weight: 500; }
+    .toast-copy span { display: block; color: var(--color-text-secondary); font-size: 12px; line-height: 16px; }
+
+    .drop-zone { position: fixed; inset: 8px; z-index: 900; display: grid; place-items: center; border: 2px dashed var(--color-accent); border-radius: var(--radius-modal); background: color-mix(in srgb, var(--color-accent-soft) 92%, transparent); color: var(--color-success); font-size: 16px; font-weight: 600; pointer-events: none; }
+
+    .launch-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 900;
+      display: grid;
+      place-items: center;
+      overflow: auto;
+      padding: var(--space-8);
+      background: #f3f5ff;
+      color: #14213d;
+      opacity: 1;
+      transition: opacity 180ms cubic-bezier(.2,.8,.2,1);
+    }
+    .launch-screen.is-leaving { opacity: 0; pointer-events: none; }
+    .launch-content { width: min(100%, 720px); display: grid; justify-items: center; text-align: center; }
+    .launch-logo {
+      width: 108px;
+      height: 108px;
+      border-radius: 28px;
+      box-shadow: 0 18px 48px #2f6feb2b;
+      transform-origin: center;
+      animation: launch-logo-breathe 3.2s cubic-bezier(.45,0,.55,1) infinite;
+      will-change: transform, filter, box-shadow;
+    }
+    @keyframes launch-logo-breathe {
+      0%, 100% {
+        transform: translateY(0) scale(1);
+        filter: brightness(1) saturate(1);
+        box-shadow: 0 18px 48px #2f6feb2b;
+      }
+      50% {
+        transform: translateY(-1.5px) scale(1.028);
+        filter: brightness(1.04) saturate(1.07);
+        box-shadow: 0 23px 58px #2f6feb42;
+      }
+    }
+    .launch-title { margin: var(--space-5) 0 0; font-size: 32px; line-height: 40px; font-weight: 600; }
+    .launch-subtitle { margin: var(--space-2) 0 0; color: #60708c; font-size: 15px; line-height: 24px; }
+    .license-panel {
+      width: 100%;
+      margin-top: var(--space-8);
+      overflow: hidden;
+      border: 1px solid #dfe4f0;
+      border-radius: 16px;
+      background: #ffffff;
+      box-shadow: 0 12px 30px #31558d14;
+    }
+    .license-row { min-height: 72px; display: grid; grid-template-columns: 40px minmax(0,1fr) auto; align-items: center; gap: var(--space-4); padding: 0 var(--space-6); text-align: left; }
+    .license-row + .license-row { border-top: 1px solid #e7eaf1; }
+    .license-check { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 50%; background: #eaf7f1; color: #16865c; }
+    .license-label { color: #60708c; font-size: 14px; line-height: 20px; }
+    .license-value { color: #14213d; font-size: 15px; line-height: 24px; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .launch-button {
+      width: min(100%, 520px);
+      height: 48px;
+      margin-top: var(--space-6);
+      border: 0;
+      border-radius: var(--radius-control);
+      background: #2563eb;
+      color: #ffffff;
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background var(--motion-fast), transform 80ms ease-out;
+    }
+    .launch-button:hover { background: #1d4ed8; }
+    .launch-button:active { transform: scale(.99); }
+    .launch-button:disabled { background: #8eaef4; cursor: default; }
+    html[data-theme="dark"] .launch-screen { background: #17191f; color: #f5f5f5; }
+    html[data-theme="dark"] .launch-subtitle,
+    html[data-theme="dark"] .license-label { color: #aeb5c2; }
+    html[data-theme="dark"] .license-panel { border-color: #3a3f49; background: #24272e; box-shadow: none; }
+    html[data-theme="dark"] .license-row + .license-row { border-color: #3a3f49; }
+    html[data-theme="dark"] .license-value { color: #f5f5f5; }
+    html[data-theme="dark"] .license-check { background: #12382b; color: #7be3b7; }
+
+    @media (max-width: 1199px) {
+      .conversation-column { width: min(calc(100% - 40px), var(--content-max)); }
+    }
+    @media (max-width: 959px) {
+      .app-shell { grid-template-columns: var(--sidebar-collapsed) minmax(0,1fr); }
+      .app-shell.sidebar-expanded { grid-template-columns: var(--sidebar-width) minmax(0,1fr); }
+      .app-shell:not(.sidebar-expanded) .brand-name,
+      .app-shell:not(.sidebar-expanded) .sidebar-tools,
+      .app-shell:not(.sidebar-expanded) .section-label,
+      .app-shell:not(.sidebar-expanded) .project-label,
+      .app-shell:not(.sidebar-expanded) .session-row,
+      .app-shell:not(.sidebar-expanded) .row-action,
+      .app-shell:not(.sidebar-expanded) .license-summary,
+      .app-shell:not(.sidebar-expanded) .settings-button span,
+      .app-shell:not(.sidebar-expanded) .trial-badge { display: none; }
+      .app-shell:not(.sidebar-expanded) .sidebar-header { padding: 0; justify-content: center; }
+      .app-shell:not(.sidebar-expanded) .brand-lockup { flex: 0 0 28px; }
+      .app-shell:not(.sidebar-expanded) .sidebar-header .icon-button { display: none; }
+      .app-shell:not(.sidebar-expanded) .nav-row,
+      .app-shell:not(.sidebar-expanded) .settings-button { justify-content: center; padding-inline: 0; }
+      .connection span { display: none; }
+    }
+    @media (max-width: 799px) {
+      .app-shell, .app-shell.sidebar-expanded { grid-template-columns: minmax(0,1fr); }
+      .sidebar { position: fixed; inset-block: 0; left: 0; width: min(320px, calc(100vw - 48px)); visibility: hidden; transform: translateX(-100%); transition: transform var(--motion-panel), visibility 0s linear 200ms; box-shadow: var(--shadow-modal); }
+      .app-shell.sidebar-open .sidebar { visibility: visible; transform: translateX(0); transition-delay: 0s; }
+      .app-shell.sidebar-open .sidebar-overlay { display: block; }
+      .app-shell .sidebar .brand-name,
+      .app-shell .sidebar .project-label,
+      .app-shell .sidebar .settings-button span,
+      .app-shell .sidebar .trial-badge { display: inline; }
+      .app-shell .sidebar .sidebar-tools,
+      .app-shell .sidebar .section-label { display: block; }
+      .app-shell .sidebar .session-row,
+      .app-shell .sidebar .license-summary { display: flex; }
+      .app-shell .sidebar .row-action { display: grid; opacity: 1; }
+      .app-shell .sidebar .sidebar-header { padding: 0 var(--space-3); justify-content: initial; }
+      html[data-platform="macos"] .app-shell .sidebar .sidebar-header { padding-left: var(--space-3); }
+      .app-shell .sidebar .brand-lockup { flex: 1; }
+      .app-shell .sidebar .sidebar-header .icon-button { display: inline-grid; }
+      .app-shell .sidebar .nav-row, .app-shell .sidebar .settings-button { justify-content: initial; padding-inline: 10px; }
+      .icon-button.mobile-menu-button { display: inline-grid; }
+      #sidebarToggleButton { display: none; }
+      .conversation-column { width: min(calc(100% - 24px), var(--content-max)); padding-top: var(--space-6); }
+      .composer-region { padding-inline: var(--space-3); }
+      .suggestions { grid-template-columns: 1fr; }
+      .empty-state { align-content: start; padding-top: var(--space-10); }
+      .empty-state h1 { font-size: 20px; line-height: 28px; }
+      .connection { display: none; }
+      .settings-dialog { width: calc(100vw - 32px); height: calc(100vh - 32px); }
+      .settings-layout { grid-template-columns: 1fr; grid-template-rows: auto minmax(0,1fr); }
+      .settings-nav { display: flex; overflow-x: auto; border-right: 0; border-bottom: 1px solid var(--color-border-subtle); padding: var(--space-2); }
+      .settings-nav button { width: auto; flex: 0 0 auto; }
+      .settings-nav button .icon { display: none; }
+      .settings-content { padding: var(--space-4); }
+      .setting-row { align-items: flex-start; flex-wrap: wrap; }
+      .launch-screen { padding: var(--space-4); }
+      .launch-logo { width: 80px; height: 80px; border-radius: 20px; }
+      .launch-title { margin-top: var(--space-3); font-size: 28px; line-height: 36px; }
+      .launch-subtitle { font-size: 14px; line-height: 20px; }
+      .license-panel { margin-top: var(--space-6); }
+      .license-row { min-height: 68px; grid-template-columns: 32px minmax(0,1fr); gap: var(--space-3); padding: 10px var(--space-4); }
+      .license-value { grid-column: 2; margin-top: -8px; font-size: 14px; line-height: 20px; }
+      .launch-button { margin-top: var(--space-4); }
+      .preview-pane.preview-fullscreen .website-nav { padding-inline: 16px; }
+      .preview-pane.preview-fullscreen .website-nav > span:not(.website-live) { display: none; }
+      .preview-pane.preview-fullscreen .website-hero h2 { font-size: 30px; line-height: 38px; }
+    }
+    @media (max-height: 599px) {
+      .conversation-column { padding-top: var(--space-4); padding-bottom: 88px; }
+      .empty-state { min-height: auto; align-content: start; padding-top: var(--space-4); }
+      .empty-logo { width: 36px; height: 36px; margin-bottom: var(--space-3); }
+      .empty-state > p { margin-bottom: var(--space-3); }
+      .composer { min-height: 88px; grid-template-rows: minmax(32px,auto) 32px; padding: 10px; }
+      .composer textarea { max-height: 120px; }
+      .icon-button, .send-button { width: 32px; height: 32px; }
+      .launch-screen { align-items: start; padding-block: var(--space-4); }
+      .launch-logo { width: 64px; height: 64px; border-radius: 16px; }
+      .launch-title { margin-top: var(--space-2); font-size: 24px; line-height: 32px; }
+      .launch-subtitle { margin-top: var(--space-1); }
+      .license-panel { margin-top: var(--space-4); }
+      .license-row { min-height: 58px; }
+      .launch-button { height: 44px; margin-top: var(--space-3); }
+    }
+    @media (forced-colors: active) {
+      :focus-visible { outline: 2px solid Highlight; outline-offset: 2px; box-shadow: none; }
+      .status-dot, .usage-meter span { forced-color-adjust: none; }
+      .modal-layer, .preview-scrim { background: Canvas; opacity: .85; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+      .launch-logo, .empty-logo { animation: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <svg class="svg-sprite" aria-hidden="true">
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
+    <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7h7l2 2h9v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/><path d="M3 9h18"/></symbol>
+    <symbol id="i-message" viewBox="0 0 24 24"><path d="M5 19l-1 3 4-2h9a4 4 0 0 0 4-4V7a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v9a4 4 0 0 0 2 3Z"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1A1.7 1.7 0 0 0 9 4.6 1.7 1.7 0 0 0 10 3v-.2h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z"/></symbol>
+    <symbol id="i-panel" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M15 4v16"/></symbol>
+    <symbol id="i-expand" viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></symbol>
+    <symbol id="i-collapse" viewBox="0 0 24 24"><path d="M9 3v6H3M15 3v6h6M9 21v-6H3M15 21v-6h6"/></symbol>
+    <symbol id="i-paperclip" viewBox="0 0 24 24"><path d="m21 11.5-8.5 8.5a6 6 0 0 1-8.5-8.5l9-9a4 4 0 1 1 5.7 5.7l-9 9a2 2 0 0 1-2.9-2.8l8.5-8.5"/></symbol>
+    <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v5M8 22h8"/></symbol>
+    <symbol id="i-arrow-up" viewBox="0 0 24 24"><path d="m6 12 6-6 6 6M12 6v12"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></symbol>
+    <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M8 13h8M8 17h6"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><path d="m4 6 2 2 4-4M4 14l2 2 4-4M13 6h7M13 14h7M4 21h16"/></symbol>
+    <symbol id="i-bug" viewBox="0 0 24 24"><path d="M8 2l1.5 2M16 2l-1.5 2M9 9h6M5 13H2M22 13h-3M5 18l-3 2M19 18l3 2"/><rect x="5" y="4" width="14" height="16" rx="7"/><path d="M12 4v16"/></symbol>
+    <symbol id="i-presentation" viewBox="0 0 24 24"><path d="M4 3h16v12H4zM8 21l4-6 4 6M2 3h20"/></symbol>
+    <symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18h1.5a1.5 1.5 0 0 0 0-3H12a2 2 0 0 1 0-4h3a6 6 0 0 0 0-12h-3Z"/><circle cx="7.5" cy="10.5" r=".5"/><circle cx="10" cy="7" r=".5"/><circle cx="14" cy="7" r=".5"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></symbol>
+    <symbol id="i-keyboard" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 9h.01M11 9h.01M15 9h.01M19 9h.01M7 13h.01M11 13h.01M15 13h4M7 16h10"/></symbol>
+    <symbol id="i-boxes" viewBox="0 0 24 24"><path d="m12 2 8 4.5v9L12 20l-8-4.5v-9Z"/><path d="m4 6.5 8 4.5 8-4.5M12 11v9M8 4.2l8 4.5"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/></symbol>
+    <symbol id="i-monitor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 22h8M12 18v4"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M6.1 9a7 7 0 0 1 11.6-2.6L20 12M4 12l2.3 5.6A7 7 0 0 0 17.9 15"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></symbol>
+    <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 3h7v7M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></symbol>
+  </svg>
+
+  <section class="launch-screen" id="licenseGate" aria-labelledby="launchTitle">
+    <div class="launch-content">
+      <img class="launch-logo" data-logo alt="码多多">
+      <h1 class="launch-title" id="launchTitle">码多多</h1>
+      <p class="launch-subtitle">授权状态与试用额度均已检查完成</p>
+      <div class="license-panel" aria-label="授权检查结果">
+        <div class="license-row">
+          <span class="license-check" aria-hidden="true"><svg class="icon icon-20"><use href="#i-check"></use></svg></span>
+          <span class="license-label">授权状态</span>
+          <strong class="license-value">试用有效 · 剩余 27 天</strong>
+        </div>
+        <div class="license-row">
+          <span class="license-check" aria-hidden="true"><svg class="icon icon-20"><use href="#i-check"></use></svg></span>
+          <span class="license-label">试用 Token 剩余额度</span>
+          <strong class="license-value">4,860,320 可用</strong>
+        </div>
+      </div>
+      <button class="launch-button" id="enterAppButton" type="button">进入码多多（4）</button>
+    </div>
+  </section>
+
+  <div class="app-shell" id="appShell">
+    <div class="sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>
+    <aside class="sidebar" id="sidebar" aria-label="项目与会话">
+      <header class="sidebar-header">
+        <div class="brand-lockup">
+          <img class="brand-logo" data-logo alt="码多多">
+          <span class="brand-name">码多多</span>
+        </div>
+        <button class="icon-button small" id="addProjectButton" type="button" aria-label="添加项目" title="添加项目" aria-haspopup="menu" aria-expanded="false" aria-controls="projectAddMenu">
+          <svg class="icon"><use href="#i-plus"></use></svg>
+        </button>
+      </header>
+
+      <div class="sidebar-tools">
+        <label class="search-field" for="projectSearch">
+          <svg class="icon icon-16"><use href="#i-search"></use></svg>
+          <input class="search-input" id="projectSearch" type="search" placeholder="搜索项目和会话" aria-label="搜索项目和会话" autocomplete="off">
+          <span class="key-hint" id="searchShortcut">⌘K</span>
+        </label>
+      </div>
+
+      <div class="sidebar-scroll" id="projectList">
+        <p class="section-label">项目与会话</p>
+        <div class="project-group" id="programmingProjectGroup" data-project="我的编程DIY" data-collapsed="false" data-default-hidden="true" hidden>
+          <div class="project-heading">
+            <button class="nav-row" type="button" aria-expanded="true" aria-label="我的编程DIY">
+              <svg class="icon icon-16"><use href="#i-folder"></use></svg>
+              <span class="project-label">我的编程DIY</span>
+            </button>
+            <button class="row-action" type="button" aria-label="在我的编程DIY中添加会话" title="添加会话">
+              <svg class="icon icon-16"><use href="#i-plus"></use></svg>
+            </button>
+          </div>
+          <button class="session-row" type="button" data-session="AI资讯小程序" hidden>
+            <span class="session-label">AI资讯小程序</span>
+          </button>
+          <button class="session-row" id="websiteSessionRow" type="button" data-session="AI编程教育小程序" hidden>
+            <span class="session-label">AI编程教育小程序</span>
+          </button>
+        </div>
+        <div class="project-group" data-project="经营问数项目" data-collapsed="false">
+          <div class="project-heading">
+            <button class="nav-row" type="button" aria-expanded="true" aria-label="经营问数项目">
+              <svg class="icon icon-16"><use href="#i-folder"></use></svg>
+              <span class="project-label">经营问数项目</span>
+            </button>
+            <button class="row-action" type="button" aria-label="在经营问数项目中添加会话" title="添加会话">
+              <svg class="icon icon-16"><use href="#i-plus"></use></svg>
+            </button>
+          </div>
+          <button class="session-row" type="button" data-session="经营问数需求探讨">
+            <span class="session-label">经营问数需求探讨</span>
+          </button>
+          <button class="session-row" id="jingguanBuildSessionRow" type="button" data-session="经营问数平台搭建" hidden>
+            <span class="session-label">经营问数平台搭建</span>
+          </button>
+        </div>
+        <div class="project-group" data-project="work" data-collapsed="false">
+          <div class="project-heading">
+            <button class="nav-row" type="button" aria-expanded="true" aria-label="work">
+              <svg class="icon icon-16"><use href="#i-folder"></use></svg>
+              <span class="project-label">work</span>
+            </button>
+            <button class="row-action" type="button" aria-label="在 work 中添加会话" title="添加会话">
+              <svg class="icon icon-16"><use href="#i-plus"></use></svg>
+            </button>
+          </div>
+          <button class="session-row" type="button" data-session="工作安排">
+            <span class="session-label">工作安排</span>
+          </button>
+        </div>
+      </div>
+
+      <footer class="sidebar-footer">
+        <div class="license-summary" title="试用有效，剩余 27 天">
+          <span class="status-dot"></span>
+          <span>试用中 · Token 4,860,320</span>
+        </div>
+        <button class="settings-button" id="settingsButton" type="button" aria-label="设置" title="设置">
+          <svg class="icon"><use href="#i-settings"></use></svg>
+          <span>设置</span>
+          <small class="trial-badge">27 天</small>
+        </button>
+      </footer>
+    </aside>
+
+    <main class="workspace">
+      <header class="context-bar">
+        <button class="icon-button mobile-menu-button" id="mobileMenuButton" type="button" aria-label="打开项目导航" title="打开导航">
+          <svg class="icon"><use href="#i-menu"></use></svg>
+        </button>
+        <button class="icon-button" id="sidebarToggleButton" type="button" aria-label="收起侧边栏" title="收起侧边栏">
+          <svg class="icon"><use href="#i-panel"></use></svg>
+        </button>
+        <div class="context-title">
+          <strong id="conversationTitle">AI资讯小程序</strong>
+          <span id="projectTitle">归属于 我的编程DIY</span>
+        </div>
+        <div class="context-actions">
+          <div class="connection" id="connectionStatus" title="网络连接正常">
+            <span class="status-dot"></span><span>已连接</span>
+          </div>
+          <button class="icon-button" id="previewToggleButton" type="button" aria-label="打开任务预览" title="请先选择快捷入口或会话" disabled>
+            <svg class="icon"><use href="#i-panel"></use></svg>
+          </button>
+        </div>
+      </header>
+
+      <div class="workspace-body" id="workspaceBody">
+        <section class="conversation-panel" aria-label="会话">
+          <div class="conversation-scroll" id="conversationScroll" tabindex="-1">
+            <div class="conversation-column">
+              <section class="empty-state" id="emptyState" aria-labelledby="welcomeTitle">
+                <img class="empty-logo" data-logo alt="">
+                <h1 id="welcomeTitle">让每一位企业工作者，都有 AI 搭档。</h1>
+                <p>从资料理解到任务执行，让 AI 在安全可控的环境中真正进入日常工作。</p>
+                <div class="suggestions" aria-label="快捷任务">
+                  <button class="suggestion" type="button" data-quick-action="prefill-jingguan-build">
+                    <svg class="icon"><use href="#i-chart"></use></svg><span>帮我搭建经营问数的平台</span>
+                  </button>
+                  <button class="suggestion" type="button" data-quick-action="prefill-website">
+                    <svg class="icon"><use href="#i-monitor"></use></svg><span>帮我做个 AI 编程教育官网</span>
+                  </button>
+                  <button class="suggestion" type="button" data-quick-action="work">
+                    <svg class="icon"><use href="#i-list"></use></svg><span>我的工作安排</span>
+                  </button>
+                  <button class="suggestion" type="button" data-quick-action="report">
+                    <svg class="icon"><use href="#i-presentation"></use></svg><span>生成汇报与执行计划</span>
+                  </button>
+                </div>
+              </section>
+              <div class="messages" id="messages" aria-live="polite"></div>
+            </div>
+          </div>
+
+          <div class="composer-region">
+            <div class="attachment-chip" id="attachmentChip" hidden>
+              <svg class="icon icon-16"><use href="#i-file"></use></svg>
+              <span id="attachmentName"></span>
+              <button class="icon-button small" id="removeAttachmentButton" type="button" aria-label="移除附件" title="移除附件">
+                <svg class="icon icon-16"><use href="#i-x"></use></svg>
+              </button>
+            </div>
+            <div class="composer">
+              <textarea id="composerInput" rows="1" placeholder="今天需要我帮你做些什么?@引用对话文件，/调用技能与指令" aria-label="今天需要我帮你做些什么?@引用对话文件，/调用技能与指令"></textarea>
+              <div class="composer-toolbar">
+                <input id="fileInput" type="file" hidden accept=".txt,.md,.pdf,.doc,.docx,.csv,.xlsx,.png,.jpg,.jpeg">
+                <button class="icon-button" id="attachButton" type="button" aria-label="添加内容" title="添加内容">
+                  <svg class="icon"><use href="#i-paperclip"></use></svg>
+                </button>
+                <div class="toolbar-spacer"></div>
+                <div class="model-menu-wrap">
+                  <button class="model-button" id="modelButton" type="button" aria-haspopup="menu" aria-expanded="false">
+                    <span id="modelButtonLabel">DeepSeek V4</span>
+                    <svg class="icon icon-16"><use href="#i-chevron-down"></use></svg>
+                  </button>
+                  <div class="menu-popover" id="modelMenu" role="menu" hidden>
+                    <div class="menu-label">可用模型</div>
+                    <button class="menu-item" type="button" role="menuitemradio" aria-checked="true" data-model="DeepSeek V4">
+                      <svg class="icon icon-16"><use href="#i-check"></use></svg>
+                      <span class="menu-item-copy"><strong>DeepSeek V4</strong><small>试用额度 · 4,860,320 Token</small></span>
+                    </button>
+                    <button class="menu-item" type="button" role="menuitemradio" aria-checked="false" data-model="DeepSeek V4 Flash">
+                      <span class="icon icon-16"></span>
+                      <span class="menu-item-copy"><strong>DeepSeek V4 Flash</strong><small>高速响应 · 需购买额度</small></span>
+                    </button>
+                    <button class="menu-item" type="button" id="manageModelsButton">
+                      <svg class="icon icon-16"><use href="#i-settings"></use></svg>
+                      <span class="menu-item-copy"><strong>管理模型</strong><small>查看额度与自有模型</small></span>
+                      <svg class="icon icon-16"><use href="#i-chevron-right"></use></svg>
+                    </button>
+                  </div>
+                </div>
+                <button class="icon-button" id="voiceButton" type="button" aria-label="语音输入" title="语音输入">
+                  <svg class="icon"><use href="#i-mic"></use></svg>
+                </button>
+                <button class="send-button" id="sendButton" type="button" aria-label="发送" title="发送" disabled>
+                  <svg class="icon icon-20"><use id="sendButtonIcon" href="#i-arrow-up"></use></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="preview-scrim" id="previewScrim" aria-hidden="true"></div>
+        <aside class="preview-pane" id="previewPane" aria-label="任务预览" aria-hidden="true" inert hidden>
+          <div class="preview-resizer" id="previewResizer" role="separator" aria-label="调整预览宽度" aria-orientation="vertical" aria-valuemin="360" aria-valuemax="720" aria-valuenow="440" tabindex="0" title="拖动调整预览宽度，双击恢复默认"></div>
+          <header class="preview-header">
+            <svg class="icon"><use href="#i-presentation"></use></svg>
+            <strong id="previewTitle">企业应用情报 · 首页预览</strong>
+            <button class="icon-button small" id="fullscreenPreviewButton" type="button" aria-label="全屏预览" title="全屏预览" aria-pressed="false">
+              <svg class="icon icon-16"><use href="#i-expand"></use></svg>
+            </button>
+            <button class="icon-button small" id="closePreviewButton" type="button" aria-label="关闭任务预览" title="关闭预览">
+              <svg class="icon icon-16"><use href="#i-x"></use></svg>
+            </button>
+          </header>
+          <div class="preview-body" id="previewContent">
+            <div class="phone-preview" aria-label="企业应用情报移动端预览">
+              <div class="phone-status"><span>9:41</span><span>● ● ●</span></div>
+              <section class="phone-hero">
+                <span class="eyebrow">企业应用情报</span>
+                <h2>今日重点判断</h2>
+                <p>企业 AI 应用落地进入“场景 ROI”阶段</p>
+              </section>
+              <div class="preview-tabs"><span>商业打法</span><span>落地案例</span><span>最新资讯</span></div>
+              <div class="article-list">
+                <article class="article-item"><small>决策层速读</small><h3>协同平台在企业客户拓展上的新打法</h3><p>3 分钟读完 · 可收藏 · 可转发</p></article>
+                <article class="article-item"><small>落地案例</small><h3>制造业 AI 助手如何先从知识库切入</h3><p>3 分钟读完 · 可收藏 · 可转发</p></article>
+                <article class="article-item"><small>市场动态</small><h3>SaaS 团队开始用私有模型做垂直服务</h3><p>3 分钟读完 · 可收藏 · 可转发</p></article>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-layer" id="addProjectLayer" hidden>
+    <section class="dialog" role="dialog" aria-modal="true" aria-labelledby="addProjectTitle">
+      <header class="dialog-header">
+        <div class="dialog-title"><h2 id="addProjectTitle">创建项目</h2><p>把相关会话、文件和任务放在一起。</p></div>
+        <button class="icon-button small dialog-close" type="button" aria-label="关闭创建项目" title="关闭"><svg class="icon icon-16"><use href="#i-x"></use></svg></button>
+      </header>
+      <form id="addProjectForm">
+        <div class="dialog-body">
+          <div class="form-field">
+            <label for="projectNameInput">项目名称</label>
+            <input id="projectNameInput" name="projectName" type="text" minlength="2" maxlength="30" autocomplete="off" placeholder="例如：市场调研" aria-describedby="projectNameHelp projectNameError">
+            <p class="field-help" id="projectNameHelp">使用 2–30 个字符，创建后可继续添加会话。</p>
+            <p class="field-error" id="projectNameError" hidden>请输入至少 2 个字符的项目名称。</p>
+          </div>
+          <div class="form-field">
+            <label for="projectTypeSelect">项目类型</label>
+            <select id="projectTypeSelect" name="projectType"><option>通用项目</option><option>产品研发</option><option>内容运营</option><option>业务分析</option></select>
+          </div>
+        </div>
+        <footer class="dialog-footer">
+          <button class="text-button secondary dialog-cancel" type="button">取消</button>
+          <button class="text-button primary" id="createProjectSubmit" type="submit" disabled>创建</button>
+        </footer>
+      </form>
+    </section>
+  </div>
+
+  <div class="modal-layer" id="settingsLayer" hidden>
+    <section class="dialog settings-dialog" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+      <header class="dialog-header">
+        <div class="dialog-title"><h2 id="settingsTitle">设置 · 外观</h2><p id="settingsSubtitle">调整主题和界面密度</p></div>
+        <button class="icon-button small dialog-close" type="button" aria-label="关闭设置" title="关闭设置"><svg class="icon icon-16"><use href="#i-x"></use></svg></button>
+      </header>
+      <div class="settings-layout">
+        <nav class="settings-nav" aria-label="设置分类" role="tablist">
+          <button type="button" role="tab" aria-selected="true" data-settings-view="appearance"><svg class="icon"><use href="#i-palette"></use></svg>外观</button>
+          <button type="button" role="tab" aria-selected="false" data-settings-view="chat"><svg class="icon"><use href="#i-message"></use></svg>聊天</button>
+          <button type="button" role="tab" aria-selected="false" data-settings-view="notifications"><svg class="icon"><use href="#i-bell"></use></svg>通知</button>
+          <button type="button" role="tab" aria-selected="false" data-settings-view="sessions"><svg class="icon"><use href="#i-folder"></use></svg>会话</button>
+          <button type="button" role="tab" aria-selected="false" data-settings-view="shortcuts"><svg class="icon"><use href="#i-keyboard"></use></svg>快捷键</button>
+          <button type="button" role="tab" aria-selected="false" data-settings-view="projects"><svg class="icon"><use href="#i-boxes"></use></svg>项目</button>
+          <button type="button" role="tab" aria-selected="false" data-settings-view="models"><svg class="icon"><use href="#i-boxes"></use></svg>模型</button>
+          <button type="button" role="tab" aria-selected="false" data-settings-view="usage"><svg class="icon"><use href="#i-chart"></use></svg>用量</button>
+        </nav>
+        <div class="settings-content">
+          <section class="settings-section" data-settings-section="appearance">
+            <h3>外观</h3><p>界面会立即应用所选外观。</p>
+            <div class="setting-group">
+              <div class="setting-row"><div class="setting-copy"><strong>主题</strong><small>默认使用深色，也可跟随系统或固定使用浅色。</small></div><div class="segmented" aria-label="主题"><label><input type="radio" name="theme" value="system"><svg class="icon icon-16"><use href="#i-monitor"></use></svg>系统</label><label><input type="radio" name="theme" value="light"><svg class="icon icon-16"><use href="#i-sun"></use></svg>浅色</label><label><input type="radio" name="theme" value="dark" checked><svg class="icon icon-16"><use href="#i-moon"></use></svg>深色</label></div></div>
+              <div class="setting-row"><div class="setting-copy"><strong>紧凑模式</strong><small>缩小历史列表间距，主对话字号保持不变。</small></div><label class="switch"><input id="compactToggle" type="checkbox"><span class="switch-track"><span class="switch-thumb"></span></span></label></div>
+            </div>
+          </section>
+
+          <section class="settings-section" data-settings-section="chat" hidden>
+            <h3>聊天</h3><p>控制生成和上下文行为。</p>
+            <div class="setting-group">
+              <div class="setting-row"><div class="setting-copy"><strong>流式显示回答</strong><small>生成时逐步显示内容，并保留停止操作。</small></div><label class="switch"><input type="checkbox" checked><span class="switch-track"><span class="switch-thumb"></span></span></label></div>
+              <div class="setting-row"><div class="setting-copy"><strong>自动打开任务预览</strong><small>生成界面或文档时自动展示右侧预览。</small></div><label class="switch"><input id="autoPreviewToggle" type="checkbox" checked><span class="switch-track"><span class="switch-thumb"></span></span></label></div>
+            </div>
+          </section>
+
+          <section class="settings-section" data-settings-section="notifications" hidden>
+            <h3>通知</h3><p>只在任务需要你关注时发送提醒。</p>
+            <div class="setting-group"><div class="setting-row"><div class="setting-copy"><strong>任务完成通知</strong><small>窗口不在前台时通知你任务已完成。</small></div><label class="switch"><input type="checkbox" checked><span class="switch-track"><span class="switch-thumb"></span></span></label></div><div class="setting-row"><div class="setting-copy"><strong>连接状态提醒</strong><small>离线或恢复连接时在应用内提示。</small></div><label class="switch"><input type="checkbox" checked><span class="switch-track"><span class="switch-thumb"></span></span></label></div></div>
+          </section>
+
+          <section class="settings-section" data-settings-section="sessions" hidden>
+            <h3>会话</h3><p>管理历史记录与新会话行为。</p>
+            <div class="setting-group"><div class="setting-row"><div class="setting-copy"><strong>新会话默认模型</strong><small>仅显示当前授权可用的模型。</small></div><select id="defaultModelSelect"><option>DeepSeek V4</option><option>DeepSeek V4 Flash</option></select></div><div class="setting-row"><div class="setting-copy"><strong>保留草稿</strong><small>切换会话时保留尚未发送的输入。</small></div><label class="switch"><input type="checkbox" checked><span class="switch-track"><span class="switch-thumb"></span></span></label></div></div>
+          </section>
+
+          <section class="settings-section" data-settings-section="shortcuts" hidden>
+            <h3>快捷键</h3><p>快捷键会根据当前系统显示。</p>
+            <div class="shortcut-list"><div class="shortcut-row"><span>新建会话</span><kbd data-shortcut="new">⌘N</kbd></div><div class="shortcut-row"><span>搜索项目与会话</span><kbd data-shortcut="search">⌘K</kbd></div><div class="shortcut-row"><span>打开设置</span><kbd data-shortcut="settings">⌘,</kbd></div><div class="shortcut-row"><span>发送消息</span><kbd>Enter</kbd></div><div class="shortcut-row"><span>输入换行</span><kbd>Shift + Enter</kbd></div></div>
+          </section>
+
+          <section class="settings-section" data-settings-section="projects" hidden>
+            <h3>项目</h3><p>定义新项目的默认行为。</p>
+            <div class="setting-group"><div class="setting-row"><div class="setting-copy"><strong>创建后自动新建会话</strong><small>创建项目后直接进入第一个会话。</small></div><label class="switch"><input type="checkbox" checked><span class="switch-track"><span class="switch-thumb"></span></span></label></div><div class="setting-row"><div class="setting-copy"><strong>显示项目类型</strong><small>在项目名称下方显示类型说明。</small></div><label class="switch"><input type="checkbox"><span class="switch-track"><span class="switch-thumb"></span></span></label></div></div>
+          </section>
+
+          <section class="settings-section" data-settings-section="models" hidden>
+            <h3>模型</h3><p>模型可见范围由当前授权控制。</p>
+            <div class="model-list">
+              <label class="model-row"><span class="model-symbol">AI</span><span class="setting-copy"><strong>DeepSeek V4</strong><small>平台供应试用额度</small></span><span>4,860,320 Token</span><input type="radio" name="settingsModel" value="DeepSeek V4" checked></label>
+              <label class="model-row"><span class="model-symbol">AI</span><span class="setting-copy"><strong>DeepSeek V4 Flash</strong><small>高速响应</small></span><span>需购买额度</span><input type="radio" name="settingsModel" value="DeepSeek V4 Flash"></label>
+              <div class="model-row disabled"><span class="model-symbol">AI</span><span class="setting-copy"><strong>MiniMax M2.7</strong><small>暂未启用</small></span><span>前往购买</span></div>
+              <div class="model-row disabled"><span class="model-symbol">AI</span><span class="setting-copy"><strong>Qwen3.5</strong><small>暂未启用</small></span><span>前往购买</span></div>
+            </div>
+          </section>
+
+          <section class="settings-section" data-settings-section="usage" hidden>
+            <h3>用量</h3><p>试用授权剩余 27 天。</p>
+            <div class="setting-group"><div class="setting-row"><div class="setting-copy"><strong>试用 Token</strong><small>本周期已使用 5,139,680，剩余 4,860,320。</small></div><strong>48.6%</strong></div><div class="usage-meter" aria-label="Token 剩余 48.6%"><span></span></div><div class="setting-row"><div class="setting-copy"><strong>授权状态</strong><small>所有核心功能可用，模型范围按额度控制。</small></div><span class="trial-badge">有效</span></div></div>
+          </section>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="toast-region" id="toastRegion" aria-live="polite" aria-atomic="true"></div>
+  <div class="project-add-menu" id="projectAddMenu" role="menu" aria-label="添加项目" hidden>
+    <button class="menu-item" id="openLocalProjectButton" type="button" role="menuitem">
+      <svg class="icon"><use href="#i-folder"></use></svg>
+      <span class="menu-item-copy"><strong>打开本地项目</strong><small>选择一个文件夹</small></span>
+    </button>
+    <button class="menu-item" id="createNewProjectButton" type="button" role="menuitem">
+      <svg class="icon"><use href="#i-plus"></use></svg>
+      <span class="menu-item-copy"><strong>创建新项目</strong><small>建立空白项目</small></span>
+    </button>
+  </div>
+  <input id="projectDirectoryInput" type="file" hidden webkitdirectory directory multiple>
+  <div class="drop-zone" id="dropZone" hidden><span>松开以添加到当前会话</span></div>
+
+  <script>
+    const BRAND_LOGO = "data:image/svg+xml,%3csvg%20width='512'%20height='512'%20viewBox='0%200%20512%20512'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cg%20clip-path='url(%23clip0)'%3e%3cpath%20d='M416.658%200H95.3422C42.6862%200%200%2042.6862%200%2095.3422V416.658C0%20469.314%2042.6862%20512%2095.3422%20512H416.658C469.314%20512%20512%20469.314%20512%20416.658V95.3422C512%2042.6862%20469.314%200%20416.658%200Z'%20fill='white'/%3e%3cpath%20opacity='.92'%20fill-rule='evenodd'%20clip-rule='evenodd'%20d='M139.159%20106.956L303.523%20265.729C312.449%20274.352%20312.097%20282.574%20302.467%20290.395L160.258%20405.905C150.628%20413.726%20141.071%20413.637%20131.587%20405.639L68.6221%20352.535C59.1382%20344.537%2056.1253%20334.565%2059.5831%20322.619L120.583%20111.94C124.041%2099.9941%20130.233%2098.3326%20139.159%20106.956Z'%20fill='url(%23paint0)'/%3e%3cpath%20opacity='.92'%20fill-rule='evenodd'%20clip-rule='evenodd'%20d='M388.779%20111.882L452.321%20322.678C455.909%20334.585%20452.992%20344.577%20443.57%20352.653L381.886%20405.522C372.464%20413.598%20362.917%20413.752%20353.244%20405.983L209.207%20290.317C199.534%20282.548%20199.133%20274.323%20208.004%20265.64L370.09%20107.044C378.961%2098.3623%20385.191%2099.9747%20388.779%20111.882Z'%20fill='url(%23paint1)'/%3e%3cpath%20d='M205.98%20267.077L255.382%20219.164L305.623%20267.166C312.126%20273.38%20311.661%20283.902%20304.633%20289.517L256.311%20328.127L207.134%20289.418C200.067%20283.855%20199.524%20273.338%20205.98%20267.077Z'%20fill='url(%23paint2)'/%3e%3c/g%3e%3cdefs%3e%3clinearGradient%20id='paint0'%20x1='84.7055'%20y1='106.789'%20x2='291.299'%20y2='410.386'%20gradientUnits='userSpaceOnUse'%3e%3cstop%20stop-color='%2341E5FE'/%3e%3cstop%20offset='1'%20stop-color='%2322D1FE'/%3e%3c/linearGradient%3e%3clinearGradient%20id='paint1'%20x1='267.764'%20y1='256.929'%20x2='454.48'%20y2='412.884'%20gradientUnits='userSpaceOnUse'%3e%3cstop%20stop-color='%23026FFA'/%3e%3cstop%20offset='.971154'%20stop-color='%230055FC'/%3e%3c/linearGradient%3e%3clinearGradient%20id='paint2'%20x1='214.831'%20y1='287.266'%20x2='305.53'%20y2='282.003'%20gradientUnits='userSpaceOnUse'%3e%3cstop%20stop-color='%232889FA'/%3e%3cstop%20offset='1'%20stop-color='%23268DFF'/%3e%3c/linearGradient%3e%3cclipPath%20id='clip0'%3e%3crect%20width='512'%20height='512'%20fill='white'/%3e%3c/clipPath%3e%3c/defs%3e%3c/svg%3e";
+
+    const root = document.documentElement;
+    const isMac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
+    const modifier = isMac ? "⌘" : "Ctrl+";
+    root.dataset.platform = isMac ? "macos" : "windows";
+    document.querySelectorAll("[data-logo]").forEach((image) => { image.src = BRAND_LOGO; });
+    document.getElementById("searchShortcut").textContent = isMac ? "⌘K" : "Ctrl K";
+    document.querySelector('[data-shortcut="new"]').textContent = isMac ? "⌘N" : "Ctrl + N";
+    document.querySelector('[data-shortcut="search"]').textContent = isMac ? "⌘K" : "Ctrl + K";
+    document.querySelector('[data-shortcut="settings"]').textContent = isMac ? "⌘," : "Ctrl + ,";
+
+    const appShell = document.getElementById("appShell");
+    const sidebar = document.getElementById("sidebar");
+    const workspaceBody = document.getElementById("workspaceBody");
+    const conversationScroll = document.getElementById("conversationScroll");
+    const composerInput = document.getElementById("composerInput");
+    const sendButton = document.getElementById("sendButton");
+    const sendButtonIcon = document.getElementById("sendButtonIcon");
+    const emptyState = document.getElementById("emptyState");
+    const messages = document.getElementById("messages");
+    const conversationTitle = document.getElementById("conversationTitle");
+    const projectTitle = document.getElementById("projectTitle");
+    const previewTitle = document.getElementById("previewTitle");
+    const previewContent = document.getElementById("previewContent");
+    const previewPane = document.getElementById("previewPane");
+    const previewResizer = document.getElementById("previewResizer");
+    const previewToggleButton = document.getElementById("previewToggleButton");
+    const fullscreenPreviewButton = document.getElementById("fullscreenPreviewButton");
+    const programmingProjectGroup = document.getElementById("programmingProjectGroup");
+    const websiteSessionRow = document.getElementById("websiteSessionRow");
+    const jingguanBuildSessionRow = document.getElementById("jingguanBuildSessionRow");
+    const modelMenu = document.getElementById("modelMenu");
+    const modelButton = document.getElementById("modelButton");
+    const modelButtonLabel = document.getElementById("modelButtonLabel");
+    const addProjectButton = document.getElementById("addProjectButton");
+    const projectAddMenu = document.getElementById("projectAddMenu");
+    const projectDirectoryInput = document.getElementById("projectDirectoryInput");
+    const addProjectLayer = document.getElementById("addProjectLayer");
+    const settingsLayer = document.getElementById("settingsLayer");
+    const projectNameInput = document.getElementById("projectNameInput");
+    const createProjectSubmit = document.getElementById("createProjectSubmit");
+    const projectNameError = document.getElementById("projectNameError");
+    const toastRegion = document.getElementById("toastRegion");
+    const attachmentChip = document.getElementById("attachmentChip");
+    const attachmentName = document.getElementById("attachmentName");
+    const fileInput = document.getElementById("fileInput");
+    const licenseGate = document.getElementById("licenseGate");
+    const enterAppButton = document.getElementById("enterAppButton");
+    let selectedModel = "DeepSeek V4";
+    let activeAttachment = null;
+    let lastModalTrigger = null;
+    let isComposing = false;
+    let isGenerating = false;
+    let launchSeconds = 4;
+    let launchTimer = null;
+    let activeSession = null;
+    let quickRunId = 0;
+    let quickTimers = [];
+    let messageTimer = null;
+    let activeThinkingMessage = null;
+    let previewResizeState = null;
+    let preferredPreviewWidth = 440;
+    let jingguanBuildPhase = "idle";
+    const sessionHistories = new Map();
+
+    const SESSION_AI = "AI资讯小程序";
+    const SESSION_WEBSITE = "AI编程教育小程序";
+    const SESSION_WORK = "工作安排";
+    const SESSION_JINGGUAN = "经营问数需求探讨";
+    const SESSION_JINGGUAN_BUILD = "经营问数平台搭建";
+    const JINGGUAN_TEST_URL = "http://tgdataxai.schkzy.com:8088/";
+    const JINGGUAN_LOCAL_URL = "coo.html";
+    const JINGGUAN_DEFAULT_PROMPT = "今天需要我帮你做什么吗";
+    const DEFAULT_PROMPT = "今天需要我帮你做些什么?@引用对话文件，/调用技能与指令";
+    const WEBSITE_PROMPT = "帮我设计并生成一个完整可演示的 AI 编程教育品牌官网首页。品牌面向 8-16 岁孩子及其家长，核心理念是让孩子借助 AI 和代码完成真实作品，在创造中建立逻辑思维、表达能力和解决问题的信心。整体要有科技感、未来感和创造力，但不要冰冷，也不要像传统培训机构广告。请使用清晰的品牌主视觉、孩子作品展示、学习路径、课程特色、家长可见的成长反馈、教师与安全保障、学员案例和体验课报名入口。首页需要兼顾品牌信任、内容可读性和报名转化，文案真诚克制，避免夸张承诺。请直接生成一个结构完整、视觉精致、可以马上预览和继续修改的官网首页。";
+    const JINGGUAN_BUILD_PROMPT = "基于我们之前在「经营问数项目」中已经讨论并确认的业务背景，请帮我搭建一套面向销售经营管理团队的经营问数平台。平台继续使用「经管之星」这个产品名称，围绕销售台账统一管理、自然语言智能问数、经营指标分析、风险项目识别和周期汇报展开。请先结合项目历史梳理已有需求与数据口径，给出清晰的首版建设方案，包括目标用户、核心业务流程、功能模块、关键页面、权限范围和实施步骤；对于需要我决定的范围先明确提出，不要直接开始建设。方案确认后，再生成一个可以实际打开和体验的平台。";
+    const JINGGUAN_PLAN_STAGES = [
+      "正在读取「经营问数项目」的历史上下文…",
+      "正在还原已确认的业务目标与角色权限…",
+      "正在梳理台账口径、问数场景与汇报链路…",
+      "正在形成可确认的首版建设方案…"
+    ];
+    const JINGGUAN_PLAN_DETAILS = [
+      "检索此前关于销售台账、AI 问数、周期汇报和系统管理的讨论。",
+      "归纳销售人员、区域负责人、经管人员和管理员的使用边界。",
+      "把经营指标、异常识别、自然语言查询和结果追溯串成完整流程。",
+      "明确首版范围、页面结构、建设顺序和需要用户确认的关键假设。"
+    ];
+    const JINGGUAN_BUILD_STAGES = [
+      "正在锁定已确认方案与数据范围…",
+      "正在搭建经营驾驶舱与销售台账…",
+      "正在配置 AI 问数、口径说明与结果追溯…",
+      "正在接入周期汇报和角色权限…",
+      "正在完成联调检查并发布访问地址…"
+    ];
+    const JINGGUAN_BUILD_DETAILS = [
+      "固定首版模块、用户角色和核心指标，避免范围在建设中漂移。",
+      "生成经营首页、2025/2026 商业市场台账与 PPL 明细页面。",
+      "配置常用问题、自然语言查询、筛选条件和明细结果。",
+      "串联月度趋势、区域对比、重点项目与数据权限。",
+      "检查页面导航、关键交互、数据展示和线上访问状态。"
+    ];
+    const QUICK_ACTIONS = {
+      miniapp: {
+        session: SESSION_AI,
+        prompt: "帮我做个企业级应用落地资讯小程序，先用轻量原型验证方向。",
+        stages: ["正在理解小程序的产品目标…", "正在读取当前项目上下文…", "正在生成首页结构与内容预览…"],
+        detail: ["识别目标用户、商业场景和核心价值。", "提取商业打法、落地案例和最新资讯。", "构建今日判断、栏目导航和精选内容。"]
+      },
+      website: {
+        session: SESSION_WEBSITE,
+        prompt: WEBSITE_PROMPT,
+        stages: ["正在分析品牌定位与用户旅程…", "正在编写首页结构与视觉组件…", "正在联调响应式布局与预览页面…"],
+        detail: ["梳理家长决策、孩子兴趣与品牌信任的关键触点。", "逐步生成主视觉、作品展示、学习路径和体验课入口。", "检查内容层级、响应式布局、交互状态和转化路径。"]
+      },
+      work: {
+        session: SESSION_WORK,
+        prompt: "查看我的工作计划，帮我按优先级整理一下。",
+        stages: ["正在读取本周工作记录…", "正在识别截止时间和阻塞项…", "正在整理优先级与今日待办…"],
+        detail: ["汇总当前项目与时间节点。", "区分必须推进、需跟进和可延后任务。", "生成 P0-P2 建议和当日时间表。"]
+      },
+      report: {
+        session: SESSION_WORK,
+        prompt: "基于当前项目，帮我生成一份汇报与执行计划。",
+        stages: ["正在汇总项目进展与问题…", "正在组织汇报结构…", "正在生成执行计划与时间节点…"],
+        detail: ["提取目标、已完成项与当前风险。", "编排目标、改动和下一步三部分内容。", "输出优先级、负责人和关键时间。"]
+      }
+    };
+
+    function icon(id, className = "icon icon-16") {
+      return `<svg class="${className}" aria-hidden="true"><use href="#${id}"></use></svg>`;
+    }
+
+    function showToast(title, description = "", type = "info", duration = 3800) {
+      const toast = document.createElement("div");
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `<div class="toast-icon">${icon(type === "success" ? "i-check" : type === "error" ? "i-info" : "i-info", "icon")}</div><div class="toast-copy"><strong></strong><span></span></div>`;
+      toast.querySelector("strong").textContent = title;
+      toast.querySelector("span").textContent = description;
+      if (!description) toast.querySelector("span").hidden = true;
+      toastRegion.prepend(toast);
+      while (toastRegion.children.length > 3) toastRegion.lastElementChild.remove();
+      if (duration) window.setTimeout(() => toast.remove(), duration);
+    }
+
+    function updateLaunchButton() {
+      enterAppButton.textContent = `进入码多多（${launchSeconds}）`;
+    }
+
+    function enterApp() {
+      if (licenseGate.hidden || licenseGate.classList.contains("is-leaving")) return;
+      window.clearInterval(launchTimer);
+      enterAppButton.disabled = true;
+      enterAppButton.textContent = "正在进入…";
+      licenseGate.classList.add("is-leaving");
+      appShell.inert = false;
+      appShell.removeAttribute("aria-hidden");
+      window.setTimeout(() => {
+        licenseGate.hidden = true;
+        setPreview(false);
+        document.getElementById("conversationScroll").focus({ preventScroll: true });
+      }, 180);
+    }
+
+    function startLaunchCountdown() {
+      appShell.inert = true;
+      appShell.setAttribute("aria-hidden", "true");
+      updateLaunchButton();
+      enterAppButton.focus();
+      launchTimer = window.setInterval(() => {
+        launchSeconds -= 1;
+        if (launchSeconds <= 0) enterApp();
+        else updateLaunchButton();
+      }, 1000);
+    }
+
+    function setPreview(open) {
+      if (open) previewPane.hidden = false;
+      workspaceBody.classList.toggle("preview-visible", open);
+      previewPane.inert = !open;
+      previewPane.setAttribute("aria-hidden", String(!open));
+      if (!open) {
+        setPreviewFullscreen(false);
+        previewPane.hidden = true;
+      }
+      previewToggleButton.classList.toggle("active", open);
+      previewToggleButton.setAttribute("aria-label", open ? "关闭任务预览" : "打开任务预览");
+    }
+
+    function setPreviewFullscreen(fullscreen) {
+      const active = Boolean(fullscreen);
+      if (active && !workspaceBody.classList.contains("preview-visible")) setPreview(true);
+      previewPane.classList.toggle("preview-fullscreen", active);
+      document.body.classList.toggle("preview-fullscreen-active", active);
+      fullscreenPreviewButton.classList.toggle("active", active);
+      fullscreenPreviewButton.setAttribute("aria-pressed", String(active));
+      fullscreenPreviewButton.setAttribute("aria-label", active ? "退出全屏预览" : "全屏预览");
+      fullscreenPreviewButton.title = active ? "退出全屏预览（Esc）" : "全屏预览";
+      fullscreenPreviewButton.querySelector("use").setAttribute("href", active ? "#i-collapse" : "#i-expand");
+      previewResizer.tabIndex = active ? -1 : 0;
+      previewResizer.setAttribute("aria-hidden", String(active));
+    }
+
+    function getPreviewWidthBounds() {
+      const min = 360;
+      const conversationMin = window.innerWidth >= 1280 ? 420 : 340;
+      const max = Math.max(min, Math.min(720, workspaceBody.clientWidth - conversationMin));
+      return { min, max };
+    }
+
+    function setPreviewWidth(width, persist = false) {
+      const { min, max } = getPreviewWidthBounds();
+      const nextWidth = Math.round(Math.max(min, Math.min(max, width)));
+      root.style.setProperty("--preview-width", `${nextWidth}px`);
+      previewResizer.setAttribute("aria-valuemin", String(min));
+      previewResizer.setAttribute("aria-valuemax", String(max));
+      previewResizer.setAttribute("aria-valuenow", String(nextWidth));
+      if (persist) {
+        preferredPreviewWidth = nextWidth;
+        try { localStorage.setItem("mdd-preview-width", String(nextWidth)); } catch (_) {}
+      }
+    }
+
+    function restorePreviewWidth() {
+      let width = 440;
+      try { width = Number(localStorage.getItem("mdd-preview-width")) || width; } catch (_) {}
+      preferredPreviewWidth = width;
+      setPreviewWidth(width);
+    }
+
+    function finishPreviewResize(event) {
+      if (!previewResizeState || event.pointerId !== previewResizeState.pointerId) return;
+      previewResizeState = null;
+      document.body.classList.remove("preview-resizing");
+      const width = parseFloat(getComputedStyle(root).getPropertyValue("--preview-width"));
+      setPreviewWidth(width, true);
+    }
+
+    function syncSidebarForViewport() {
+      if (window.innerWidth >= 960) appShell.classList.remove("sidebar-expanded", "sidebar-open");
+      if (window.innerWidth < 800) appShell.classList.remove("sidebar-expanded", "sidebar-collapsed");
+      updateSidebarToggleLabel();
+      syncSidebarAvailability();
+    }
+
+    function syncSidebarAvailability() {
+      const hiddenDrawer = window.innerWidth < 800 && !appShell.classList.contains("sidebar-open");
+      sidebar.inert = hiddenDrawer;
+      sidebar.setAttribute("aria-hidden", String(hiddenDrawer));
+    }
+
+    function updateSidebarToggleLabel() {
+      const button = document.getElementById("sidebarToggleButton");
+      const expanded = window.innerWidth >= 960 ? !appShell.classList.contains("sidebar-collapsed") : appShell.classList.contains("sidebar-expanded");
+      button.setAttribute("aria-label", expanded ? "收起侧边栏" : "展开侧边栏");
+      button.title = expanded ? "收起侧边栏" : "展开侧边栏";
+    }
+
+    function toggleSidebar() {
+      if (window.innerWidth < 800) appShell.classList.toggle("sidebar-open");
+      else if (window.innerWidth < 960) appShell.classList.toggle("sidebar-expanded");
+      else appShell.classList.toggle("sidebar-collapsed");
+      updateSidebarToggleLabel();
+      syncSidebarAvailability();
+    }
+
+    function openModal(layer, trigger) {
+      closeModelMenu();
+      lastModalTrigger = trigger || document.activeElement;
+      layer.hidden = false;
+      document.getElementById("appShell").inert = true;
+      document.body.style.overflow = "hidden";
+      const focusTarget = layer.querySelector("input:not([type=hidden]), button, select, textarea");
+      window.requestAnimationFrame(() => focusTarget?.focus());
+    }
+
+    function closeModal(layer) {
+      layer.hidden = true;
+      document.getElementById("appShell").inert = false;
+      document.body.style.overflow = "";
+      lastModalTrigger?.focus();
+    }
+
+    function openSettings(view = "appearance", trigger) {
+      switchSettingsView(view);
+      openModal(settingsLayer, trigger);
+    }
+
+    function switchSettingsView(view) {
+      const labels = {
+        appearance: ["外观", "调整主题和界面密度"], chat: ["聊天", "控制生成和上下文行为"], notifications: ["通知", "选择需要提醒的任务状态"],
+        sessions: ["会话", "管理历史记录与新会话行为"], shortcuts: ["快捷键", "查看当前系统的常用快捷键"], projects: ["项目", "定义新项目的默认行为"],
+        models: ["模型", "管理模型与可用额度"], usage: ["用量", "查看试用授权和 Token 余额"]
+      };
+      document.querySelectorAll("[data-settings-view]").forEach((button) => button.setAttribute("aria-selected", String(button.dataset.settingsView === view)));
+      document.querySelectorAll("[data-settings-section]").forEach((section) => { section.hidden = section.dataset.settingsSection !== view; });
+      document.getElementById("settingsTitle").textContent = `设置 · ${labels[view][0]}`;
+      document.getElementById("settingsSubtitle").textContent = labels[view][1];
+    }
+
+    function setTheme(source) {
+      const systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      const resolved = source === "system" ? (systemDark ? "dark" : "light") : source;
+      root.dataset.theme = resolved;
+      root.dataset.themeSource = source;
+      try { localStorage.setItem("mdd-theme-v2", source); } catch (_) {}
+    }
+
+    function restoreTheme() {
+      let theme = "dark";
+      try { theme = localStorage.getItem("mdd-theme-v2") || "dark"; } catch (_) {}
+      const control = document.querySelector(`input[name="theme"][value="${theme}"]`);
+      if (control) control.checked = true;
+      setTheme(theme);
+    }
+
+    function updateComposerState() {
+      composerInput.style.height = "auto";
+      composerInput.style.height = `${Math.min(composerInput.scrollHeight, 160)}px`;
+      sendButton.disabled = isGenerating ? false : !composerInput.value.trim();
+      sendButton.classList.toggle("is-generating", isGenerating);
+      sendButton.setAttribute("aria-label", isGenerating ? "暂停生成" : "发送");
+      sendButton.title = isGenerating ? "暂停生成" : "发送";
+      sendButtonIcon.setAttribute("href", isGenerating ? "#i-pause" : "#i-arrow-up");
+    }
+
+    function setComposerPrompt(useWebsitePrompt = false) {
+      composerInput.placeholder = DEFAULT_PROMPT;
+      composerInput.setAttribute("aria-label", DEFAULT_PROMPT);
+      if (activeSession === SESSION_JINGGUAN) composerInput.value = "打开页面";
+      else composerInput.value = useWebsitePrompt ? WEBSITE_PROMPT : "";
+      updateComposerState();
+    }
+
+    function closeModelMenu() {
+      modelMenu.hidden = true;
+      modelButton.setAttribute("aria-expanded", "false");
+    }
+
+    function closeProjectAddMenu() {
+      projectAddMenu.hidden = true;
+      addProjectButton.setAttribute("aria-expanded", "false");
+    }
+
+    function openProjectAddMenu() {
+      closeModelMenu();
+      const rect = addProjectButton.getBoundingClientRect();
+      projectAddMenu.hidden = false;
+      addProjectButton.setAttribute("aria-expanded", "true");
+      const menuWidth = projectAddMenu.offsetWidth;
+      const menuHeight = projectAddMenu.offsetHeight;
+      const left = Math.max(8, Math.min(rect.right - menuWidth, window.innerWidth - menuWidth - 8));
+      const top = rect.bottom + 8 + menuHeight <= window.innerHeight
+        ? rect.bottom + 8
+        : Math.max(8, rect.top - menuHeight - 8);
+      projectAddMenu.style.left = `${left}px`;
+      projectAddMenu.style.top = `${top}px`;
+    }
+
+    function resetProjectForm(trigger = addProjectButton) {
+      projectNameInput.value = "";
+      projectNameInput.removeAttribute("aria-invalid");
+      projectNameError.hidden = true;
+      createProjectSubmit.disabled = true;
+      openModal(addProjectLayer, trigger);
+      window.requestAnimationFrame(() => projectNameInput.focus());
+    }
+
+    function addProjectToSidebar(name, description) {
+      const normalizedName = name.trim();
+      const duplicate = Array.from(document.querySelectorAll(".project-group")).find((group) =>
+        group.dataset.project?.toLocaleLowerCase() === normalizedName.toLocaleLowerCase()
+      );
+      if (duplicate) {
+        duplicate.hidden = false;
+        duplicate.dataset.collapsed = "false";
+        duplicate.querySelector(".nav-row")?.setAttribute("aria-expanded", "true");
+        showToast("项目已存在", `${normalizedName} 已在项目列表中。`, "info");
+        return false;
+      }
+
+      const project = document.createElement("div");
+      project.className = "project-group";
+      project.dataset.project = normalizedName;
+      project.dataset.collapsed = "false";
+      project.innerHTML = `<div class="project-heading"><button class="nav-row" type="button" aria-expanded="true">${icon("i-folder")}<span class="project-label"></span></button><button class="row-action" type="button" aria-label="添加会话" title="添加会话">${icon("i-plus")}</button></div><button class="session-row" type="button" data-session="新会话" aria-current="page"><span class="session-label">新会话</span></button>`;
+      project.querySelector(".project-label").textContent = normalizedName;
+      project.querySelector(".nav-row").setAttribute("aria-label", normalizedName);
+      project.querySelector(".row-action").setAttribute("aria-label", `在${normalizedName}中添加会话`);
+      document.querySelectorAll(".session-row").forEach((row) => row.removeAttribute("aria-current"));
+      document.querySelector(".empty-projects")?.remove();
+      document.getElementById("projectSearch").value = "";
+      document.querySelectorAll(".project-group").forEach((group) => { group.hidden = false; });
+      document.getElementById("projectList").appendChild(project);
+      project.querySelector(".session-row").setAttribute("aria-current", "page");
+      openNewSession(normalizedName);
+      project.querySelector(".session-row").setAttribute("aria-current", "page");
+      showToast("项目已添加", description || `${normalizedName} 已添加到项目列表。`, "success");
+      return true;
+    }
+
+    function addUserMessage(text) {
+      const message = document.createElement("article");
+      message.className = "message user";
+      const bubble = document.createElement("div");
+      bubble.className = "user-bubble";
+      bubble.textContent = text;
+      message.appendChild(bubble);
+      messages.appendChild(message);
+    }
+
+    function addThinkingMessage() {
+      const message = document.createElement("article");
+      message.className = "message assistant";
+      message.innerHTML = `<div class="assistant-message"><div class="message-meta"><img class="assistant-mark" src="${BRAND_LOGO}" alt=""><strong>${selectedModel}</strong><span class="mode-tag">build</span></div><div class="thinking"><span class="spinner" aria-hidden="true"></span><span>正在理解你的问题…</span></div></div>`;
+      messages.appendChild(message);
+      return message;
+    }
+
+    function finishAssistantMessage(message, prompt) {
+      const isPlan = /汇报|计划|进展|界面|项目/.test(prompt);
+      message.innerHTML = `<div class="assistant-message"><div class="message-meta"><img class="assistant-mark" src="${BRAND_LOGO}" alt=""><strong>${selectedModel}</strong><span class="mode-tag">build</span></div><div class="assistant-copy"><p>我已结合当前项目上下文完成初步梳理。建议先用一份轻量结果验证方向，再逐步补充细节。</p>${isPlan ? `<h2>本轮执行重点</h2><div class="tool-list"><div class="tool-row">${icon("i-check")}<strong>范围确认</strong><span>锁定目标用户与核心任务</span></div><div class="tool-row">${icon("i-file")}<strong>内容结构</strong><span>整理关键信息与优先级</span></div><div class="tool-row">${icon("i-presentation")}<strong>可视化预览</strong><span>生成可检查的首页方案</span></div></div><p>右侧预览已更新。下一步可以继续细化内容模块，或根据反馈调整信息密度。</p>` : `<p>我会优先给出明确结论、风险和可执行的下一步，并保留原始资料中的关键依据。</p>`}</div><div class="message-actions"><button class="icon-button small copy-message" type="button" aria-label="复制回答" title="复制">${icon("i-copy")}</button><button class="icon-button small" type="button" aria-label="重新生成" title="重新生成">${icon("i-refresh")}</button></div></div>`;
+      if (isPlan && !previewToggleButton.disabled && document.getElementById("autoPreviewToggle").checked) setPreview(true);
+    }
+
+    function setJingguanBuildSessionLabel(label, loading = false) {
+      jingguanBuildSessionRow.hidden = false;
+      jingguanBuildSessionRow.classList.toggle("is-renaming", loading);
+      jingguanBuildSessionRow.querySelector(".session-label").textContent = label;
+      jingguanBuildSessionRow.setAttribute("aria-label", label);
+    }
+
+    function prepareJingguanBuildSession() {
+      cancelQuickGeneration();
+      jingguanBuildPhase = "idle";
+      setJingguanBuildSessionLabel("新会话");
+      selectImportedSessionContext(SESSION_JINGGUAN_BUILD);
+      messages.replaceChildren();
+      setPreview(false);
+      previewToggleButton.disabled = true;
+      previewToggleButton.title = "确认方案并完成搭建后可查看";
+      composerInput.value = JINGGUAN_BUILD_PROMPT;
+      composerInput.placeholder = DEFAULT_PROMPT;
+      composerInput.setAttribute("aria-label", DEFAULT_PROMPT);
+      updateComposerState();
+      composerInput.focus();
+    }
+
+    function startJingguanBuildSessionNaming(runId) {
+      setJingguanBuildSessionLabel("正在读取项目…", true);
+      quickTimers.push(
+        window.setTimeout(() => {
+          if (runId === quickRunId) setJingguanBuildSessionLabel("正在理解需求…", true);
+        }, 2300),
+        window.setTimeout(() => {
+          if (runId === quickRunId) setJingguanBuildSessionLabel("正在生成标题…", true);
+        }, 5600),
+        window.setTimeout(() => {
+          if (runId === quickRunId) setJingguanBuildSessionLabel(SESSION_JINGGUAN_BUILD);
+        }, 9000)
+      );
+    }
+
+    function jingguanGenerationMessage() {
+      const message = document.createElement("article");
+      message.className = "message assistant";
+      message.dataset.generationMessage = "true";
+      messages.appendChild(message);
+      return message;
+    }
+
+    function renderJingguanGenerationStage(message, stages, details, stageIndex, mode = "thinking") {
+      const steps = stages.map((label, index) => {
+        const state = index < stageIndex ? "done" : index === stageIndex ? "active" : "pending";
+        return `<div class="generation-step" data-state="${state}">${label.replace("正在", "").replace("…", "")}</div>`;
+      }).join("");
+      message.innerHTML = `<div class="assistant-message"><div class="message-meta"><img class="assistant-mark" src="${BRAND_LOGO}" alt=""><strong>DeepSeek V4 Flash</strong><span class="mode-tag">${mode}</span></div><div class="generation-status" role="status" aria-live="polite"><div class="generation-head"><span class="spinner" aria-hidden="true"></span><div class="generation-copy"><strong>${stages[stageIndex]}</strong><span>${details[stageIndex]}</span></div></div><div class="generation-steps">${steps}</div></div></div>`;
+      if (activeSession === SESSION_JINGGUAN_BUILD) sessionHistories.set(SESSION_JINGGUAN_BUILD, messages.innerHTML);
+      scrollConversationToBottom();
+    }
+
+    function completeJingguanPlan(message, runId) {
+      if (runId !== quickRunId || activeSession !== SESSION_JINGGUAN_BUILD) return;
+      message.outerHTML = assistantMessageHtml(`<p>我先基于这个项目此前的讨论，把已经明确的部分和本轮需要确认的范围分开。现有上下文足够支撑首版建设，不需要从零重新定义产品。</p><h3>已从项目历史中确认</h3><div class="answer-list"><div class="answer-row"><strong>产品定位</strong><span>面向销售经营管理团队的台账管理、AI 智能问数与周期经营分析平台。</span></div><div class="answer-row"><strong>核心用户</strong><span>销售人员、区域负责人、经管人员和系统管理员，按角色控制数据范围。</span></div><div class="answer-row"><strong>数据基础</strong><span>2025 商业市场、2026 商业市场和 PPL 明细三类台账。</span></div><div class="answer-row"><strong>管理目标</strong><span>统一经营口径，快速发现长期未更新、回款延期和低概率大项目等风险。</span></div></div><h3>建议的首版建设方案</h3><div class="tool-list"><div class="tool-row">${icon("i-chart")}<strong>经营驾驶舱</strong><span>目标、签约、预测、覆盖率、重点项目和风险提醒</span></div><div class="tool-row">${icon("i-list")}<strong>销售台账</strong><span>统一筛选、固定表头、明细查看、导入导出与记录追踪</span></div><div class="tool-row">${icon("i-message")}<strong>AI 问数</strong><span>常用问题、自然语言查询、口径说明、结果明细和继续追问</span></div><div class="tool-row">${icon("i-presentation")}<strong>周期汇报</strong><span>月度趋势、区域对比、产品结构、重点项目与风险结论</span></div><div class="tool-row">${icon("i-settings")}<strong>权限管理</strong><span>本人、本区域、全量数据三层范围与管理员配置</span></div></div><h3>本轮需要你确认</h3><p>建议首版沿用现有台账字段和权限边界，优先完成“经营首页 + 台账管理 + AI 问数 + 周期汇报 + 系统管理”的完整闭环，暂不扩展审批流、移动端和外部 CRM 集成。</p><div class="confirmation-panel"><span>确认后将按上述范围开始搭建，并在完成后生成可直接访问的线上地址。</span><button class="confirmation-button" type="button" data-confirm-jingguan-build>${icon("i-check")}<span>确认并开始搭建</span></button></div>`, "plan");
+      jingguanBuildPhase = "awaiting-confirmation";
+      sessionHistories.set(SESSION_JINGGUAN_BUILD, messages.innerHTML);
+      composerInput.disabled = false;
+      composerInput.value = "";
+      composerInput.placeholder = DEFAULT_PROMPT;
+      composerInput.setAttribute("aria-label", DEFAULT_PROMPT);
+      isGenerating = false;
+      quickTimers = [];
+      updateComposerState();
+      scrollConversationToBottom();
+      composerInput.focus({ preventScroll: true });
+    }
+
+    function startJingguanPlan(prompt) {
+      cancelQuickGeneration();
+      const runId = ++quickRunId;
+      jingguanBuildPhase = "planning";
+      startJingguanBuildSessionNaming(runId);
+      isGenerating = true;
+      emptyState.hidden = true;
+      addUserMessage(prompt);
+      const message = jingguanGenerationMessage();
+      composerInput.value = "";
+      composerInput.disabled = true;
+      updateComposerState();
+      renderJingguanGenerationStage(message, JINGGUAN_PLAN_STAGES, JINGGUAN_PLAN_DETAILS, 0);
+      quickTimers.push(
+        window.setTimeout(() => renderJingguanGenerationStage(message, JINGGUAN_PLAN_STAGES, JINGGUAN_PLAN_DETAILS, 1), 3000),
+        window.setTimeout(() => renderJingguanGenerationStage(message, JINGGUAN_PLAN_STAGES, JINGGUAN_PLAN_DETAILS, 2), 6200),
+        window.setTimeout(() => renderJingguanGenerationStage(message, JINGGUAN_PLAN_STAGES, JINGGUAN_PLAN_DETAILS, 3), 9400),
+        window.setTimeout(() => completeJingguanPlan(message, runId), 12600)
+      );
+    }
+
+    function jingguanBuildPreviewHtml(stageIndex) {
+      const progress = [14, 34, 57, 78, 94][stageIndex];
+      const modules = [
+        ["project-context.md", "requirements.md"],
+        ["dashboard.html", "ledger-table.js"],
+        ["ai-query.js", "metric-rules.json"],
+        ["reports.js", "permissions.json"],
+        ["release-check.md", "production"]
+      ];
+      return `<section class="coding-preview" aria-label="经管之星实时搭建预览"><header class="coding-preview-head"><strong>JINGGUAN BUILD WORKSPACE</strong><span>BUILDING · ${progress}%</span></header><div class="coding-workbench"><aside class="coding-files"><strong>EXPLORER</strong><span class="active">经管之星/</span><span>dashboard/</span><span>ledger/</span><span>ai-query/</span><span>reports/</span></aside><div class="coding-editor"><div class="coding-tab">${modules[stageIndex][0]} · 正在处理</div><div class="coding-code"><div class="coding-line"><b>01</b><span><span class="tag">project</span>: <span class="text">"经管之星"</span></span></div><div class="coding-line"><b>02</b><span><span class="attr">module</span>: <span class="text">"${modules[stageIndex][0]}"</span></span></div><div class="coding-line"><b>03</b><span><span class="attr">dependency</span>: <span class="text">"${modules[stageIndex][1]}"</span></span></div><div class="coding-line"><b>04</b><span><span class="attr">status</span>: <span class="green">building</span><i class="coding-caret"></i></span></div></div><div class="coding-live-preview"><div class="coding-live-nav"><strong>经管之星</strong><span>台账管理</span><span>AI 问数</span><span>周期汇报</span></div><section class="coding-live-hero"><small>经营数据中心 · BUILD ${stageIndex + 1}/5</small><h3>${JINGGUAN_BUILD_STAGES[stageIndex].replace("正在", "").replace("…", "")}</h3><p>${JINGGUAN_BUILD_DETAILS[stageIndex]}</p></section></div></div></div><footer class="coding-stage-status" style="--coding-progress:${progress}%"><strong>${JINGGUAN_BUILD_STAGES[stageIndex]}</strong><span>${JINGGUAN_BUILD_DETAILS[stageIndex]}</span><i></i></footer></section>`;
+    }
+
+    function renderJingguanBuildStage(message, stageIndex, runId) {
+      if (runId !== quickRunId || activeSession !== SESSION_JINGGUAN_BUILD) return;
+      renderJingguanGenerationStage(message, JINGGUAN_BUILD_STAGES, JINGGUAN_BUILD_DETAILS, stageIndex, stageIndex < 2 ? "thinking" : "build");
+      previewTitle.textContent = `经管之星 · Building ${stageIndex + 1}/5`;
+      previewContent.innerHTML = jingguanBuildPreviewHtml(stageIndex);
+      previewToggleButton.disabled = false;
+      previewToggleButton.title = "查看实时搭建过程";
+      setPreview(true);
+    }
+
+    function showJingguanLiveSite() {
+      const localUrl = new URL(JINGGUAN_LOCAL_URL, window.location.href).href;
+      previewTitle.textContent = "经管之星 · 静态页面";
+      previewContent.innerHTML = `<section class="external-preview" aria-label="经管之星静态页面预览"><div class="external-preview-bar"><span class="external-preview-dots" aria-hidden="true"><i></i><i></i><i></i></span><a class="external-preview-url" href="${localUrl}" target="_blank" rel="noopener noreferrer" title="在新页面打开经管之星">${localUrl}</a>${icon("i-external")}</div><iframe src="${localUrl}" title="经管之星静态页面" loading="eager"></iframe></section>`;
+      previewToggleButton.disabled = false;
+      previewToggleButton.title = "经管之星静态页面";
+      setPreview(true);
+    }
+
+    function completeJingguanBuild(message, runId) {
+      if (runId !== quickRunId || activeSession !== SESSION_JINGGUAN_BUILD) return;
+      message.outerHTML = assistantMessageHtml(`<p>经管之星已经按确认的首版范围完成搭建和联调。经营驾驶舱、三类销售台账、AI 智能问数、周期汇报以及角色权限已串成完整使用流程。</p><div class="tool-list"><div class="tool-row">${icon("i-check")}<strong>发布检查</strong><span>页面导航、核心交互与数据展示均已完成检查</span></div><div class="tool-row">${icon("i-external")}<strong>生成页面</strong><a class="external-result-link" href="${JINGGUAN_LOCAL_URL}" target="_blank" rel="noopener noreferrer">打开经管之星</a></div></div><p>我已同时在右侧载入生成的静态页面。你可以直接体验当前版本；接下来如果要调整指标、文案或页面结构，告诉我具体位置即可。</p>`, "build");
+      jingguanBuildPhase = "complete";
+      sessionHistories.set(SESSION_JINGGUAN_BUILD, messages.innerHTML);
+      composerInput.disabled = false;
+      composerInput.value = "";
+      composerInput.placeholder = DEFAULT_PROMPT;
+      composerInput.setAttribute("aria-label", DEFAULT_PROMPT);
+      isGenerating = false;
+      quickTimers = [];
+      updateComposerState();
+      showJingguanLiveSite();
+      scrollConversationToBottom();
+    }
+
+    function startJingguanBuild() {
+      cancelQuickGeneration();
+      const runId = ++quickRunId;
+      jingguanBuildPhase = "building";
+      isGenerating = true;
+      const message = jingguanGenerationMessage();
+      composerInput.value = "";
+      composerInput.disabled = true;
+      updateComposerState();
+      renderJingguanBuildStage(message, 0, runId);
+      quickTimers.push(
+        window.setTimeout(() => renderJingguanBuildStage(message, 1, runId), 3200),
+        window.setTimeout(() => renderJingguanBuildStage(message, 2, runId), 6600),
+        window.setTimeout(() => renderJingguanBuildStage(message, 3, runId), 10100),
+        window.setTimeout(() => renderJingguanBuildStage(message, 4, runId), 13600),
+        window.setTimeout(() => completeJingguanBuild(message, runId), 17100)
+      );
+    }
+
+    function shouldFollowOutput() {
+      return conversationScroll.scrollHeight - conversationScroll.scrollTop - conversationScroll.clientHeight <= 72;
+    }
+
+    function scrollConversationToBottom() {
+      const previousBehavior = conversationScroll.style.scrollBehavior;
+      conversationScroll.style.scrollBehavior = "auto";
+      conversationScroll.scrollTop = conversationScroll.scrollHeight;
+      window.requestAnimationFrame(() => { conversationScroll.style.scrollBehavior = previousBehavior; });
+    }
+
+    function sendMessage() {
+      const text = composerInput.value.trim();
+      if (!text || isGenerating || isComposing) return;
+      if (text === JINGGUAN_BUILD_PROMPT && activeSession !== SESSION_JINGGUAN_BUILD) {
+        prepareJingguanBuildSession();
+        startJingguanPlan(text);
+        return;
+      }
+      if (activeSession === SESSION_JINGGUAN_BUILD && jingguanBuildPhase === "idle") {
+        startJingguanPlan(text);
+        return;
+      }
+      if (activeSession === SESSION_JINGGUAN && text === "打开页面") {
+        const follow = shouldFollowOutput();
+        isGenerating = true;
+        emptyState.hidden = true;
+        addUserMessage(text);
+        const thinking = addThinkingMessage();
+        activeThinkingMessage = thinking;
+        composerInput.value = "";
+        composerInput.placeholder = JINGGUAN_DEFAULT_PROMPT;
+        composerInput.setAttribute("aria-label", JINGGUAN_DEFAULT_PROMPT);
+        updateComposerState();
+        if (follow) conversationScroll.scrollTop = conversationScroll.scrollHeight;
+        messageTimer = window.setTimeout(() => {
+          if (activeThinkingMessage !== thinking) return;
+          thinking.innerHTML = `<div class="assistant-message"><div class="message-meta"><img class="assistant-mark" src="${BRAND_LOGO}" alt=""><strong>${selectedModel}</strong><span class="mode-tag">build</span></div><div class="assistant-copy"><p>好的，测试页面已在右侧打开。我已经载入真实访问地址，你可以直接检查页面内容和交互。需要调整布局、文案或功能时，告诉我具体位置，我会继续修改。</p></div><div class="message-actions"><button class="icon-button small copy-message" type="button" aria-label="复制回答" title="复制">${icon("i-copy")}</button><button class="icon-button small" type="button" aria-label="重新生成" title="重新生成">${icon("i-refresh")}</button></div></div>`;
+          showJingguanTestSite();
+          sessionHistories.set(SESSION_JINGGUAN, messages.innerHTML);
+          messageTimer = null;
+          activeThinkingMessage = null;
+          isGenerating = false;
+          updateComposerState();
+          if (follow) conversationScroll.scrollTop = conversationScroll.scrollHeight;
+        }, 900);
+        return;
+      }
+      if (text === WEBSITE_PROMPT) {
+        composerInput.value = "";
+        updateComposerState();
+        runQuickAction("website");
+        return;
+      }
+      const follow = shouldFollowOutput();
+      isGenerating = true;
+      emptyState.hidden = true;
+      addUserMessage(text);
+      const thinking = addThinkingMessage();
+      activeThinkingMessage = thinking;
+      composerInput.value = "";
+      updateComposerState();
+      if (activeAttachment) clearAttachment();
+      if (follow) conversationScroll.scrollTop = conversationScroll.scrollHeight;
+      messageTimer = window.setTimeout(() => {
+        if (activeThinkingMessage !== thinking) return;
+        finishAssistantMessage(thinking, text);
+        messageTimer = null;
+        activeThinkingMessage = null;
+        isGenerating = false;
+        updateComposerState();
+        if (follow) conversationScroll.scrollTop = conversationScroll.scrollHeight;
+      }, 2200);
+    }
+
+    function clearAttachment() {
+      activeAttachment = null;
+      fileInput.value = "";
+      attachmentChip.hidden = true;
+      attachmentName.textContent = "";
+    }
+
+    function addAttachment(file) {
+      if (!file) return;
+      if (file.size > 10 * 1024 * 1024) {
+        showToast("文件过大", "当前原型支持不超过 10 MB 的文件。", "error", 6000);
+        return;
+      }
+      activeAttachment = file;
+      attachmentName.textContent = `${file.name} · ${Math.max(1, Math.round(file.size / 1024))} KB`;
+      attachmentChip.hidden = false;
+      showToast("文件已添加", "发送消息时会一并加入当前上下文。", "success");
+    }
+
+    function userMessageHtml(text) {
+      return `<article class="message user"><div class="user-bubble">${text}</div></article>`;
+    }
+
+    function assistantMessageHtml(content, mode = "build") {
+      return `<article class="message assistant"><div class="assistant-message"><div class="message-meta"><img class="assistant-mark" src="${BRAND_LOGO}" alt=""><strong>DeepSeek V4 Flash</strong><span class="mode-tag">${mode}</span></div><div class="assistant-copy">${content}</div><div class="message-actions"><button class="icon-button small copy-message" type="button" aria-label="复制回答" title="复制">${icon("i-copy")}</button><button class="icon-button small" type="button" aria-label="重新生成" title="重新生成">${icon("i-refresh")}</button></div></div></article>`;
+    }
+
+    function aiConversationHtml() {
+      return [
+        userMessageHtml("我要做一个企业级应用落地相关的资讯小程序，我是团队负责人，关心商业打法、落地场景、最新资讯。"),
+        assistantMessageHtml(`<p>这个方向不错。我先了解一下你的具体想法，再把小程序的信息结构拆出来。</p><div class="tool-list"><div class="tool-row">${icon("i-file")}<strong>Read File</strong><span>idea-board.md</span></div><div class="tool-row">${icon("i-boxes")}<strong>Read File</strong><span>skills</span></div><div class="tool-row">${icon("i-message")}<strong>Question</strong><span>Asked 3 questions</span></div></div>`, "plan"),
+        userMessageHtml("我主要想先判断这个小程序有没有价值，不想一上来就做太复杂。"),
+        assistantMessageHtml(`<p>明白。那我们先用“轻量原型”验证方向，不先堆功能。第一版重点证明三件事：</p><div class="tool-list"><div class="tool-row">${icon("i-check")}<strong>目标用户</strong><span>是否明确</span></div><div class="tool-row">${icon("i-check")}<strong>内容价值</strong><span>是否值得每天打开</span></div><div class="tool-row">${icon("i-check")}<strong>决策帮助</strong><span>生成内容能否帮助团队判断</span></div></div>`, "plan"),
+        userMessageHtml("那栏目不要太多，先围绕决策层能看懂、能转发。"),
+        assistantMessageHtml(`<p>第一版栏目建议压缩为 3 个主入口，避免像资讯网站一样铺太散：</p><div class="answer-list"><div class="answer-row"><strong>商业打法</strong><span>看别人怎么获客、转化、定价、交付，适合负责人快速吸收打法。</span></div><div class="answer-row"><strong>落地案例</strong><span>看行业案例和结果，帮助判断是否值得在自己公司复用。</span></div><div class="answer-row"><strong>最新资讯</strong><span>只保留和企业应用落地强相关的动态，不做泛资讯堆叠。</span></div></div>`, "plan"),
+        userMessageHtml("首页第一屏应该放什么？"),
+        assistantMessageHtml(`<p>首页第一屏建议不要直接上信息流，而是先给“今日判断”。这样更像情报助手，不像普通新闻小程序。</p><div class="answer-list"><div class="answer-row"><strong>顶部</strong><span>产品名 + 搜索入口</span></div><div class="answer-row"><strong>第一卡片</strong><span>今日重点判断，直接给结论</span></div><div class="answer-row"><strong>第二层</strong><span>商业打法 / 落地案例 / 最新资讯</span></div><div class="answer-row"><strong>下方</strong><span>精选内容卡片，保持少而精</span></div></div>`, "build"),
+        userMessageHtml("可以，先给我生成一个能看的界面。"),
+        assistantMessageHtml(`<p class="font-semibold">好的，为您生成小程序界面。</p><div class="tool-list"><div class="tool-row">${icon("i-external")}<strong>打开预览页面</strong><button class="preview-link" type="button" data-preview-session="${SESSION_AI}">http://127.0.0.1:5174/preview/ai-news-miniapp</button></div><div class="tool-row">${icon("i-panel")}<strong>预览</strong><span>右侧已展开小程序首页</span></div></div>`, "build")
+      ].join("");
+    }
+
+    function websiteConversationHtml() {
+      return [
+        userMessageHtml(WEBSITE_PROMPT),
+        assistantMessageHtml(`<p>好的，为您生成官网首页。</p><div class="tool-list"><div class="tool-row">${icon("i-check")}<strong>定位</strong><span>AI 编程教育 / 创作型学习</span></div><div class="tool-row">${icon("i-palette")}<strong>视觉</strong><span>深色计算界面 + 青色系统状态</span></div><div class="tool-row">${icon("i-external")}<strong>打开预览</strong><button class="preview-link" type="button" data-preview-session="${SESSION_WEBSITE}">http://127.0.0.1:5174/preview/coding-diy-homepage</button></div></div><p>右侧已生成官网首页演示，可继续调整文案、风格和模块。</p>`, "build")
+      ].join("");
+    }
+
+    function workConversationHtml() {
+      return [
+        userMessageHtml("查看我的工作计划，帮我按优先级整理一下。"),
+        assistantMessageHtml(`<p>我先把你的工作计划按“今天必须推进、需要跟进、可延后”三类整理，方便你快速判断先做什么。</p><div class="tool-list"><div class="tool-row">${icon("i-file")}<strong>Read</strong><span>本周工作记录</span></div><div class="tool-row">${icon("i-chart")}<strong>Analyze</strong><span>识别截止时间和阻塞项</span></div></div>`, "plan"),
+        assistantMessageHtml(`<h3>今日优先级建议</h3><div class="priority-list"><div class="priority-item primary"><strong>P0｜产品演示页优化</strong><span>检查启动页、默认页、会话页的跳转和展示状态，确保演示过程顺畅。</span></div><div class="priority-item"><strong>P1｜整理需求变更点</strong><span>把页面文案、会话数据、右侧演示区的调整记录成清单。</span></div><div class="priority-item"><strong>P2｜准备汇报材料</strong><span>将本次优化前后效果整理为 3 页汇报：目标、改动、下一步。</span></div></div>`, "plan"),
+        userMessageHtml("帮我生成一下今天的待办清单。"),
+        assistantMessageHtml(`<h3>今日待办</h3><div class="answer-list"><div class="answer-row"><strong>09:30</strong><span>检查演示页面交互状态</span></div><div class="answer-row"><strong>11:00</strong><span>确认默认页快捷入口跳转</span></div><div class="answer-row"><strong>14:00</strong><span>整理优化记录和问题清单</span></div><div class="answer-row"><strong>17:00</strong><span>输出明日推进计划</span></div></div>`, "todo")
+      ].join("");
+    }
+
+    function jingguanConversationHtml() {
+      return [
+        userMessageHtml("我想做一个销管日常用的管理平台，给卖硬件服务器公司的销售管理人员用，主要做台账数据管理。"),
+        assistantMessageHtml(`<p>可以。我先把它定义为销售经管团队的日常工作台，而不只是一个表格查看器。第一版会围绕“数据进来、过程可查、问题可问、结果可汇报”四条主线展开。</p><div class="answer-list"><div class="answer-row"><strong>使用对象</strong><span>销售管理人员、区域负责人、经营分析人员</span></div><div class="answer-row"><strong>核心任务</strong><span>维护销售台账、发现异常、追踪进度、输出周期汇报</span></div><div class="answer-row"><strong>交付形态</strong><span>单文件 HTML 原型，便于快速评审和持续迭代</span></div></div>`, "plan"),
+        userMessageHtml("产品名称叫「经管之星」，定位是企业级销售经管数据管理、AI 智能问数、周期数据可视化平台。"),
+        assistantMessageHtml(`<p>定位已确认。产品表达会更偏企业经营管理，不做成泛化的聊天机器人。首页突出经营指标和异常提醒，AI 问数负责降低查询门槛，统计汇报负责形成周期性管理视图。</p>`, "plan"),
+        userMessageHtml("首页先放哪些数据比较合适？我们最关心销售规模、项目进度和风险。"),
+        assistantMessageHtml(`<p>首页建议分三层，先看结果，再看过程，最后处理风险：</p><div class="answer-list"><div class="answer-row"><strong>经营结果</strong><span>年度目标、已签金额、预测金额、目标达成率</span></div><div class="answer-row"><strong>过程指标</strong><span>商机数量、重点项目、PPL 覆盖率、阶段转化</span></div><div class="answer-row"><strong>风险提醒</strong><span>长期未更新、预计回款延期、数据字段缺失、低概率大项目</span></div></div>`, "plan"),
+        userMessageHtml("左侧菜单要有：首页、台账管理、AI问数、周期汇报数据统计图、系统管理。台账管理下放 2025 商业市场、2026 商业市场、PPL 明细三个子页面。"),
+        assistantMessageHtml(`<p>菜单层级已整理。台账页面会共用同一套筛选、表格和导入导出框架，避免不同年份的操作方式不一致。</p><div class="tool-list"><div class="tool-row">${icon("i-check")}<strong>一级导航</strong><span>首页 / 台账管理 / AI 问数 / 周期汇报 / 系统管理</span></div><div class="tool-row">${icon("i-check")}<strong>台账子页</strong><span>2025 商业市场 / 2026 商业市场 / PPL 明细</span></div></div>`, "plan"),
+        userMessageHtml("AI 问数不能只是一个聊天框，要让不懂数据库的人也能直接问业务问题。"),
+        assistantMessageHtml(`<p>对。AI 问数页会把自然语言问题转换成明确的统计口径，并展示结论、关键数据和可追溯条件。</p><div class="answer-list"><div class="answer-row"><strong>示例问题</strong><span>“华东区本季度预测金额是多少？”“哪些项目超过 30 天没有更新？”</span></div><div class="answer-row"><strong>结果形式</strong><span>结论摘要、指标卡、明细表、趋势图</span></div><div class="answer-row"><strong>可信机制</strong><span>显示数据范围、筛选条件和口径说明，支持继续追问</span></div></div>`, "plan"),
+        userMessageHtml("周期汇报要能给领导看，至少有月度趋势、区域对比、产品线结构和重点项目。"),
+        assistantMessageHtml(`<p>会按“结论先行”的汇报顺序设计：顶部给本周期摘要，中部展示趋势与结构，底部列出重点项目和风险事项。图表保持可读，不堆过多颜色。</p>`, "plan"),
+        userMessageHtml("系统管理里把账户和权限也做出来。销售只能看自己的，区域负责人看本区域，经管人员看全部。"),
+        assistantMessageHtml(`<p>权限模型会按角色和数据范围两层呈现。</p><div class="answer-list"><div class="answer-row"><strong>销售人员</strong><span>查看本人负责项目，可更新本人台账</span></div><div class="answer-row"><strong>区域负责人</strong><span>查看本区域数据，查看团队汇总与风险</span></div><div class="answer-row"><strong>经管人员</strong><span>查看全量数据，管理导入、口径和汇报</span></div><div class="answer-row"><strong>系统管理员</strong><span>管理账号、角色、权限和基础配置</span></div></div>`, "plan"),
+        userMessageHtml("可以，先生成一个完整原型，我要直接打开看。"),
+        assistantMessageHtml(`<p>原型已经生成，包含登录、首页、三类台账、AI 问数、统计汇报和账户权限管理。点击文件可在右侧查看页面预览。</p><div class="tool-list"><div class="tool-row">${icon("i-file")}<strong>生成文件</strong><button class="preview-link file-link" type="button" data-preview-file="index.html">${icon("i-external")}index.html</button></div><div class="tool-row">${icon("i-check")}<strong>原型状态</strong><span>单文件，可直接打开演示</span></div></div>`, "build"),
+        userMessageHtml("我对现在的 UI 风格不满意，感觉比较粗糙。整体要改成现代企业云平台风格，顶部深色导航栏，左侧白色侧边栏，内容区卡片化。"),
+        assistantMessageHtml(`<p>明白。视觉方向调整为现代企业云平台：顶部深炭灰承载品牌和账户，左侧白色导航强化层级，内容区使用低阴影卡片与清晰留白。主色使用 Material Design 蓝，状态色只用于成功、提醒和风险。</p>`, "plan"),
+        userMessageHtml("导入、导出、导入记录、刷新这些按钮也统一成同一套样式。"),
+        assistantMessageHtml(`<p>已统一操作区：主操作用蓝色实心按钮，导出和刷新使用次级按钮，低频操作收进更多菜单。台账表格同步增加固定表头、斑马纹、横向滚动和空状态。</p><div class="tool-list"><div class="tool-row">${icon("i-file")}<strong>更新文件</strong><button class="preview-link file-link" type="button" data-preview-file="index.html">${icon("i-external")}index.html</button></div><div class="tool-row">${icon("i-palette")}<strong>视觉规范</strong><span>企业蓝 / 深色顶栏 / 白色侧栏 / 卡片内容区</span></div></div>`, "build"),
+        userMessageHtml("AI 问数页再强化一下，最好有常用问题、口径提示和结果导出。"),
+        assistantMessageHtml(`<p>已补充三个入口：页面顶部提供常用问题模板，输入区旁显示当前数据范围，结果区支持导出明细和复制结论。对于金额、年份等关键口径，会在回答前进行确认。</p>`, "build"),
+        userMessageHtml("现在整体可以了，帮我按现有功能整理一份 PRD。不要把还没做的规划写成已实现。"),
+        assistantMessageHtml(`<p>我会严格基于当前原型整理，并把“已实现”和“后续建议”分开。PRD 将覆盖用户角色、信息架构、页面功能、数据口径、交互规则和当前限制。</p>`, "plan"),
+        userMessageHtml("帮我按照现有功能写一份 PRD，注意不要把还没做的东西写进去。"),
+        assistantMessageHtml(`<p>PRD 已生成。内容重点覆盖首页、台账管理、智能问数、周期汇报、系统管理和权限边界，并单独列出原型当前限制。点击文件可在右侧阅读。</p><div class="tool-list"><div class="tool-row">${icon("i-file")}<strong>生成文档</strong><button class="preview-link file-link" type="button" data-preview-file="PRD-经管之星-现有功能.md">${icon("i-external")}PRD-经管之星-现有功能.md</button></div><div class="tool-row">${icon("i-check")}<strong>内容范围</strong><span>仅记录当前已实现原型能力</span></div></div>`, "build"),
+        userMessageHtml("只把这个最新的 PRD 文件推送到 git 上。"),
+        assistantMessageHtml(`<p>已只提交新 PRD 文件，没有带入其他工作区修改。本地 commit 已完成；推送时发现远程仓库处于归档状态，GitCode 返回 403，因此暂时无法上传。文件和本地提交均已保留。</p><div class="tool-list"><div class="tool-row">${icon("i-file")}<strong>已提交文件</strong><button class="preview-link file-link" type="button" data-preview-file="PRD-经管之星-现有功能.md">${icon("i-external")}PRD-经管之星-现有功能.md</button></div><div class="tool-row">${icon("i-info")}<strong>远程状态</strong><span>仓库已归档，推送返回 403</span></div></div>`, "build")
+      ].join("");
+    }
+
+    function reportConversationHtml() {
+      return [
+        userMessageHtml(QUICK_ACTIONS.report.prompt),
+        assistantMessageHtml(`<p>已将当前项目整理为一份可直接汇报的结构，并补充了执行优先级。</p><h3>三页汇报结构</h3><div class="answer-list"><div class="answer-row"><strong>01 目标</strong><span>恢复完整产品流程，让项目、问答与右侧预览一致运作。</span></div><div class="answer-row"><strong>02 改动</strong><span>完成启动页、会话数据、快捷入口与预览区迁移。</span></div><div class="answer-row"><strong>03 下一步</strong><span>完善生成过程、验收多窗口体验并整理交付记录。</span></div></div><h3>执行计划</h3><div class="priority-list"><div class="priority-item primary"><strong>P0｜补齐生成状态</strong><span>完成 thinking、build 和 preview 阶段验收。</span></div><div class="priority-item"><strong>P1｜多尺寸复查</strong><span>检查桌面常驻预览与紧凑窗口抽屉。</span></div><div class="priority-item"><strong>P2｜形成交付记录</strong><span>汇总改动、测试结果和剩余风险。</span></div></div>`, "plan")
+      ].join("");
+    }
+
+    function miniappPreviewHtml() {
+      return `<div class="phone-preview" aria-label="企业应用情报移动端预览"><div class="phone-status"><span>9:41</span><span>● ● ●</span></div><section class="phone-hero"><span class="eyebrow">企业应用情报</span><h2>今日重点判断</h2><p>企业 AI 应用落地进入“场景 ROI”阶段</p></section><div class="preview-tabs"><span>商业打法</span><span>落地案例</span><span>最新资讯</span></div><div class="article-list"><article class="article-item"><small>决策层速读</small><h3>协同平台在企业客户拓展上的新打法</h3><p>3 分钟读完 · 可收藏 · 可转发</p></article><article class="article-item"><small>落地案例</small><h3>制造业 AI 助手如何先从知识库切入</h3><p>3 分钟读完 · 可收藏 · 可转发</p></article><article class="article-item"><small>市场动态</small><h3>SaaS 团队开始用私有模型做垂直服务</h3><p>3 分钟读完 · 可收藏 · 可转发</p></article></div></div>`;
+    }
+
+    function websitePreviewHtml() {
+      return `<div class="preview-browser" aria-label="AI 编程教育官网预览"><div class="preview-browser-bar"><div class="preview-browser-dots" aria-hidden="true"><span></span><span></span><span></span></div><div class="preview-browser-url">https://diycode.ai/experience</div></div><div class="website-page"><nav class="website-nav"><strong class="website-logo">DIY_CODE LAB</strong><span>课程</span><span>作品</span><span>体验课</span><span class="website-live">SYSTEM ONLINE</span></nav><section class="website-hero"><span class="website-kicker">// CREATE_MODE: ON</span><h2>让孩子用 AI 和代码，做出自己的第一个作品</h2><p>面向 8-16 岁的创作实验室。从小游戏、个人网站到智能工具，用真实作品记录每一次能力进化。</p><div class="website-actions"><span class="primary">启动免费体验</span><span>查看创作档案</span></div><div class="tech-console"><div class="tech-console-head"><i></i><i></i><i></i><span>project_first_work.js</span></div><div class="tech-code"><div><b>01</b><span><span class="blue">const</span> idea = <span class="green">"我的第一个 AI 作品"</span>;</span></div><div><b>02</b><span><span class="blue">await</span> learn(<span class="cyan">idea</span>);</span></div><div><b>03</b><span>build({ curiosity: <span class="green">true</span> });</span></div><div><b>04</b><span>launch(<span class="cyan">future</span>);<i class="tech-cursor"></i></span></div></div></div></section><div class="website-signal"><div><strong>12+</strong><span>CREATIONS</span></div><div><strong>4W</strong><span>FIRST BUILD</span></div><div><strong>1:6</strong><span>COACH RATIO</span></div></div><div class="website-tags"><span>AI_COPILOT</span><span>PROJECT_BASED</span><span>PARENT_VISIBLE</span></div><div class="website-points"><article class="website-point"><strong>从兴趣初始化项目</strong><p>孩子选择真正喜欢的主题，AI 陪伴拆解任务，老师把控代码质量。</p></article><article class="website-point"><strong>用作品记录能力进化</strong><p>每节课都有可展示成果，家长能看到从构思到上线的真实进步。</p></article><article class="website-point"><strong>安全、可控、持续反馈</strong><p>课程过程透明，提供阶段报告、代码质量评估和下一步创作建议。</p></article></div></div></div>`;
+    }
+
+    function workPreviewHtml() {
+      return `<section class="work-preview" aria-label="今日工作计划"><time>2026 年 7 月 23 日</time><h2>今日工作计划</h2><div class="work-overview"><div class="work-stat"><strong>4</strong><span>待办</span></div><div class="work-stat"><strong>1</strong><span>P0 任务</span></div><div class="work-stat"><strong>17:00</strong><span>最后节点</span></div></div><div class="work-timeline"><article><time>09:30</time><div><strong>检查演示页交互</strong><p>确认启动、会话与预览状态。</p></div></article><article><time>11:00</time><div><strong>确认快捷入口</strong><p>逐一验证四个业务流程。</p></div></article><article><time>14:00</time><div><strong>整理优化记录</strong><p>汇总文案、会话数据和展示区调整。</p></div></article><article><time>17:00</time><div><strong>输出明日计划</strong><p>记录未完成项与下一步。</p></div></article></div></section>`;
+    }
+
+    function jingguanWebsitePreviewHtml() {
+      return `<div class="preview-browser" aria-label="经管之星网站预览"><div class="preview-browser-bar"><div class="preview-browser-dots" aria-hidden="true"><span></span><span></span><span></span></div><div class="preview-browser-url">经管之星 / index.html</div></div><div class="jingguan-page"><header class="jingguan-topbar"><strong class="jingguan-brand">经管之星</strong><span>经营数据中心</span><span>张经理</span></header><div class="jingguan-layout"><nav class="jingguan-nav"><span class="active">首页</span><span>台账管理</span><span>AI 问数</span><span>周期汇报</span><span>系统管理</span></nav><main class="jingguan-main"><div class="jingguan-heading"><div><h2>经营驾驶舱</h2><p>2026 年商业市场经营概览</p></div><button type="button">生成周期汇报</button></div><div class="jingguan-stats"><div class="jingguan-stat"><span>年度目标</span><strong>12.8 亿</strong><small>全年目标</small></div><div class="jingguan-stat"><span>已签金额</span><strong>6.42 亿</strong><small>同比 +12.4%</small></div><div class="jingguan-stat"><span>预测金额</span><strong>8.76 亿</strong><small>覆盖率 68.4%</small></div><div class="jingguan-stat"><span>重点项目</span><strong>46</strong><small>7 个需关注</small></div></div><div class="jingguan-grid"><section class="jingguan-panel"><h3>月度签约趋势</h3><div class="jingguan-bars"><i style="height:42%"></i><i style="height:58%"></i><i style="height:47%"></i><i style="height:72%"></i><i style="height:64%"></i><i style="height:88%"></i></div></section><section class="jingguan-panel"><h3>AI 经营助手</h3><div class="jingguan-ai">${icon("i-message")}<div><strong>哪些项目超过 30 天没有更新？</strong><span>基于 2026 商业市场台账 · 可继续追问</span></div></div></section></div></main></div></div></div>`;
+    }
+
+    function jingguanPrdPreviewHtml() {
+      return `<article class="document-preview" aria-label="经管之星 PRD 预览"><span class="document-kicker">PRODUCT REQUIREMENTS DOCUMENT</span><h2>经管之星 · 现有功能 PRD</h2><p class="document-meta">版本 V1.0 · 更新于 2026-07-23 · 状态：原型已实现</p><section><h3>1. 产品定位</h3><p>面向企业销售经管团队的数据管理、智能问数与周期经营分析平台，帮助管理人员统一台账口径、快速发现风险并形成汇报材料。</p></section><section><h3>2. 当前用户角色</h3><ul><li>销售人员：查看并维护本人负责项目</li><li>区域负责人：查看本区域汇总、重点项目与风险</li><li>经管人员：管理全量台账、口径与周期汇报</li><li>系统管理员：维护账户、角色与权限</li></ul></section><section><h3>3. 已实现功能</h3><ul><li>经营首页：目标、签约、预测、重点项目与趋势</li><li>台账管理：2025 商业市场、2026 商业市场、PPL 明细</li><li>AI 问数：自然语言提问、口径提示、结果表格与追问</li><li>周期汇报：月度趋势、区域对比、产品结构和重点项目</li><li>系统管理：账户、角色及数据范围配置</li></ul></section><section><h3>4. 当前限制</h3><p>当前为前端演示原型，数据为模拟内容，尚未接入真实数据库、统一身份认证和生产权限系统。</p></section></article>`;
+    }
+
+    function showJingguanFile(fileName = "index.html") {
+      const isPrd = fileName.endsWith(".md");
+      previewTitle.textContent = isPrd ? fileName : "经管之星 · 网站预览";
+      previewContent.innerHTML = isPrd ? jingguanPrdPreviewHtml() : jingguanWebsitePreviewHtml();
+      previewToggleButton.disabled = false;
+      previewToggleButton.title = "任务预览";
+      setPreview(true);
+    }
+
+    function showJingguanTestSite() {
+      previewTitle.textContent = "经管之星 · 线上页面";
+      previewContent.innerHTML = `<section class="external-preview" aria-label="经管之星线上页面预览"><div class="external-preview-bar"><span class="external-preview-dots" aria-hidden="true"><i></i><i></i><i></i></span><a class="external-preview-url" href="${JINGGUAN_TEST_URL}" target="_blank" rel="noopener noreferrer" title="在新页面打开经管之星">${JINGGUAN_TEST_URL}</a>${icon("i-external")}</div><iframe src="${JINGGUAN_TEST_URL}" title="经管之星线上页面" loading="eager" referrerpolicy="no-referrer"></iframe></section>`;
+      previewToggleButton.disabled = false;
+      previewToggleButton.title = "经管之星线上页面";
+      setPreview(true);
+    }
+
+    function updatePreviewForSession(sessionName) {
+      if (sessionName === SESSION_WEBSITE) {
+        previewTitle.textContent = "AI 编程教育 · 官网预览";
+        previewContent.innerHTML = websitePreviewHtml();
+      } else if (sessionName === SESSION_WORK) {
+        previewTitle.textContent = "工作安排 · 今日计划";
+        previewContent.innerHTML = workPreviewHtml();
+      } else if (sessionName === SESSION_JINGGUAN_BUILD && jingguanBuildPhase === "complete") {
+        showJingguanLiveSite();
+      } else if (sessionName === SESSION_JINGGUAN) {
+        previewTitle.textContent = "经管之星 · 网站预览";
+        previewContent.innerHTML = jingguanWebsitePreviewHtml();
+      } else {
+        previewTitle.textContent = "企业应用情报 · 首页预览";
+        previewContent.innerHTML = miniappPreviewHtml();
+      }
+    }
+
+    function defaultConversationForSession(sessionName) {
+      if (sessionName === SESSION_WEBSITE) return websiteConversationHtml();
+      if (sessionName === SESSION_WORK) return workConversationHtml();
+      if (sessionName === SESSION_JINGGUAN) return jingguanConversationHtml();
+      if (sessionName === SESSION_JINGGUAN_BUILD) return "";
+      return aiConversationHtml();
+    }
+
+    function resultConversationForAction(action) {
+      if (action === "website") return websiteConversationHtml();
+      if (action === "work") return workConversationHtml();
+      if (action === "report") return reportConversationHtml();
+      return aiConversationHtml();
+    }
+
+    function setPreviewPending() {
+      setPreview(false);
+      previewToggleButton.disabled = true;
+      previewToggleButton.title = "对话加载完成后可查看预览";
+    }
+
+    function revealPreviewForSession(sessionName) {
+      if (sessionName === SESSION_JINGGUAN) {
+        setPreview(false);
+        previewToggleButton.disabled = true;
+        previewToggleButton.title = "发送“打开页面”后显示测试网站";
+        return;
+      }
+      if (sessionName === SESSION_JINGGUAN_BUILD) {
+        if (jingguanBuildPhase === "complete") showJingguanLiveSite();
+        else {
+          setPreview(false);
+          previewToggleButton.disabled = true;
+          previewToggleButton.title = "确认方案并完成搭建后可查看";
+        }
+        return;
+      }
+      updatePreviewForSession(sessionName);
+      previewToggleButton.disabled = false;
+      previewToggleButton.title = "任务预览";
+      setPreview(true);
+    }
+
+    function selectImportedSessionContext(sessionName) {
+      activeSession = sessionName;
+      setPreviewPending();
+      setComposerPrompt();
+      if (sessionName === SESSION_AI || sessionName === SESSION_WEBSITE) {
+        programmingProjectGroup.hidden = false;
+        programmingProjectGroup.dataset.revealed = "true";
+        document.getElementById("projectList").appendChild(programmingProjectGroup);
+      }
+      if (sessionName === SESSION_WEBSITE) websiteSessionRow.hidden = false;
+      if (sessionName === SESSION_JINGGUAN_BUILD) jingguanBuildSessionRow.hidden = false;
+      const sessionRow = document.querySelector(`.session-row[data-session="${sessionName}"]`);
+      document.querySelectorAll(".session-row").forEach((row) => row.removeAttribute("aria-current"));
+      sessionRow?.setAttribute("aria-current", "page");
+      const projectName = sessionRow?.closest(".project-group")?.dataset.project || "我的编程DIY";
+      conversationTitle.textContent = sessionName;
+      projectTitle.textContent = `归属于 ${projectName}`;
+      emptyState.hidden = true;
+      appShell.classList.remove("sidebar-open");
+      syncSidebarAvailability();
+    }
+
+    function cancelQuickGeneration() {
+      quickRunId += 1;
+      quickTimers.forEach((timer) => window.clearTimeout(timer));
+      quickTimers = [];
+      if (websiteSessionRow.classList.contains("is-renaming")) finishWebsiteSessionNaming();
+      if (jingguanBuildSessionRow.classList.contains("is-renaming")) setJingguanBuildSessionLabel(SESSION_JINGGUAN_BUILD);
+      if (messageTimer !== null) window.clearTimeout(messageTimer);
+      messageTimer = null;
+      activeThinkingMessage = null;
+      composerInput.disabled = false;
+      isGenerating = false;
+      updateComposerState();
+    }
+
+    function setWebsiteSessionLabel(label, loading = false) {
+      websiteSessionRow.hidden = false;
+      websiteSessionRow.classList.toggle("is-renaming", loading);
+      websiteSessionRow.querySelector(".session-label").textContent = label;
+      websiteSessionRow.setAttribute("aria-label", label);
+    }
+
+    function finishWebsiteSessionNaming() {
+      setWebsiteSessionLabel(SESSION_WEBSITE);
+    }
+
+    function startWebsiteSessionNaming(runId) {
+      setWebsiteSessionLabel("新会话");
+      quickTimers.push(
+        window.setTimeout(() => {
+          if (runId === quickRunId) setWebsiteSessionLabel("正在理解任务…", true);
+        }, 550),
+        window.setTimeout(() => {
+          if (runId === quickRunId) setWebsiteSessionLabel("正在生成标题…", true);
+        }, 1750),
+        window.setTimeout(() => {
+          if (runId === quickRunId) finishWebsiteSessionNaming();
+        }, 3400)
+      );
+    }
+
+    function pauseGeneration() {
+      if (!isGenerating) return;
+      const pausedJingguanPhase = activeSession === SESSION_JINGGUAN_BUILD ? jingguanBuildPhase : null;
+      const thinkingMessage = activeThinkingMessage;
+      const generationStatus = messages.querySelector("[data-generation-message] .generation-status");
+      const streamingMessage = messages.querySelector("[data-streaming-message]");
+      cancelQuickGeneration();
+      if (pausedJingguanPhase === "planning") jingguanBuildPhase = "idle";
+      if (pausedJingguanPhase === "building") jingguanBuildPhase = "awaiting-confirmation";
+
+      const thinkingBody = thinkingMessage?.querySelector(".thinking");
+      if (thinkingBody?.isConnected) {
+        thinkingBody.classList.add("is-paused");
+        thinkingBody.innerHTML = `${icon("i-pause", "icon icon-16")}<span>已暂停生成</span>`;
+      }
+      if (generationStatus?.isConnected) {
+        generationStatus.classList.add("is-paused");
+        const spinner = generationStatus.querySelector(".spinner");
+        if (spinner) spinner.outerHTML = icon("i-pause", "icon icon-20");
+        const copy = generationStatus.querySelector(".generation-copy");
+        copy.querySelector("strong").textContent = "已暂停生成";
+        copy.querySelector("span").textContent = "当前进度已保留，可以修改任务后重新发送。";
+        generationStatus.querySelector('[data-state="active"]')?.setAttribute("data-state", "paused");
+      }
+      if (streamingMessage?.isConnected) {
+        streamingMessage.querySelector(".stream-caret")?.remove();
+        const spinner = streamingMessage.querySelector(".spinner");
+        if (spinner) spinner.outerHTML = icon("i-pause", "icon icon-20");
+        streamingMessage.querySelector(".streaming-surface")?.insertAdjacentHTML("beforeend", `<div class="stream-pause-note">${icon("i-pause", "icon icon-16")}<span>已暂停生成，当前流式内容已保留</span></div>`);
+        streamingMessage.removeAttribute("data-streaming-message");
+      }
+      composerInput.focus({ preventScroll: true });
+      showToast("已暂停生成", "当前内容已保留，可以修改后重新发送。", "info");
+    }
+
+    function generationStatusHtml(config, stageIndex) {
+      const steps = config.stages.map((label, index) => {
+        const state = index < stageIndex ? "done" : index === stageIndex ? "active" : "pending";
+        return `<div class="generation-step" data-state="${state}">${label.replace("正在", "").replace("…", "")}</div>`;
+      }).join("");
+      const mode = stageIndex < 2 ? "thinking" : "build";
+      return `${userMessageHtml(config.prompt)}<article class="message assistant" data-generation-message="true"><div class="assistant-message"><div class="message-meta"><img class="assistant-mark" src="${BRAND_LOGO}" alt=""><strong>DeepSeek V4 Flash</strong><span class="mode-tag">${mode}</span></div><div class="generation-status" role="status" aria-live="polite"><div class="generation-head"><span class="spinner" aria-hidden="true"></span><div class="generation-copy"><strong>${config.stages[stageIndex]}</strong><span>${config.detail[stageIndex]}</span></div></div><div class="generation-steps">${steps}</div></div></div></article>`;
+    }
+
+    function streamingWebsiteAssistantHtml(content, mode = "thinking", highlight = false, current = false) {
+      return `<article class="message assistant streaming-message${highlight ? " highlight" : ""}"${current ? ' data-streaming-message="true"' : ""}><div class="assistant-message"><div class="message-meta"><img class="assistant-mark" src="${BRAND_LOGO}" alt=""><strong>DeepSeek V4 Flash</strong><span class="mode-tag">${mode}</span></div><div class="streaming-surface">${content}</div></div></article>`;
+    }
+
+    function websiteGenerationHtml(stageIndex) {
+      const direction = `<div class="stream-direction"><strong>方向判断</strong><span>科技蓝 + 温暖作品感，第一屏突出孩子能做出真实作品。</span></div>`;
+      const analysis = streamingWebsiteAssistantHtml(`<p class="streaming-analysis">我先理解你的目标：这是一个面向家长和孩子的 AI 编程教育官网，需要同时强调科技感、创造力和报名转化。</p>${direction}`);
+      const currentText = `<span data-stream-target></span><i class="stream-caret" aria-hidden="true"></i>`;
+      if (stageIndex === 0) {
+        return `${userMessageHtml(WEBSITE_PROMPT)}${streamingWebsiteAssistantHtml(`<div class="streaming-thinking"><span class="spinner" aria-hidden="true"></span><div class="streaming-copy"><strong>${currentText}</strong><p>分析目标用户、首页结构、视觉风格和预览页面。</p></div></div>`, "thinking", true, true)}`;
+      }
+      if (stageIndex === 1) {
+        return `${userMessageHtml(WEBSITE_PROMPT)}${analysis}${streamingWebsiteAssistantHtml(`<div class="streaming-thinking"><span class="spinner" aria-hidden="true"></span><div class="streaming-copy"><strong>${currentText}</strong><p>生成页面结构、主视觉、CTA 和右侧预览。</p></div></div>`, "build", true, true)}`;
+      }
+      return `${userMessageHtml(WEBSITE_PROMPT)}${analysis}${streamingWebsiteAssistantHtml(`<p class="streaming-analysis">${currentText}</p><div class="stream-direction"><strong>页面生成</strong><span>主视觉、作品路径、报名 CTA 与科技感界面已进入最终整理。</span></div>`, "build", true, true)}`;
+    }
+
+    function streamWebsiteText(target, text, runId, speed) {
+      if (!target) return;
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        target.textContent = text;
+        return;
+      }
+      const characters = Array.from(text);
+      let index = 0;
+      const writeNext = () => {
+        if (runId !== quickRunId || !target.isConnected) return;
+        index += 1;
+        target.textContent = characters.slice(0, index).join("");
+        conversationScroll.scrollTop = conversationScroll.scrollHeight;
+        if (index < characters.length) quickTimers.push(window.setTimeout(writeNext, speed));
+      };
+      writeNext();
+    }
+
+    function renderWebsiteGenerationStage(stageIndex, runId) {
+      if (runId !== quickRunId) return;
+      const stageText = [
+        "正在分析品牌定位、目标用户与首页转化路径…",
+        "正在编写主视觉、作品展示、学习路径与体验课组件…",
+        "页面主体已生成，正在联调响应式布局、交互状态与最终预览…"
+      ][stageIndex];
+      messages.innerHTML = websiteGenerationHtml(stageIndex);
+      streamWebsiteText(messages.querySelector("[data-stream-target]"), stageText, runId, stageIndex === 2 ? 38 : 52);
+      previewTitle.textContent = `AI 编程教育官网 · Coding ${stageIndex + 1}/3`;
+      previewContent.innerHTML = websiteCodingPreviewHtml(stageIndex);
+      previewToggleButton.disabled = false;
+      previewToggleButton.title = "查看实时编码预览";
+      setPreview(true);
+      scrollConversationToBottom();
+    }
+
+    function websiteCodingPreviewHtml(stageIndex) {
+      const progress = [24, 58, 88][stageIndex];
+      const status = [
+        ["正在创建页面骨架", "分析品牌、用户与信息架构"],
+        ["正在编写核心组件", "Hero / 作品展示 / 学习路径 / CTA"],
+        ["正在联调页面与交互", "响应式布局、视觉细节与预览入口"]
+      ][stageIndex];
+      const extraLines = stageIndex === 0
+        ? `<div class="coding-line"><b>05</b><span><span class="tag">&lt;main&gt;</span><i class="coding-caret"></i></span></div>`
+        : stageIndex === 1
+          ? `<div class="coding-line"><b>05</b><span>&nbsp;&nbsp;<span class="tag">&lt;Hero</span> <span class="attr">audience</span>=<span class="text">"8-16 岁"</span> <span class="tag">/&gt;</span></span></div><div class="coding-line"><b>06</b><span>&nbsp;&nbsp;<span class="tag">&lt;ProjectGallery</span> <span class="attr">visible</span> <span class="tag">/&gt;</span><i class="coding-caret"></i></span></div>`
+          : `<div class="coding-line"><b>05</b><span>&nbsp;&nbsp;<span class="tag">&lt;LearningPath</span> <span class="attr">steps</span>={4} <span class="tag">/&gt;</span></span></div><div class="coding-line"><b>06</b><span>&nbsp;&nbsp;<span class="tag">&lt;ParentFeedback</span> <span class="attr">trusted</span> <span class="tag">/&gt;</span></span></div><div class="coding-line"><b>07</b><span>&nbsp;&nbsp;<span class="tag">&lt;TrialCTA</span> <span class="attr">primary</span> <span class="tag">/&gt;</span><i class="coding-caret"></i></span></div>`;
+      const livePreview = stageIndex === 0 ? "" : `<div class="coding-live-preview"><div class="coding-live-nav"><strong>DIY_CODE LAB</strong><span>课程</span><span>作品</span><span>体验课</span></div><section class="coding-live-hero"><small>// CREATE_MODE: ON</small><h3>${stageIndex === 1 ? "让孩子用 AI 和代码，做出真实作品" : "让孩子用 AI 和代码，做出自己的第一个作品"}</h3><p>${stageIndex === 1 ? "正在生成品牌说明与报名路径…" : "从小游戏、个人网站到智能工具，用真实作品记录每一次能力进化。"}</p></section>${stageIndex === 2 ? `<div class="coding-live-blocks"><i></i><i></i><i></i></div>` : ""}</div>`;
+      return `<section class="coding-preview" aria-label="官网实时编码预览"><header class="coding-preview-head"><strong>CODING WORKSPACE</strong><span>BUILDING · ${progress}%</span></header><div class="coding-workbench"><aside class="coding-files"><strong>EXPLORER</strong><span class="active">index.html</span><span>styles.css</span><span>app.js</span><span>assets/</span></aside><div class="coding-editor"><div class="coding-tab">index.html · 正在编辑</div><div class="coding-code"><div class="coding-line"><b>01</b><span><span class="tag">&lt;!doctype html&gt;</span></span></div><div class="coding-line"><b>02</b><span><span class="tag">&lt;html</span> <span class="attr">lang</span>=<span class="text">"zh-CN"</span><span class="tag">&gt;</span></span></div><div class="coding-line"><b>03</b><span>&nbsp;&nbsp;<span class="tag">&lt;title&gt;</span><span class="text">DIY_CODE LAB · AI 编程教育</span><span class="tag">&lt;/title&gt;</span></span></div><div class="coding-line"><b>04</b><span>&nbsp;&nbsp;<span class="tag">&lt;body</span> <span class="attr">data-theme</span>=<span class="text">"creative-tech"</span><span class="tag">&gt;</span></span></div>${extraLines}</div>${livePreview}</div></div><footer class="coding-stage-status" style="--coding-progress:${progress}%"><strong>${status[0]}</strong><span>${status[1]}</span><i></i></footer></section>`;
+    }
+
+    function previewGeneratingHtml(config, stageIndex) {
+      const progress = [24, 58, 86][stageIndex];
+      return `<section class="preview-generating" aria-label="正在生成预览"><div class="preview-core" aria-hidden="true"></div><h3>${config.stages[stageIndex]}</h3><p>PIPELINE ${stageIndex + 1}/3 · ${config.detail[stageIndex]}</p><div class="preview-progress" aria-label="生成进度 ${progress}%"><span style="width:${progress}%"></span></div></section>`;
+    }
+
+    function renderQuickGenerationStage(action, stageIndex, runId) {
+      if (runId !== quickRunId) return;
+      const config = QUICK_ACTIONS[action];
+      messages.innerHTML = generationStatusHtml(config, stageIndex);
+      conversationScroll.scrollTop = conversationScroll.scrollHeight;
+    }
+
+    function completeQuickAction(action, runId) {
+      if (runId !== quickRunId) return;
+      const config = QUICK_ACTIONS[action];
+      if (action === "website") finishWebsiteSessionNaming();
+      const result = resultConversationForAction(action);
+      sessionHistories.set(config.session, result);
+      messages.innerHTML = result;
+      revealPreviewForSession(config.session);
+      composerInput.disabled = false;
+      isGenerating = false;
+      quickTimers = [];
+      updateComposerState();
+      conversationScroll.scrollTop = conversationScroll.scrollHeight;
+    }
+
+    function runQuickAction(action) {
+      const config = QUICK_ACTIONS[action];
+      if (!config) return;
+      cancelQuickGeneration();
+      const runId = ++quickRunId;
+      if (action === "website") startWebsiteSessionNaming(runId);
+      selectImportedSessionContext(config.session);
+      isGenerating = true;
+      composerInput.disabled = true;
+      updateComposerState();
+      if (action === "website") {
+        renderWebsiteGenerationStage(0, runId);
+        quickTimers.push(
+          window.setTimeout(() => renderWebsiteGenerationStage(1, runId), 3200),
+          window.setTimeout(() => renderWebsiteGenerationStage(2, runId), 7000),
+          window.setTimeout(() => completeQuickAction(action, runId), 12000)
+        );
+        return;
+      }
+      renderQuickGenerationStage(action, 0, runId);
+      quickTimers = [
+        window.setTimeout(() => renderQuickGenerationStage(action, 1, runId), 1200),
+        window.setTimeout(() => renderQuickGenerationStage(action, 2, runId), 2600),
+        window.setTimeout(() => completeQuickAction(action, runId), 4200)
+      ];
+    }
+
+    function openImportedSession(sessionName) {
+      if (activeSession && !emptyState.hidden && messages.childElementCount) {
+        sessionHistories.set(activeSession, messages.innerHTML);
+      }
+      cancelQuickGeneration();
+      const loadId = quickRunId;
+      selectImportedSessionContext(sessionName);
+      messages.innerHTML = sessionHistories.get(sessionName) || defaultConversationForSession(sessionName);
+      scrollConversationToBottom();
+      window.requestAnimationFrame(() => window.requestAnimationFrame(() => {
+        if (loadId !== quickRunId || activeSession !== sessionName) return;
+        revealPreviewForSession(sessionName);
+        scrollConversationToBottom();
+      }));
+    }
+
+    function openNewSession(projectName, sessionName = "新会话") {
+      cancelQuickGeneration();
+      activeSession = sessionName;
+      setPreview(false);
+      previewToggleButton.disabled = true;
+      previewToggleButton.title = "请先选择快捷入口或会话";
+      document.querySelectorAll(".session-row").forEach((row) => row.removeAttribute("aria-current"));
+      conversationTitle.textContent = sessionName;
+      projectTitle.textContent = `归属于 ${projectName}`;
+      messages.replaceChildren();
+      emptyState.hidden = false;
+      setComposerPrompt();
+      composerInput.focus();
+      appShell.classList.remove("sidebar-open");
+      syncSidebarAvailability();
+    }
+
+    document.getElementById("sidebarToggleButton").addEventListener("click", toggleSidebar);
+    enterAppButton.addEventListener("click", enterApp);
+    document.getElementById("mobileMenuButton").addEventListener("click", toggleSidebar);
+    document.getElementById("sidebarOverlay").addEventListener("click", () => {
+      appShell.classList.remove("sidebar-open");
+      syncSidebarAvailability();
+    });
+    previewToggleButton.addEventListener("click", () => setPreview(!workspaceBody.classList.contains("preview-visible")));
+    fullscreenPreviewButton.addEventListener("click", () => setPreviewFullscreen(!previewPane.classList.contains("preview-fullscreen")));
+    document.getElementById("closePreviewButton").addEventListener("click", () => setPreview(false));
+    document.getElementById("previewScrim").addEventListener("click", () => setPreview(false));
+    previewResizer.addEventListener("pointerdown", (event) => {
+      if (window.innerWidth < 1080) return;
+      event.preventDefault();
+      previewResizeState = {
+        pointerId: event.pointerId,
+        startX: event.clientX,
+        startWidth: previewPane.getBoundingClientRect().width
+      };
+      previewResizer.setPointerCapture(event.pointerId);
+      document.body.classList.add("preview-resizing");
+    });
+    previewResizer.addEventListener("pointermove", (event) => {
+      if (!previewResizeState || event.pointerId !== previewResizeState.pointerId) return;
+      setPreviewWidth(previewResizeState.startWidth + previewResizeState.startX - event.clientX);
+    });
+    previewResizer.addEventListener("pointerup", finishPreviewResize);
+    previewResizer.addEventListener("pointercancel", finishPreviewResize);
+    previewResizer.addEventListener("dblclick", () => setPreviewWidth(440, true));
+    previewResizer.addEventListener("keydown", (event) => {
+      if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+      event.preventDefault();
+      const { min, max } = getPreviewWidthBounds();
+      const current = Number(previewResizer.getAttribute("aria-valuenow")) || 440;
+      const step = event.shiftKey ? 64 : 24;
+      const next = event.key === "Home" ? min
+        : event.key === "End" ? max
+        : current + (event.key === "ArrowLeft" ? step : -step);
+      setPreviewWidth(next, true);
+    });
+
+    addProjectButton.addEventListener("click", () => {
+      if (projectAddMenu.hidden) openProjectAddMenu();
+      else closeProjectAddMenu();
+    });
+
+    document.getElementById("openLocalProjectButton").addEventListener("click", () => {
+      closeProjectAddMenu();
+      projectDirectoryInput.click();
+    });
+
+    document.getElementById("createNewProjectButton").addEventListener("click", () => {
+      closeProjectAddMenu();
+      resetProjectForm();
+    });
+
+    projectDirectoryInput.addEventListener("change", () => {
+      const files = Array.from(projectDirectoryInput.files || []);
+      if (!files.length) return;
+      const relativePath = files[0].webkitRelativePath || files[0].name;
+      const folderName = relativePath.split("/")[0].trim();
+      if (!folderName) {
+        showToast("无法打开项目", "未能读取所选文件夹名称。", "error");
+        projectDirectoryInput.value = "";
+        return;
+      }
+      addProjectToSidebar(folderName, `${folderName} 已从本地打开，共读取 ${files.length} 个文件。`);
+      projectDirectoryInput.value = "";
+    });
+
+    projectNameInput.addEventListener("input", () => {
+      const valid = projectNameInput.value.trim().length >= 2;
+      createProjectSubmit.disabled = !valid;
+      projectNameError.hidden = valid || projectNameInput.value.length === 0;
+      projectNameInput.setAttribute("aria-invalid", String(!valid && projectNameInput.value.length > 0));
+    });
+
+    document.getElementById("addProjectForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const name = projectNameInput.value.trim();
+      if (name.length < 2) {
+        projectNameError.hidden = false;
+        projectNameInput.focus();
+        return;
+      }
+      if (addProjectToSidebar(name, `${name} 已创建并添加到项目列表。`)) closeModal(addProjectLayer);
+    });
+
+    document.getElementById("settingsButton").addEventListener("click", (event) => openSettings("appearance", event.currentTarget));
+    document.getElementById("manageModelsButton").addEventListener("click", (event) => openSettings("models", event.currentTarget));
+    document.querySelectorAll("[data-settings-view]").forEach((button) => button.addEventListener("click", () => switchSettingsView(button.dataset.settingsView)));
+    document.querySelectorAll("input[name='theme']").forEach((input) => input.addEventListener("change", () => setTheme(input.value)));
+    document.getElementById("compactToggle").addEventListener("change", (event) => root.classList.toggle("compact", event.target.checked));
+
+    document.querySelectorAll(".dialog-close, .dialog-cancel").forEach((button) => button.addEventListener("click", () => closeModal(button.closest(".modal-layer"))));
+    document.querySelectorAll(".modal-layer").forEach((layer) => layer.addEventListener("pointerdown", (event) => {
+      if (event.target !== layer) return;
+      if (layer === settingsLayer || (layer === addProjectLayer && !projectNameInput.value.trim())) closeModal(layer);
+    }));
+
+    modelButton.addEventListener("click", () => {
+      modelMenu.hidden = !modelMenu.hidden;
+      modelButton.setAttribute("aria-expanded", String(!modelMenu.hidden));
+    });
+    document.querySelectorAll("[data-model]").forEach((item) => item.addEventListener("click", () => {
+      selectedModel = item.dataset.model;
+      modelButtonLabel.textContent = selectedModel;
+      document.querySelectorAll("[data-model]").forEach((candidate) => candidate.setAttribute("aria-checked", String(candidate === item)));
+      document.querySelectorAll("input[name='settingsModel']").forEach((radio) => { radio.checked = radio.value === selectedModel; });
+      closeModelMenu();
+      showToast("模型已切换", `新消息将使用 ${selectedModel}。`, "success");
+    }));
+    document.querySelectorAll("input[name='settingsModel']").forEach((radio) => radio.addEventListener("change", () => {
+      selectedModel = radio.value;
+      modelButtonLabel.textContent = selectedModel;
+      document.querySelectorAll("[data-model]").forEach((candidate) => candidate.setAttribute("aria-checked", String(candidate.dataset.model === selectedModel)));
+    }));
+
+    document.addEventListener("pointerdown", (event) => {
+      if (!event.target.closest(".model-menu-wrap")) closeModelMenu();
+      if (!event.target.closest("#projectAddMenu, #addProjectButton")) closeProjectAddMenu();
+    });
+
+    composerInput.addEventListener("input", updateComposerState);
+    composerInput.addEventListener("compositionstart", () => { isComposing = true; });
+    composerInput.addEventListener("compositionend", () => { isComposing = false; });
+    composerInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && !event.shiftKey && !event.isComposing && !isComposing) {
+        event.preventDefault();
+        sendMessage();
+      }
+    });
+    sendButton.addEventListener("click", () => {
+      if (isGenerating) pauseGeneration();
+      else sendMessage();
+    });
+    document.querySelectorAll(".suggestion").forEach((button) => button.addEventListener("click", () => {
+      if (button.dataset.quickAction === "prefill-jingguan-build") {
+        cancelQuickGeneration();
+        composerInput.value = JINGGUAN_BUILD_PROMPT;
+        updateComposerState();
+        composerInput.focus();
+        return;
+      }
+      if (button.dataset.quickAction === "prefill-website") {
+        cancelQuickGeneration();
+        composerInput.value = WEBSITE_PROMPT;
+        updateComposerState();
+        composerInput.focus();
+        return;
+      }
+      runQuickAction(button.dataset.quickAction);
+    }));
+
+    document.getElementById("projectList").addEventListener("click", (event) => {
+      const group = event.target.closest(".project-group");
+      if (!group) return;
+      const addSession = event.target.closest(".row-action");
+      if (addSession) {
+        openNewSession(group.dataset.project);
+        return;
+      }
+      const session = event.target.closest(".session-row");
+      if (session) {
+        const sessionName = session.dataset.session || session.textContent.trim();
+        if ([SESSION_AI, SESSION_WEBSITE, SESSION_WORK, SESSION_JINGGUAN, SESSION_JINGGUAN_BUILD].includes(sessionName)) openImportedSession(sessionName);
+        else openNewSession(group.dataset.project, sessionName);
+        return;
+      }
+      const projectButton = event.target.closest(".nav-row");
+      if (projectButton) {
+        const collapsed = group.dataset.collapsed !== "true";
+        group.dataset.collapsed = String(collapsed);
+        projectButton.setAttribute("aria-expanded", String(!collapsed));
+      }
+    });
+
+    document.getElementById("attachButton").addEventListener("click", () => fileInput.click());
+    fileInput.addEventListener("change", () => addAttachment(fileInput.files[0]));
+    document.getElementById("removeAttachmentButton").addEventListener("click", clearAttachment);
+    document.getElementById("voiceButton").addEventListener("click", () => showToast("语音输入", "桌面客户端将使用系统麦克风权限。", "info"));
+
+    document.getElementById("projectSearch").addEventListener("input", (event) => {
+      const query = event.target.value.trim().toLowerCase();
+      let visible = 0;
+      document.querySelectorAll(".project-group").forEach((group) => {
+        const match = group.textContent.toLowerCase().includes(query);
+        const defaultHidden = group.dataset.defaultHidden === "true" && group.dataset.revealed !== "true";
+        group.hidden = query ? !match : defaultHidden;
+        if (!group.hidden) visible += 1;
+      });
+      let empty = document.querySelector(".empty-projects");
+      if (!visible && !empty) {
+        empty = document.createElement("p");
+        empty.className = "empty-projects";
+        empty.textContent = "没有匹配的项目或会话";
+        document.getElementById("projectList").appendChild(empty);
+      } else if (visible && empty) empty.remove();
+    });
+
+    messages.addEventListener("click", async (event) => {
+      const confirmationButton = event.target.closest("[data-confirm-jingguan-build]");
+      if (confirmationButton) {
+        if (activeSession !== SESSION_JINGGUAN_BUILD || jingguanBuildPhase !== "awaiting-confirmation") return;
+        confirmationButton.disabled = true;
+        confirmationButton.classList.add("is-confirmed");
+        confirmationButton.innerHTML = `${icon("i-check")}<span>已确认，正在开始…</span>`;
+        startJingguanBuild();
+        return;
+      }
+      const previewLink = event.target.closest(".preview-link");
+      if (previewLink) {
+        if (previewLink.dataset.previewFile) showJingguanFile(previewLink.dataset.previewFile);
+        else revealPreviewForSession(previewLink.dataset.previewSession || activeSession || SESSION_AI);
+        return;
+      }
+      const copy = event.target.closest(".copy-message");
+      if (!copy) return;
+      const text = copy.closest(".assistant-message").querySelector(".assistant-copy").innerText;
+      try { await navigator.clipboard.writeText(text); showToast("已复制", "回答已复制到剪贴板。", "success"); }
+      catch (_) { showToast("无法复制", "请选中文本后手动复制。", "error"); }
+    });
+
+    window.addEventListener("online", () => {
+      const status = document.getElementById("connectionStatus");
+      status.innerHTML = '<span class="status-dot"></span><span>已连接</span>';
+      status.title = "网络连接正常";
+      showToast("已恢复连接", "可以继续发送任务。", "success");
+    });
+    window.addEventListener("offline", () => {
+      const status = document.getElementById("connectionStatus");
+      status.innerHTML = '<span class="status-dot offline"></span><span>离线</span>';
+      status.title = "当前处于离线状态";
+      showToast("网络连接已断开", "输入内容会保留，恢复后可继续发送。", "error", 0);
+    });
+    window.addEventListener("resize", () => {
+      closeProjectAddMenu();
+      syncSidebarForViewport();
+      setPreviewWidth(preferredPreviewWidth);
+    });
+    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (root.dataset.themeSource === "system") setTheme("system"); });
+
+    document.addEventListener("keydown", (event) => {
+      const openLayer = !settingsLayer.hidden ? settingsLayer : !addProjectLayer.hidden ? addProjectLayer : null;
+      if (event.key === "Tab" && openLayer) {
+        const focusable = Array.from(openLayer.querySelectorAll("button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex='-1'])")).filter((element) => element.offsetParent !== null);
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (focusable.length && (event.shiftKey ? document.activeElement === first : document.activeElement === last)) {
+          event.preventDefault();
+          (event.shiftKey ? last : first).focus();
+        }
+      }
+      const command = isMac ? event.metaKey : event.ctrlKey;
+      if (event.key === "Escape") {
+        if (!settingsLayer.hidden) closeModal(settingsLayer);
+        else if (!addProjectLayer.hidden) closeModal(addProjectLayer);
+        else if (!projectAddMenu.hidden) {
+          closeProjectAddMenu();
+          addProjectButton.focus();
+        }
+        else if (!modelMenu.hidden) closeModelMenu();
+        else if (previewPane.classList.contains("preview-fullscreen")) setPreviewFullscreen(false);
+        else if (workspaceBody.classList.contains("preview-visible") && window.innerWidth < 1080) setPreview(false);
+        else {
+          appShell.classList.remove("sidebar-open");
+          syncSidebarAvailability();
+        }
+      }
+      if (command && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        if (window.innerWidth < 800) appShell.classList.add("sidebar-open");
+        else if (window.innerWidth < 960) appShell.classList.add("sidebar-expanded");
+        syncSidebarAvailability();
+        document.getElementById("projectSearch").focus();
+      }
+      if (command && event.key.toLowerCase() === "n") {
+        event.preventDefault();
+        const currentProject = projectTitle.textContent.replace("归属于 ", "");
+        openNewSession(currentProject);
+        showToast("已新建会话", "当前项目中的新会话已就绪。", "success");
+      }
+      if (command && event.key === ",") {
+        event.preventDefault();
+        openSettings("appearance", document.getElementById("settingsButton"));
+      }
+    });
+
+    document.addEventListener("dragenter", (event) => { event.preventDefault(); document.getElementById("dropZone").hidden = false; });
+    document.addEventListener("dragover", (event) => event.preventDefault());
+    document.addEventListener("dragleave", (event) => { if (!event.relatedTarget) document.getElementById("dropZone").hidden = true; });
+    document.addEventListener("drop", (event) => {
+      event.preventDefault();
+      document.getElementById("dropZone").hidden = true;
+      addAttachment(event.dataTransfer.files[0]);
+    });
+
+    restoreTheme();
+    syncSidebarForViewport();
+    restorePreviewWidth();
+    setPreview(false);
+    setComposerPrompt();
+    startLaunchCountdown();
+  </script>
+</body>
+</html>

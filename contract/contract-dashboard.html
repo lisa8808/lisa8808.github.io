@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>华鲲元启 - 项目列表</title>
+  <style>
+    :root {
+      --blue: #025dff;
+      --blue-soft: #eef4ff;
+      --ink: #18202e;
+      --title: #0d162a;
+      --text: #333;
+      --muted: rgba(0,0,0,.6);
+      --line: #e8edf4;
+      --canvas: #f6fafe;
+      --surface: #fff;
+      --surface-soft: #f7f8f8;
+      --danger: #f04438;
+      font-family: "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+      color: var(--ink);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { width: 100%; min-height: 100%; margin: 0; background: var(--canvas); }
+    body { font-size: 14px; overflow-y: auto; }
+    a { color: inherit; text-decoration: none; }
+    button { border: 0; padding: 0; background: none; color: inherit; font: inherit; cursor: pointer; }
+    a:focus-visible, button:focus-visible { outline: 2px solid rgba(2,93,255,.32); outline-offset: 2px; }
+    img { display: block; }
+
+    .topbar { height: 62px; padding: 0 43px 0 16px; background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,.08); display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 5; }
+    .brand { width: 300px; height: 48px; object-fit: contain; }
+    .profile { height: 40px; display: flex; align-items: center; gap: 10px; color: #1f2026; line-height: 20px; }
+    .profile img { width: 40px; height: 40px; }
+    .profile-arrow { width: 10px; height: 10px; border-right: 1.5px solid #6b7280; border-bottom: 1.5px solid #6b7280; transform: rotate(45deg) translateY(-2px); }
+
+    .layout { min-height: calc(100vh - 62px); padding: 20px; display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 20px; align-items: start; overflow: visible; }
+    .sidebar, .workspace { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+    .sidebar { padding: 18px 0; overflow: hidden; }
+    .menu-title { padding: 0 20px 12px; color: var(--muted); font-weight: 600; line-height: 22px; }
+    .menu-group { padding: 8px 0 12px; border-bottom: 1px solid var(--line); }
+    .menu-group:last-child { border-bottom: 0; }
+    .menu-item { min-height: 48px; padding: 0 20px; display: flex; align-items: center; gap: 12px; color: #5f6368; font-size: 16px; line-height: 24px; border-left: 3px solid transparent; transition: background .16s ease, color .16s ease, border-color .16s ease; }
+    .menu-item:hover { background: var(--surface-soft); color: var(--title); }
+    .menu-item.active { color: var(--blue); background: var(--blue-soft); border-left-color: var(--blue); font-weight: 500; }
+    .menu-item.loading-link { cursor: wait; }
+    .menu-icon { position: relative; width: 22px; height: 22px; flex: none; color: inherit; }
+    .menu-icon::before, .menu-icon::after { content: ""; position: absolute; box-sizing: border-box; }
+    .icon-home::before { left: 3px; top: 5px; width: 16px; height: 13px; border: 1.8px solid currentColor; border-top: 0; border-radius: 2px; }
+    .icon-home::after { left: 4px; top: 2px; width: 14px; height: 14px; border-left: 1.8px solid currentColor; border-top: 1.8px solid currentColor; transform: rotate(45deg); border-radius: 2px 0 0; }
+    .icon-project::before { inset: 3px; border: 1.8px solid currentColor; border-radius: 4px; }
+    .icon-project::after { left: 6px; top: 6px; width: 4px; height: 4px; border-radius: 1px; background: currentColor; box-shadow: 6px 0 0 currentColor, 0 6px 0 currentColor, 6px 6px 0 currentColor; }
+    .icon-approval::before { left: 4px; top: 4px; width: 14px; height: 14px; border: 1.8px solid currentColor; border-radius: 50%; }
+    .icon-approval::after { left: 8px; top: 7px; width: 7px; height: 5px; border-left: 1.8px solid currentColor; border-bottom: 1.8px solid currentColor; transform: rotate(-45deg); }
+    .icon-seal::before { left: 5px; top: 3px; width: 12px; height: 10px; border: 1.8px solid currentColor; border-radius: 5px 5px 3px 3px; }
+    .icon-seal::after { left: 3px; bottom: 4px; width: 16px; height: 5px; border: 1.8px solid currentColor; border-radius: 2px; }
+    .icon-archive::before { left: 3px; top: 6px; width: 16px; height: 12px; border: 1.8px solid currentColor; border-radius: 3px; }
+    .icon-archive::after { left: 7px; top: 3px; width: 8px; height: 5px; border: 1.8px solid currentColor; border-bottom: 0; border-radius: 2px 2px 0 0; }
+    .icon-report::before { left: 4px; bottom: 4px; width: 3px; height: 8px; background: currentColor; border-radius: 1px; box-shadow: 6px -4px 0 currentColor, 12px -8px 0 currentColor; }
+    .icon-report::after { left: 3px; bottom: 3px; width: 16px; height: 1.8px; background: currentColor; border-radius: 1px; }
+    .icon-client::before { left: 4px; top: 4px; width: 14px; height: 14px; border: 1.8px solid currentColor; border-radius: 50%; }
+    .icon-client::after { left: 9px; top: 7px; width: 4px; height: 4px; border-radius: 50%; background: currentColor; box-shadow: -4px 7px 0 -1px currentColor, 4px 7px 0 -1px currentColor; }
+    .icon-library::before { left: 5px; top: 3px; width: 11px; height: 16px; border: 1.8px solid currentColor; border-radius: 2px; }
+    .icon-library::after { left: 8px; top: 3px; width: 1.8px; height: 16px; background: currentColor; }
+    .icon-template::before { left: 4px; top: 5px; width: 13px; height: 13px; border: 1.8px solid currentColor; border-radius: 2px; }
+    .icon-template::after { left: 7px; top: 2px; width: 13px; height: 13px; border: 1.8px solid currentColor; border-radius: 2px; background: var(--surface); }
+    .badge { margin-left: auto; min-width: 26px; height: 22px; border-radius: 11px; padding: 0 8px; display: inline-flex; align-items: center; justify-content: center; color: #fff; background: var(--danger); font-size: 13px; font-weight: 600; }
+    .loading-toast { position: fixed; left: 50%; top: 86px; z-index: 20; height: 40px; padding: 0 18px; border-radius: 8px; display: inline-flex; align-items: center; gap: 10px; color: var(--title); background: #fff; border: 1px solid var(--line); box-shadow: 0 4px 12px rgba(0,0,0,.08); opacity: 0; pointer-events: none; transform: translate(-50%, -8px); transition: opacity .16s ease, transform .16s ease; }
+    .loading-toast.show { opacity: 1; transform: translate(-50%, 0); }
+    .loading-spinner { width: 16px; height: 16px; border-radius: 50%; border: 2px solid #dce6fb; border-top-color: var(--blue); animation: spin .8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .workspace { padding: 14px 0 40px; }
+    .home-inner { width: min(1500px, calc(100% - 56px)); margin: 0 auto; }
+    .page-heading { margin: 6px 0 18px; color: #101828; font-size: 26px; line-height: 36px; font-weight: 600; letter-spacing: .2px; }
+    .toolbar { height: 44px; display: flex; align-items: center; justify-content: space-between; }
+    .tabs { display: flex; align-items: center; gap: 14px; }
+    .nav-tab { height: 44px; padding: 0 22px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; color: var(--title); font-size: 15px; line-height: 21px; transition: color .15s ease, background .15s ease, transform .12s ease; }
+    .nav-tab:hover { background: #f4f7ff; color: var(--blue); }
+    .nav-tab:active { transform: scale(.98); }
+    .nav-tab.active { min-width: 80px; border: 1px solid #d3e3ff; background: #eaf2ff; color: var(--blue); font-weight: 500; }
+    .nav-tab.review { min-width: 112px; }
+    .toolbar-actions { display: flex; align-items: center; gap: 16px; }
+    .sort-button { width: 92px; height: 44px; border: 1px solid #cecece; border-radius: 10px; background: #fff; display: flex; align-items: center; justify-content: center; gap: 10px; color: var(--title); font-size: 15px; font-weight: 500; transition: border-color .15s ease, background .15s ease, transform .12s ease; }
+    .sort-button:hover { border-color: #9ab8ff; background: #f7faff; }
+    .sort-button:active { background: #eaf2ff; transform: scale(.98); }
+    .sort-button img { width: 16px; height: 16px; }
+    .view-switch { width: 128px; height: 44px; border: 1px solid #cecece; border-radius: 10px; background: #fff; display: grid; grid-template-columns: 1fr 1fr; overflow: hidden; }
+    .view-button { height: 42px; display: grid; place-items: center; transition: background .15s ease, transform .12s ease; }
+    .view-button:hover { background: #f4f7ff; }
+    .view-button:active { transform: scale(.96); }
+    .view-button.active { border: 1px solid #d1e2ff; border-radius: 9px; background: #eaf2ff; }
+    .view-button img { width: 24px; height: 24px; }
+    .create-button { width: 92px; height: 44px; border-radius: 10px; background: var(--blue); color: #fff; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; font-weight: 500; transition: background .15s ease, transform .12s ease, box-shadow .15s ease; }
+    .create-button:hover { background: #0052e0; box-shadow: 0 6px 16px rgba(2, 93, 255, .18); }
+    .create-button:active { background: #0046c1; transform: scale(.98); }
+    .create-button img { width: 20px; height: 20px; filter: brightness(0) invert(1); }
+    .section-title { margin: 34px 0 16px; color: #172033; font-size: 17px; line-height: 24px; font-weight: 500; }
+    .projects { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; align-content: start; }
+    .new-card, .project-card { position: relative; min-width: 0; height: 190px; border-radius: 16px; cursor: pointer; transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease; }
+    .new-card { border: 2px dashed #d7e4f7; background: #fff; box-shadow: 0 1px 2px rgba(20,55,110,.04), 0 10px 26px -10px rgba(20,55,110,.08); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 28px; }
+    .new-card:hover, .new-card:focus-visible { border-color: #8eb5ff; box-shadow: 0 10px 28px rgba(20,55,110,.12); transform: translateY(-2px); }
+    .new-card:active { transform: translateY(0) scale(.995); }
+    .plus-circle { width: 60px; height: 60px; border-radius: 50%; background: #dce9ff; display: grid; place-items: center; }
+    .plus-circle img { width: 32px; height: 32px; }
+    .new-label { color: #172033; font-size: 20px; line-height: 28px; font-weight: 500; }
+    .project-card { border: 1px solid var(--line); background: linear-gradient(180deg, rgba(232,241,255,.95) 0%, rgba(248,251,255,.86) 48%, rgba(255,255,255,0) 100%), #fff; box-shadow: 0 1px 2px rgba(20,55,110,.04), 0 10px 26px -10px rgba(20,55,110,.08); padding: 18px 22px; }
+    .project-card:hover, .project-card:focus-visible { border-color: #9ab8ff; box-shadow: 0 12px 28px rgba(20,55,110,.13); transform: translateY(-2px); outline: 0; }
+    .project-card:active { transform: translateY(0) scale(.995); }
+    .project-icon { width: 48px; height: 48px; opacity: .8; }
+    .project-name { margin: 18px 0 0; overflow: hidden; color: var(--ink); font-size: 15px; line-height: 21px; font-weight: 500; white-space: nowrap; text-overflow: ellipsis; }
+    .file-count { margin: 8px 0 0; color: #666; font-size: 14px; line-height: 20px; }
+    .project-meta { position: absolute; left: 22px; right: 18px; bottom: 20px; display: flex; align-items: center; justify-content: space-between; }
+    .project-date { min-width: 0; color: #999; font-size: 14px; line-height: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .card-actions { display: flex; align-items: center; gap: 12px; flex: none; }
+    .icon-button { width: 20px; height: 20px; border-radius: 4px; display: grid; place-items: center; transition: background .15s ease, transform .12s ease; }
+    .icon-button:hover { background: #eaf2ff; }
+    .icon-button:active { transform: scale(.9); }
+    .icon-button img { width: 20px; height: 20px; }
+    .projects.list-view { grid-template-columns: 1fr; gap: 12px; }
+    .projects.list-view .new-card { height: 94px; flex-direction: row; gap: 14px; }
+    .projects.list-view .plus-circle { width: 44px; height: 44px; }
+    .projects.list-view .plus-circle img { width: 26px; height: 26px; }
+    .projects.list-view .new-label { font-size: 17px; }
+    .projects.list-view .project-card { height: 94px; padding: 18px 22px 18px 84px; }
+    .projects.list-view .project-icon { position: absolute; left: 22px; top: 23px; width: 48px; height: 48px; }
+    .projects.list-view .project-name { margin: 0; max-width: 42%; }
+    .projects.list-view .file-count { margin-top: 7px; }
+    .projects.list-view .project-meta { left: auto; right: 22px; bottom: 28px; width: 42%; }
+
+    @media (max-width: 1280px) { .home-inner { width: calc(100% - 56px); } .projects { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+    @media (max-width: 1000px) { .layout { min-height: auto; grid-template-columns: 1fr; } .sidebar { display: none; } .projects { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 640px) { .workspace { padding: 14px 0 40px; } .home-inner { width: calc(100% - 28px); } .toolbar { height: auto; align-items: flex-start; gap: 14px; } .toolbar-actions { gap: 8px; flex-wrap: wrap; justify-content: flex-end; } .sort-button { width: 88px; } .view-switch { width: 112px; } .create-button { width: 92px; } .section-title { margin-top: 28px; } .projects { grid-template-columns: 1fr; } .projects.list-view .project-meta { display: none; } }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a href="index.html"><img class="brand" src="assets/huakun-contract-logo.png" alt="华鲲元启 | 合同审查"></a>
+    <div class="profile"><img src="assets/avatar.svg" alt=""><span>易天行</span><span class="profile-arrow"></span></div>
+  </header>
+
+  <main class="layout">
+    <aside class="sidebar" aria-label="功能菜单">
+      <div class="menu-title">功能菜单</div>
+      <div class="menu-group">
+        <a class="menu-item" href="index.html"><span class="menu-icon icon-home"></span><span>首页</span></a>
+        <a class="menu-item active" href="contract-dashboard.html"><span class="menu-icon icon-project"></span><span>项目及审查</span></a>
+        <a class="menu-item loading-link" href="#"><span class="menu-icon icon-approval"></span><span>审批管理</span></a>
+        <a class="menu-item loading-link" href="#"><span class="menu-icon icon-seal"></span><span>施印管理</span></a>
+        <a class="menu-item loading-link" href="#"><span class="menu-icon icon-archive"></span><span>归档管理</span></a>
+      </div>
+      <div class="menu-title">数据中心</div>
+      <div class="menu-group"><a class="menu-item loading-link" href="#"><span class="menu-icon icon-report"></span><span>数据报表</span></a><a class="menu-item loading-link" href="#"><span class="menu-icon icon-client"></span><span>大客户追踪</span></a></div>
+      <div class="menu-title">配置管理</div>
+      <div class="menu-group"><a class="menu-item loading-link" href="#"><span class="menu-icon icon-library"></span><span>标准合同库</span></a><a class="menu-item loading-link" href="#"><span class="menu-icon icon-template"></span><span>合同模板库</span></a></div>
+    </aside>
+
+    <section class="workspace" aria-label="项目列表">
+      <div class="home-inner">
+        <h1 class="page-heading">智能合同审核</h1>
+        <div class="toolbar">
+          <nav class="tabs" aria-label="首页栏目">
+            <button class="nav-tab active" type="button">项目</button>
+            <button class="nav-tab review" type="button">审查清单</button>
+          </nav>
+          <div class="toolbar-actions">
+            <button class="sort-button" type="button"><span>最近</span><img src="assets/chevron-down.svg" alt=""></button>
+            <div class="view-switch" aria-label="视图切换">
+              <button class="view-button grid-toggle active" type="button" title="网格视图" aria-label="网格视图"><img src="assets/view-grid-active.svg" alt=""></button>
+              <button class="view-button list-toggle" type="button" title="列表视图" aria-label="列表视图"><img src="assets/view-list-inactive.svg" alt=""></button>
+            </div>
+            <a class="create-button" href="contract-management.html?action=pre-review"><img src="assets/add.svg" alt=""><span>新建</span></a>
+          </div>
+        </div>
+
+        <h2 class="section-title">最近创建的项目</h2>
+        <section class="projects" aria-label="项目列表">
+          <a class="new-card" href="contract-management.html?action=pre-review"><span class="plus-circle"><img src="assets/add.svg" alt=""></span><span class="new-label">新建</span></a>
+          <article class="project-card" tabindex="0" data-href="detail.html"><img class="project-icon" src="assets/project-contract.png" alt=""><h2 class="project-name">供应链保理合同审查项目</h2><p class="file-count">5个文件</p><div class="project-meta"><span class="project-date">2026-07-22 09:20:47</span><div class="card-actions"><button class="icon-button" type="button" title="编辑项目"><img src="assets/edit.svg" alt=""></button><button class="icon-button" type="button" title="删除项目"><img src="assets/delete.svg" alt=""></button></div></div></article>
+          <article class="project-card" tabindex="0" data-href="detail.html"><img class="project-icon" src="assets/project-contract.png" alt=""><h2 class="project-name">信息技术服务合同审查项目</h2><p class="file-count">4个文件</p><div class="project-meta"><span class="project-date">2026-07-21 16:45:12</span><div class="card-actions"><button class="icon-button" type="button" title="编辑项目"><img src="assets/edit.svg" alt=""></button><button class="icon-button" type="button" title="删除项目"><img src="assets/delete.svg" alt=""></button></div></div></article>
+          <article class="project-card" tabindex="0" data-href="detail.html"><img class="project-icon" src="assets/project-contract.png" alt=""><h2 class="project-name">年度物料采购合同审查项目</h2><p class="file-count">3个文件</p><div class="project-meta"><span class="project-date">2026-07-20 14:08:33</span><div class="card-actions"><button class="icon-button" type="button" title="编辑项目"><img src="assets/edit.svg" alt=""></button><button class="icon-button" type="button" title="删除项目"><img src="assets/delete.svg" alt=""></button></div></div></article>
+          <article class="project-card" tabindex="0" data-href="detail.html"><img class="project-icon" src="assets/project-contract.png" alt=""><h2 class="project-name">设备融资租赁合同审查项目</h2><p class="file-count">3个文件</p><div class="project-meta"><span class="project-date">2026-07-19 11:36:58</span><div class="card-actions"><button class="icon-button" type="button" title="编辑项目"><img src="assets/edit.svg" alt=""></button><button class="icon-button" type="button" title="删除项目"><img src="assets/delete.svg" alt=""></button></div></div></article>
+          <article class="project-card" tabindex="0" data-href="detail.html"><img class="project-icon" src="assets/project-contract.png" alt=""><h2 class="project-name">应收账款融资合同审查项目</h2><p class="file-count">5个文件</p><div class="project-meta"><span class="project-date">2026-07-18 17:12:05</span><div class="card-actions"><button class="icon-button" type="button" title="编辑项目"><img src="assets/edit.svg" alt=""></button><button class="icon-button" type="button" title="删除项目"><img src="assets/delete.svg" alt=""></button></div></div></article>
+          <article class="project-card" tabindex="0" data-href="detail.html"><img class="project-icon" src="assets/project-contract.png" alt=""><h2 class="project-name">商业秘密保密协议审查项目</h2><p class="file-count">2个文件</p><div class="project-meta"><span class="project-date">2026-07-17 10:27:41</span><div class="card-actions"><button class="icon-button" type="button" title="编辑项目"><img src="assets/edit.svg" alt=""></button><button class="icon-button" type="button" title="删除项目"><img src="assets/delete.svg" alt=""></button></div></div></article>
+          <article class="project-card" tabindex="0" data-href="detail.html"><img class="project-icon" src="assets/project-contract.png" alt=""><h2 class="project-name">公路运输服务合同审查项目</h2><p class="file-count">4个文件</p><div class="project-meta"><span class="project-date">2026-07-16 15:54:29</span><div class="card-actions"><button class="icon-button" type="button" title="编辑项目"><img src="assets/edit.svg" alt=""></button><button class="icon-button" type="button" title="删除项目"><img src="assets/delete.svg" alt=""></button></div></div></article>
+        </section>
+      </div>
+    </section>
+  </main>
+  <div class="loading-toast" role="status" aria-live="polite"><span class="loading-spinner"></span><span>正在加载...</span></div>
+  <script>
+    const loadingToast = document.querySelector('.loading-toast');
+    let loadingTimer;
+
+    document.querySelectorAll('.loading-link').forEach((link) => {
+      link.addEventListener('click', (event) => {
+        event.preventDefault();
+        clearTimeout(loadingTimer);
+        loadingToast.classList.add('show');
+        loadingTimer = setTimeout(() => loadingToast.classList.remove('show'), 1400);
+      });
+    });
+
+    const projects = document.querySelector('.projects');
+    const gridToggle = document.querySelector('.grid-toggle');
+    const listToggle = document.querySelector('.list-toggle');
+
+    function setView(mode) {
+      const isList = mode === 'list';
+      projects.classList.toggle('list-view', isList);
+      gridToggle.classList.toggle('active', !isList);
+      listToggle.classList.toggle('active', isList);
+      gridToggle.querySelector('img').src = isList ? 'assets/view-grid-inactive.svg' : 'assets/view-grid-active.svg';
+      listToggle.querySelector('img').src = isList ? 'assets/view-list-active.svg' : 'assets/view-list-inactive.svg';
+    }
+
+    gridToggle.addEventListener('click', () => setView('grid'));
+    listToggle.addEventListener('click', () => setView('list'));
+
+    document.querySelectorAll('.project-card').forEach((card) => {
+      card.addEventListener('click', (event) => {
+        if (event.target.closest('.icon-button')) return;
+        window.location.href = card.dataset.href;
+      });
+      card.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          window.location.href = card.dataset.href;
+        }
+      });
+    });
+
+    document.querySelectorAll('.icon-button').forEach((button) => {
+      button.addEventListener('click', (event) => {
+        event.stopPropagation();
+        clearTimeout(loadingTimer);
+        loadingToast.classList.add('show');
+        loadingTimer = setTimeout(() => loadingToast.classList.remove('show'), 1000);
+      });
+    });
+  </script>
+</body>
+</html>

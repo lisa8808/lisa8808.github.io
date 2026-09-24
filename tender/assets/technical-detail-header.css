@@ -1,0 +1,18 @@
+.brand {
+  cursor: default;
+}
+
+.brand-product {
+  cursor: pointer;
+  transition: color 0.16s ease, background-color 0.16s ease;
+}
+
+.brand-product:hover {
+  color: var(--color-primary);
+}
+
+.brand-project {
+  cursor: default;
+  font-size: 16px;
+  font-weight: 400;
+}

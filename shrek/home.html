@@ -1,0 +1,889 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; connect-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; object-src 'self' data: blob:; worker-src 'none'; frame-src 'self' data: blob:" />
+    <title>AI-shrek 项目首页</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body class="home-body">
+    <main class="project-home" aria-label="AI-shrek 项目首页">
+      <header class="home-topbar">
+        <a class="home-logo" href="./home.html" aria-label="AI-shrek 首页">
+          <img src="./assets/logo.png" alt="" />
+          <span>AI-shrek</span>
+        </a>
+
+        <div class="user-actions">
+          <button class="avatar-button" type="button" data-user-menu-toggle aria-label="当前用户">A</button>
+          <div class="user-menu" data-user-menu hidden>
+            <button type="button" data-user-action="account"><img class="account-menu-icon" src="./assets/icons/account-info.svg" alt="" /><span>账户信息</span></button>
+            <button type="button" data-user-action="members"><img class="account-menu-icon" src="./assets/icons/member-management.svg" alt="" /><span>成员管理</span></button>
+            <button type="button" data-user-action="cad"><img class="account-menu-icon" src="./assets/icons/design-link.svg" alt="" /><span>设计联动</span></button>
+            <button type="button" data-user-action="models"><img class="account-menu-icon" src="./assets/icons/account-settings.svg" alt="" /><span>模型配置</span></button>
+            <button type="button" data-user-action="services"><img class="account-menu-icon" src="./assets/icons/value-services.svg" alt="" /><span>增值服务</span></button>
+            <button type="button" data-user-action="usage"><img class="account-menu-icon" src="./assets/icons/usage-trace.svg" alt="" /><span>使用轨迹</span></button>
+            <button class="danger" type="button" data-user-action="logout"><img class="account-menu-icon" src="./assets/icons/logout.svg" alt="" /><span>退出登录</span></button>
+          </div>
+        </div>
+      </header>
+
+      <section class="home-toolbar" aria-label="项目工具栏">
+        <div class="toolbar-inner">
+          <h1>我的工作台</h1>
+
+          <div class="toolbar-controls">
+            <label class="project-search">
+              <img class="search-icon" src="./assets/icons/search.svg" alt="" />
+              <input type="search" name="projectSearch" placeholder="请输入名称" autocomplete="off" />
+            </label>
+
+            <label class="sort-select">
+              <select name="sortProject" aria-label="项目排序">
+                <option value="recent">最近更新</option>
+                <option value="created">创建时间</option>
+                <option value="name">名称排序</option>
+              </select>
+            </label>
+
+            <div class="view-switch" aria-label="视图切换">
+              <button class="view-button active" type="button" data-view="grid" aria-label="网格视图">
+                <img class="toolbar-icon" src="./assets/icons/grid.svg" alt="" />
+              </button>
+              <button class="view-button" type="button" data-view="list" aria-label="列表视图">
+                <img class="toolbar-icon" src="./assets/icons/list.svg" alt="" />
+              </button>
+            </div>
+
+            <button class="new-project-button" type="button" data-open-create>
+              <img class="button-icon" src="./assets/icons/add.svg" alt="" />
+              新建
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section class="project-content" aria-label="项目列表">
+        <div class="project-grid" data-project-grid>
+          <button class="create-card" type="button" data-open-create>
+            <span class="create-icon" aria-hidden="true">
+              <img src="./assets/icons/add.svg" alt="" />
+            </span>
+            <span>新建设计项目</span>
+          </button>
+        </div>
+
+      </section>
+    </main>
+
+    <div class="context-menu" data-menu hidden>
+      <button type="button" data-menu-action="rename"><img class="context-menu-icon" src="./assets/icons/project-menu-edit.svg" alt="" /><span>修改名称</span></button>
+      <button type="button" data-menu-action="delete"><img class="context-menu-icon" src="./assets/icons/project-menu-delete.svg" alt="" /><span>删除</span></button>
+    </div>
+
+    <div class="modal-backdrop" data-app-modal hidden>
+      <section class="project-modal app-info-modal" role="dialog" aria-modal="true" aria-labelledby="appModalTitle">
+        <button class="modal-close" type="button" data-close-app-modal aria-label="关闭">×</button>
+        <h2 id="appModalTitle" data-app-modal-title>账户信息</h2>
+        <div class="app-modal-body" data-app-modal-body></div>
+      </section>
+    </div>
+
+    <div class="workspace-toast" data-home-toast hidden></div>
+
+    <script src="./assets/vendor/three.min.js"></script>
+    <script src="./assets/vendor/STLLoader.js"></script>
+    <script>
+      function isSessionAuthed() {
+        try {
+          return sessionStorage.getItem("aiShrekAuthed") === "true";
+        } catch (error) {
+          console.warn("Session storage read failed:", error);
+          return true;
+        }
+      }
+
+      function getStoredValue(key, fallback = null) {
+        try {
+          const value = localStorage.getItem(key);
+          return value == null ? fallback : value;
+        } catch (error) {
+          console.warn("Local storage read failed:", key, error);
+          return fallback;
+        }
+      }
+
+      function setStoredValue(key, value) {
+        try {
+          localStorage.setItem(key, value);
+        } catch (error) {
+          console.warn("Local storage write failed:", key, error);
+        }
+      }
+
+      if (!isSessionAuthed()) {
+        window.location.replace("./index.html");
+      }
+
+      const grid = document.querySelector("[data-project-grid]");
+      const searchInput = document.querySelector("input[name='projectSearch']");
+      const sortSelect = document.querySelector("select[name='sortProject']");
+      const menu = document.querySelector("[data-menu]");
+      const viewButtons = document.querySelectorAll("[data-view]");
+      const userMenu = document.querySelector("[data-user-menu]");
+      const appModal = document.querySelector("[data-app-modal]");
+      const appModalTitle = document.querySelector("[data-app-modal-title]");
+      const appModalBody = document.querySelector("[data-app-modal-body]");
+      const homeToast = document.querySelector("[data-home-toast]");
+      const projectStorageKey = "stl_projects";
+      const usageStorageKey = "ai_shrek_usage_track";
+      const membersStorageKey = "stl_members";
+      const aiModelsStorageKey = "stl_ai_models";
+      const serviceStorageKey = "ai_shrek_services";
+      const thumbCachePrefix = "stl_thumb_v6_";
+      let openMenuProjectId = null;
+      let toastTimer = 0;
+      let lastFocusedElement = null;
+      let thumbCanvas = null;
+      let thumbScene = null;
+      let thumbCamera = null;
+      let thumbRenderer = null;
+      let projects = loadProjects();
+
+      function escapeHtml(value) {
+        return String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      function uid(prefix = "id") {
+        return `${prefix}_${Date.now()}_${Math.random().toString(16).slice(2, 8)}`;
+      }
+
+      function readJson(key, fallback) {
+        try {
+          return JSON.parse(getStoredValue(key)) || fallback;
+        } catch {
+          return fallback;
+        }
+      }
+
+      function writeJson(key, value) {
+        setStoredValue(key, JSON.stringify(value));
+      }
+
+      function simpleHash(value) {
+        let hash = 0;
+        for (let index = 0; index < value.length; index += 1) {
+          hash = ((hash << 5) - hash) + value.charCodeAt(index);
+          hash |= 0;
+        }
+        return (hash >>> 0).toString(16);
+      }
+
+      function dataUrlToArrayBuffer(dataUrl) {
+        const comma = dataUrl.indexOf(",");
+        if (comma < 0) return null;
+        const binary = atob(dataUrl.slice(comma + 1));
+        const buffer = new ArrayBuffer(binary.length);
+        const view = new Uint8Array(buffer);
+        for (let index = 0; index < binary.length; index += 1) view[index] = binary.charCodeAt(index);
+        return buffer;
+      }
+
+      function ensureThumbRenderer() {
+        if (thumbRenderer || typeof THREE === "undefined") return !!thumbRenderer;
+        thumbCanvas = document.createElement("canvas");
+        thumbCanvas.width = 320;
+        thumbCanvas.height = 240;
+        try {
+          thumbRenderer = new THREE.WebGLRenderer({ canvas: thumbCanvas, antialias: true, alpha: true });
+        } catch {
+          thumbRenderer = null;
+          return false;
+        }
+        thumbRenderer.setSize(320, 240);
+        thumbRenderer.setPixelRatio(1);
+        thumbRenderer.setClearColor(0x0C0E10, 1);
+        thumbScene = new THREE.Scene();
+        thumbCamera = new THREE.PerspectiveCamera(28, 320 / 240, 0.1, 5000);
+        thumbScene.add(new THREE.AmbientLight(0xffffff, 0.72));
+        const keyLight = new THREE.DirectionalLight(0xffffff, 0.72);
+        keyLight.position.set(1, 1.2, 1.5);
+        thumbScene.add(keyLight);
+        const fillLight = new THREE.DirectionalLight(0x8eb6ff, 0.34);
+        fillLight.position.set(-1, -0.5, -1);
+        thumbScene.add(fillLight);
+        return true;
+      }
+
+      function renderStlThumbnail(stlDataUrl) {
+        if (!ensureThumbRenderer() || typeof THREE.STLLoader === "undefined") return null;
+        const buffer = dataUrlToArrayBuffer(stlDataUrl);
+        if (!buffer) return null;
+        let geometry;
+        try {
+          geometry = new THREE.STLLoader().parse(buffer);
+        } catch {
+          return null;
+        }
+
+        geometry.computeBoundingBox();
+        const center = new THREE.Vector3();
+        geometry.boundingBox.getCenter(center);
+        geometry.translate(-center.x, -center.y, -center.z);
+        geometry.computeBoundingBox();
+        const size = new THREE.Vector3();
+        geometry.boundingBox.getSize(size);
+        const maxDim = Math.max(size.x, size.y, size.z) || 1;
+        const material = new THREE.MeshPhongMaterial({ color: 0x626b76, specular: 0x454d5d, shininess: 80, flatShading: true });
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.rotation.x = -Math.PI / 2;
+        mesh.position.y = maxDim * 0.44;
+        thumbScene.add(mesh);
+
+        const distance = maxDim * 4.2;
+        thumbCamera.position.set(distance * 0.7, distance * 0.55, distance * 0.7);
+        thumbCamera.up.set(0, 1, 0);
+        thumbCamera.lookAt(0, 0, 0);
+        thumbCamera.updateProjectionMatrix();
+        thumbRenderer.render(thumbScene, thumbCamera);
+        const dataUrl = thumbCanvas.toDataURL("image/png");
+
+        thumbScene.remove(mesh);
+        geometry.dispose();
+        material.dispose();
+        return dataUrl;
+      }
+
+      function getStlThumb(stlDataUrl) {
+        if (!stlDataUrl) return null;
+        const key = `${thumbCachePrefix}${simpleHash(stlDataUrl.slice(0, 4096))}`;
+        try {
+          const cached = getStoredValue(key);
+          if (cached) return cached;
+        } catch {}
+        const thumb = renderStlThumbnail(stlDataUrl);
+        if (thumb) {
+          try { setStoredValue(key, thumb); } catch {}
+        }
+        return thumb;
+      }
+
+      function getEntryExtension(entry) {
+        const name = String(entry.name || "").toLowerCase();
+        return String(entry.fileType || name.split(".").pop() || "").toLowerCase();
+      }
+
+      function generatePlaceholderThumbnail(fileName, fileType) {
+        const ext = (fileType || fileName?.split(".").pop() || "3D").toUpperCase().slice(0, 8);
+        const colors = { STL: "#5b6abf", STEP: "#3b82f6", STP: "#3b82f6", PRT: "#8b5cf6", ASM: "#a78bfa", OBJ: "#06b6d4", PLY: "#10b981", "3MF": "#f59e0b", PDF: "#ef4444", DWG: "#f97316", DXF: "#f97316" };
+        const color = colors[ext] || "#6b7280";
+        try {
+          const c = document.createElement("canvas");
+          c.width = 320; c.height = 240;
+          const x = c.getContext("2d");
+          x.fillStyle = "#13151a"; x.fillRect(0, 0, 320, 240);
+          x.fillStyle = "#1e2128"; x.strokeStyle = color; x.lineWidth = 2;
+          x.fillRect(100, 70, 120, 100); x.strokeRect(100, 70, 120, 100);
+          x.fillStyle = color; x.font = "bold 28px Arial,sans-serif";
+          x.textAlign = "center"; x.textBaseline = "middle";
+          x.fillText(ext, 160, 130);
+          x.fillStyle = "#4b5563"; x.font = "12px Arial,sans-serif";
+          x.fillText("3D CAD", 160, 155);
+          return c.toDataURL("image/png");
+        } catch (e) {
+          return "";
+        }
+      }
+
+      function getEntryThumbnail(entry) {
+        if (entry.thumbnailUrl && entry.thumbnailUrl !== "placeholder") return entry.thumbnailUrl;
+        const ext = getEntryExtension(entry);
+        if (["jpg", "jpeg", "png", "webp", "bmp"].includes(ext) && entry.data) return entry.data;
+        if (ext === "stl" && entry.data) {
+          const thumb = getStlThumb(entry.data);
+          if (thumb) return thumb;
+        }
+        return generatePlaceholderThumbnail(entry.name, entry.fileType);
+      }
+
+      function hasThumbnailSource(entry) {
+        return Boolean(entry?.thumbnailUrl || entry?.data);
+      }
+
+      function getAllUploadEntries(projectId) {
+        const entriesByIdentity = new Map();
+        try {
+          for (let index = 0; index < localStorage.length; index += 1) {
+            const key = localStorage.key(index);
+            if (!key || (!key.startsWith("stl_upload_history_") && !key.startsWith("upload_history_"))) continue;
+            const arr = readJson(key, []);
+            if (!Array.isArray(arr)) continue;
+            arr.forEach((entry) => {
+              if (projectId && entry.projectId !== projectId && !key.includes("_" + projectId + "_")) return;
+              const identity = String(entry.id || entry.name || "file") + "_" + String(entry.time || entry.updatedAt || 0);
+              const existing = entriesByIdentity.get(identity);
+              if (!existing || (!hasThumbnailSource(existing) && hasThumbnailSource(entry))) {
+                entriesByIdentity.set(identity, entry);
+              }
+            });
+          }
+        } catch {}
+        const entries = [...entriesByIdentity.values()];
+        return entries.sort((a, b) => Number(b.time || b.updatedAt || 0) - Number(a.time || a.updatedAt || 0));
+      }
+
+      function formatRelative(timestamp) {
+        const diff = Date.now() - Number(timestamp || Date.now());
+        const minutes = Math.max(1, Math.floor(diff / 60000));
+        if (minutes < 60) return `${minutes}分钟前`;
+        const hours = Math.floor(minutes / 60);
+        if (hours < 24) return `${hours}小时前`;
+        return `${Math.floor(hours / 24)}天前`;
+      }
+
+      function getFileCount(projectId) {
+        return ["general", "precision"].reduce((sum, mode) => {
+          const sourceMode = mode === "general" ? "zhongxing" : "jingmi";
+          return sum + readJson(`upload_history_${projectId}_${mode}`, []).length + readJson(`stl_upload_history_${projectId}_${sourceMode}`, []).length;
+        }, 0);
+      }
+
+      function getVersionCount(projectId) {
+        return readJson(`stl_versions_project_${projectId}`, []).length;
+      }
+
+      function normalizeProject(project, index) {
+        const id = String(project.id || project.projectId || uid("project"));
+        const thumbnailKey = `ai_shrek_project_thumbnail_${id}`;
+        let capturedThumbnailUrl = getStoredValue(thumbnailKey, "");
+        if (!capturedThumbnailUrl) {
+          try { capturedThumbnailUrl = sessionStorage.getItem(thumbnailKey) || ""; } catch {}
+        }
+        const uploadThumbnailUrl = getAllUploadEntries(id).reduce((thumbnail, entry) => thumbnail || getEntryThumbnail(entry), "");
+        const thumbnailUrl = capturedThumbnailUrl || uploadThumbnailUrl || project.thumbnailUrl || "";
+        return {
+          id,
+          name: project.name || project.title || `项目_${new Date().toLocaleDateString("zh-CN").replaceAll("/", "")}`,
+          desc: project.desc || "",
+          createdAt: project.createdAt || Date.now() - index * 3600000,
+          updatedAt: project.updatedAt || Date.now() - index * 3600000,
+          fileCount: getFileCount(id) || project.fileCount || project.files || 0,
+          versionCount: getVersionCount(id) || project.versionCount || project.versions || 0,
+          thumbnailUrl,
+          theme: project.theme || (index === 0 ? "blank" : `arm-${String.fromCharCode(97 + (index % 6))}`)
+        };
+      }
+
+      function loadProjects() {
+        const cached = readJson(projectStorageKey, []);
+        const list = cached.length ? cached : [];
+        const normalized = list.map(normalizeProject);
+        writeJson(projectStorageKey, normalized);
+        return normalized;
+      }
+
+      function saveProjects() {
+        projects = projects.map(normalizeProject);
+        writeJson(projectStorageKey, projects);
+      }
+
+      function trackUsage(type, tokens, desc = "", projectName = "") {
+        const records = readJson(usageStorageKey, []);
+        records.unshift({
+          id: uid("usage"),
+          type,
+          tokens,
+          project: projectName,
+          creativeType: type === "sim" ? "仿真分析" : "通用建模",
+          creativeDesc: desc,
+          time: Date.now()
+        });
+        writeJson(usageStorageKey, records.slice(0, 200));
+      }
+
+      function showToast(message) {
+        homeToast.textContent = message;
+        homeToast.hidden = false;
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => {
+          homeToast.hidden = true;
+        }, 1800);
+      }
+
+      function createProject(name, desc = "") {
+        const project = normalizeProject({
+          id: uid("project"),
+          name: name || `项目_${new Date().toLocaleDateString("zh-CN").replaceAll("/", "")}`,
+          desc,
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+          fileCount: 0,
+          versionCount: 0,
+          theme: "blank"
+        }, 0);
+        projects.unshift(project);
+        saveProjects();
+        trackUsage("generate", 500, "创建项目", project.name);
+        return project;
+      }
+
+      function goWorkspace(projectId) {
+        window.location.href = `./workspace.html?project=${encodeURIComponent(projectId)}`;
+      }
+
+      function renderProjects() {
+        const query = searchInput.value.trim().toLowerCase();
+        projects = projects.map(normalizeProject);
+        writeJson(projectStorageKey, projects);
+        const sorted = [...projects].sort((a, b) => {
+          if (sortSelect.value === "created") return b.createdAt - a.createdAt;
+          if (sortSelect.value === "name") return a.name.localeCompare(b.name, "zh-CN");
+          return b.updatedAt - a.updatedAt;
+        });
+
+        const filtered = sorted.filter((project) => `${project.name} ${project.desc}`.toLowerCase().includes(query));
+        grid.querySelectorAll(".project-card").forEach((card) => card.remove());
+
+        filtered.forEach((project) => {
+          grid.appendChild(createProjectCard(project));
+        });
+
+      }
+
+      function createProjectCard(project) {
+        const card = document.createElement("article");
+        const title = escapeHtml(project.name);
+        const emptyThumb = `
+            <div class="project-empty-thumb" aria-hidden="true">
+              <img class="project-empty-icon" src="./assets/icons/default-cad-empty.png" alt="" />
+              <span>暂无文件</span>
+            </div>`;
+        card.className = "project-card";
+        card.dataset.projectId = String(project.id);
+        card.tabIndex = 0;
+        card.innerHTML = `
+          <div class="project-thumb ${project.thumbnailUrl ? "has-thumbnail" : "empty-thumb"} ${project.theme}">${project.thumbnailUrl ? `<img class="project-thumbnail-image" src="${escapeHtml(project.thumbnailUrl)}" alt="${title} 3D 模型缩略图" />` : emptyThumb}
+          </div>
+          <div class="project-info">
+            <div class="project-title-row">
+              <h2 class="project-title" title="${title}" data-full-title="${title}"><span>${title}</span></h2>
+              <button class="more-button" type="button" aria-label="更多操作">
+                <img src="./assets/icons/more.svg" alt="" />
+              </button>
+            </div>
+            <div class="project-meta">
+              <span class="file-count"><img src="./assets/icons/file.svg" alt="" />${project.fileCount}个文件</span>
+              <span class="version-count"><img src="./assets/icons/version.svg" alt="" />${project.versionCount}个版本</span>
+            </div>
+            <div class="updated-time"><img src="./assets/icons/time.svg" alt="" />${formatRelative(project.updatedAt)}</div>
+          </div>
+        `;
+        return card;
+      }
+
+      function openAppModal(title, html) {
+        lastFocusedElement = document.activeElement;
+        appModalTitle.textContent = title;
+        appModalBody.innerHTML = html;
+        appModal.hidden = false;
+        requestAnimationFrame(() => {
+          const focusable = appModal.querySelector("button, input, select, textarea, a[href]");
+          focusable?.focus?.();
+        });
+      }
+
+      function closeAppModal() {
+        appModal.hidden = true;
+        lastFocusedElement?.focus?.();
+      }
+
+      function trapModalFocus(event, container) {
+        if (event.key !== "Tab" || container.hidden) return;
+        const focusable = [...container.querySelectorAll("button, input, select, textarea, a[href], [tabindex]:not([tabindex='-1'])")].filter((el) => !el.disabled && el.offsetParent !== null);
+        if (!focusable.length) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
+
+      function renderUsageModal(filters = {}) {
+        const records = readJson(usageStorageKey, []);
+        const filtered = records.filter((item) => {
+          const time = Number(item.time || 0);
+          if (filters.type && item.type !== filters.type) return false;
+          if (filters.start && time < new Date(`${filters.start}T00:00:00`).getTime()) return false;
+          if (filters.end && time > new Date(`${filters.end}T23:59:59`).getTime()) return false;
+          return true;
+        });
+        const total = filtered.reduce((sum, item) => sum + Math.abs(item.tokens || 0), 0);
+        const today = new Date().toDateString();
+        const rows = filtered.slice(0, 30).map((item) => `
+          <tr><td>${escapeHtml(item.type)}</td><td>${escapeHtml(item.creativeType || "-")}</td><td>${escapeHtml(item.project || "-")}</td><td>${escapeHtml(item.creativeDesc || "-")}</td><td>${item.tokens}</td><td>${new Date(item.time).toLocaleString("zh-CN")}</td></tr>
+        `).join("");
+        openAppModal("使用轨迹", `
+          <div class="stats-grid"><span>筛选调用 <b>${filtered.length}</b></span><span>筛选额度 <b>${total}</b></span><span>今日调用 <b>${filtered.filter((r) => new Date(r.time).toDateString() === today).length}</b></span><span>总记录 <b>${records.length}</b></span></div>
+          <form class="inline-form compact" data-usage-filter><input type="date" name="start" value="${escapeHtml(filters.start || "")}" /><input type="date" name="end" value="${escapeHtml(filters.end || "")}" /><select name="type"><option value="">全部类型</option><option value="chat" ${filters.type === "chat" ? "selected" : ""}>AI 对话</option><option value="generate" ${filters.type === "generate" ? "selected" : ""}>生成/导入</option><option value="sim" ${filters.type === "sim" ? "selected" : ""}>仿真</option></select><button type="submit">筛选</button></form>
+          <table class="info-table"><thead><tr><th>类型</th><th>业务</th><th>项目</th><th>描述</th><th>额度</th><th>时间</th></tr></thead><tbody>${rows || `<tr><td colspan="6">暂无算力记录</td></tr>`}</tbody></table>
+        `);
+      }
+
+      function renderMembersModal() {
+        const members = readJson(membersStorageKey, [
+          { id: "m_admin", name: "管理员", email: "admin@ai-shrek.local", account: "admin", password: "admin123", role: "admin", joinedAt: Date.now() - 86400000 },
+          { id: "m_engineer", name: "结构工程师", email: "engineer@ai-shrek.local", account: "engineer", password: "engineer123", role: "member", joinedAt: Date.now() - 3600000 }
+        ]);
+        writeJson(membersStorageKey, members);
+        const rows = members.map((item) => `
+          <tr data-member-id="${escapeHtml(item.id)}"><td>${escapeHtml(item.name)}</td><td>${escapeHtml(item.account || item.email)}</td><td><span class="masked-pass" data-pass="${escapeHtml(item.password || "admin123")}">••••••</span></td><td>${item.role === "admin" ? "管理员" : "成员"}</td><td>${new Date(item.joinedAt).toLocaleDateString("zh-CN")}</td><td><button class="text-action" type="button" data-member-pass>显示</button><button class="text-action danger" type="button" data-member-delete>删除</button></td></tr>
+        `).join("");
+        openAppModal("成员管理", `
+          <div class="modal-note">V1.0 使用 localStorage 模拟 RBAC，管理员可管理成员，成员仅能管理本人项目。</div>
+          <table class="info-table"><thead><tr><th>姓名</th><th>账号</th><th>密码</th><th>角色</th><th>加入时间</th><th>操作</th></tr></thead><tbody>${rows}</tbody></table>
+          <form class="inline-form" data-add-member><input name="name" placeholder="成员姓名" required /><input name="account" placeholder="登录账号" required /><input name="password" placeholder="初始密码" required /><select name="role"><option value="member">成员</option><option value="admin">管理员</option></select><button type="submit">添加成员</button></form>
+        `);
+      }
+
+      function renderCadModal() {
+        const cfg = readJson("ai_shrek_cad_link", { cadType: "SolidWorks", path: "", enabled: false });
+        const cards = ["SolidWorks", "UG NX", "CREO"].map((name) => `<button class="cad-card ${cfg.cadType === name ? "active" : ""}" type="button" data-cad-choice="${name}"><strong>${name}</strong><span>${name === "UG NX" ? "prt / asm / step" : "参数联动 / 文件同步"}</span></button>`).join("");
+        openAppModal("设计联动", `
+          <div class="modal-note">实验功能：保存 SolidWorks / UG NX / CREO 联动配置，后续接入 CAD 插件。</div>
+          <div class="cad-grid">${cards}</div>
+          <form class="stack-form" data-cad-form>
+            <label>CAD 类型<select name="cadType"><option ${cfg.cadType === "SolidWorks" ? "selected" : ""}>SolidWorks</option><option ${cfg.cadType === "UG NX" ? "selected" : ""}>UG NX</option><option ${cfg.cadType === "CREO" ? "selected" : ""}>CREO</option></select></label>
+            <label>安装路径<input name="path" value="${escapeHtml(cfg.path)}" placeholder="/Applications/SolidWorks" /></label>
+            <label class="check-line"><input name="enabled" type="checkbox" ${cfg.enabled ? "checked" : ""} /> 启用设计联动</label>
+            <button type="submit">保存配置</button>
+          </form>
+        `);
+      }
+
+      function renderModelsModal() {
+        const models = readJson(aiModelsStorageKey, [
+          { id: "model_default", name: "DeepSeek", baseUrl: "https://api.deepseek.com/v1", model: "deepseek-chat", apiKey: "", isDefault: true },
+          { id: "model_opus", name: "Claude Opus", baseUrl: "https://open.palebluedot.ai/v1", model: "anthropic/claude-opus-4.6", apiKey: "", isDefault: false }
+        ]);
+        writeJson(aiModelsStorageKey, models);
+        const rows = models.map((item) => `<tr data-model-id="${escapeHtml(item.id)}"><td>${escapeHtml(item.name)}</td><td>${escapeHtml(item.model)}</td><td>${escapeHtml(item.baseUrl)}</td><td>${item.isDefault ? "默认" : "备用"}</td><td><button class="text-action" type="button" data-model-default>设为默认</button><button class="text-action danger" type="button" data-model-delete>删除</button></td></tr>`).join("");
+        openAppModal("模型配置", `
+          <div class="modal-note">保存 OpenAI 兼容接口配置，工作台对话会优先读取默认模型。</div>
+          <table class="info-table"><thead><tr><th>名称</th><th>模型</th><th>Base URL</th><th>状态</th><th>操作</th></tr></thead><tbody>${rows}</tbody></table>
+          <form class="inline-form" data-add-model><input name="name" placeholder="名称" required /><input name="baseUrl" placeholder="Base URL" required /><input name="model" placeholder="模型名" required /><input name="apiKey" placeholder="API Key" /><button type="submit">添加模型</button></form>
+        `);
+      }
+
+      function getServices() {
+        const defaults = [
+          { id: "template", name: "基础模版", desc: "标准建模与上传历史", enabled: true },
+          { id: "neutral", name: "中性设计", desc: "STL/STEP/PDF/图片工程图", enabled: true },
+          { id: "native", name: "原生联动", desc: "PRT/ASM 原生 CAD 文件", enabled: false },
+          { id: "structure", name: "结构仿真", desc: "静力、材料、载荷与安全系数", enabled: false },
+          { id: "dynamic", name: "动力学分析", desc: "转速、扭矩、功率估算", enabled: false }
+        ];
+        const cached = readJson(serviceStorageKey, null);
+        return cached || defaults;
+      }
+
+      function renderServicesModal() {
+        const services = getServices();
+        writeJson(serviceStorageKey, services);
+        openAppModal("增值服务", `
+          <div class="service-modal-content">
+            <p class="service-modal-intro">按需开通专业能力，授权状态仅保存在当前设备。</p>
+            <div class="service-grid">${services.map((item) => `
+              <article class="service-card ${item.enabled ? "enabled" : ""}">
+                <div class="service-card-heading">
+                  <strong>${escapeHtml(item.name)}</strong>
+                  <span class="service-status">${item.enabled ? "已开通" : "未开通"}</span>
+                </div>
+                <p class="service-description">${escapeHtml(item.desc)}</p>
+                <div class="service-card-footer">
+                  <span class="service-license-note">${item.enabled ? "本机授权有效" : "需要导入授权文件"}</span>
+                  <button type="button" data-auth-service="${escapeHtml(item.id)}">${item.enabled ? "查看授权" : "开通服务"}</button>
+                </div>
+              </article>
+            `).join("")}</div>
+          </div>
+        `);
+      }
+
+      function renderLicenseModal(serviceId) {
+        const fingerprint = getStoredValue("ai_shrek_fingerprint") || `FP-${Math.random().toString(36).slice(2, 8).toUpperCase()}-${Date.now().toString(36).toUpperCase()}`;
+        setStoredValue("ai_shrek_fingerprint", fingerprint);
+        openAppModal("服务授权", `
+          <div class="modal-note">请将机器码提供给管理员生成授权文件，导入后会在本机缓存开通状态。</div>
+          <dl class="info-list"><dt>服务 ID</dt><dd>${escapeHtml(serviceId)}</dd><dt>机器码</dt><dd>${escapeHtml(fingerprint)}</dd></dl>
+          <form class="inline-form" data-license-form><input name="license" type="file" accept=".lic,.license,.key,.txt" required /><input type="hidden" name="serviceId" value="${escapeHtml(serviceId)}" /><button type="button" data-copy-fingerprint>复制机器码</button><button type="submit">导入授权</button></form>
+        `);
+      }
+
+      function closeMenu() {
+        menu.hidden = true;
+        openMenuProjectId = null;
+      }
+
+      function renameProjectInline(projectId) {
+        const card = grid.querySelector(`.project-card[data-project-id="${CSS.escape(String(projectId))}"]`);
+        if (!card) return;
+        const titleNode = card.querySelector(".project-title span");
+        if (!titleNode) return;
+        const oldName = titleNode.textContent;
+        const input = document.createElement("input");
+        input.className = "project-title-input";
+        input.value = oldName;
+        input.maxLength = 50;
+        titleNode.replaceWith(input);
+        input.focus();
+        input.select();
+
+        function finish() {
+          const newName = input.value.trim() || oldName;
+          projects = projects.map((project) => project.id === String(projectId) ? { ...project, name: newName, updatedAt: Date.now() } : project);
+          saveProjects();
+          showToast(newName === oldName ? "项目名称未变更" : "项目名称已更新");
+          renderProjects();
+        }
+
+        input.addEventListener("blur", finish, { once: true });
+        input.addEventListener("keydown", (event) => {
+          if (event.key === "Enter") input.blur();
+          if (event.key === "Escape") {
+            input.value = oldName;
+            input.blur();
+          }
+        });
+      }
+
+      function deleteProject(projectId) {
+        const target = projects.find((project) => project.id === String(projectId));
+        if (target && !window.confirm(`确认删除「${target.name}」吗？项目内的文件历史也会被清除。`)) return;
+        projects = projects.filter((project) => project.id !== String(projectId));
+        saveProjects();
+        try {
+          Object.keys(localStorage).forEach((key) => {
+            if (key.includes(`_${projectId}_`) || key.endsWith(`_${projectId}`) || key.startsWith(`stl_project_${projectId}`)) {
+              localStorage.removeItem(key);
+            }
+          });
+        } catch {}
+        showToast("项目已删除");
+        renderProjects();
+      }
+
+      grid.addEventListener("click", (event) => {
+        const createButton = event.target.closest("[data-open-create]");
+        if (createButton) {
+          const project = createProject();
+          goWorkspace(project.id);
+          return;
+        }
+
+        const moreButton = event.target.closest(".more-button");
+        if (moreButton) {
+          event.stopPropagation();
+          const card = moreButton.closest(".project-card");
+          openMenuProjectId = card.dataset.projectId;
+          const rect = moreButton.getBoundingClientRect();
+          menu.style.left = `${Math.min(rect.left, window.innerWidth - 150)}px`;
+          menu.style.top = `${rect.bottom + 8}px`;
+          menu.hidden = false;
+          return;
+        }
+
+        const card = event.target.closest(".project-card");
+        if (card) {
+          goWorkspace(card.dataset.projectId);
+        }
+      });
+
+      grid.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter") return;
+        const card = event.target.closest(".project-card");
+        if (card) goWorkspace(card.dataset.projectId);
+      });
+
+      document.querySelector(".new-project-button").addEventListener("click", () => {
+        const project = createProject();
+        goWorkspace(project.id);
+      });
+
+      menu.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-menu-action]");
+        const action = button?.dataset.menuAction;
+        if (!action || openMenuProjectId == null) return;
+
+        if (action === "rename") {
+          renameProjectInline(openMenuProjectId);
+        }
+
+        if (action === "delete") {
+          deleteProject(openMenuProjectId);
+        }
+
+        closeMenu();
+      });
+
+      searchInput.addEventListener("input", renderProjects);
+      sortSelect.addEventListener("change", renderProjects);
+
+      document.querySelector("[data-user-menu-toggle]").addEventListener("click", (event) => {
+        event.stopPropagation();
+        userMenu.hidden = !userMenu.hidden;
+      });
+
+      userMenu.addEventListener("click", (event) => {
+        const actionButton = event.target.closest("[data-user-action]");
+        const action = actionButton?.dataset.userAction;
+        if (!action) return;
+        userMenu.hidden = true;
+        if (action === "account") {
+          openAppModal("账户信息", `<dl class="info-list"><dt>用户名</dt><dd>admin</dd><dt>邮箱</dt><dd>admin@ai-shrek.local</dd><dt>套餐等级</dt><dd>免费版 · 每日 1000 额度</dd><dt>注册时间</dt><dd>${new Date().toLocaleDateString("zh-CN")}</dd></dl>`);
+        }
+        if (action === "members") renderMembersModal();
+        if (action === "cad") renderCadModal();
+        if (action === "models") renderModelsModal();
+        if (action === "services") renderServicesModal();
+        if (action === "usage") renderUsageModal();
+        if (action === "logout") {
+          sessionStorage.removeItem("aiShrekAuthed");
+          window.location.replace("./index.html");
+        }
+      });
+
+      appModal.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const memberForm = event.target.closest("[data-add-member]");
+        const cadForm = event.target.closest("[data-cad-form]");
+        const modelForm = event.target.closest("[data-add-model]");
+        const licenseForm = event.target.closest("[data-license-form]");
+        const usageForm = event.target.closest("[data-usage-filter]");
+        if (usageForm) {
+          const data = new FormData(usageForm);
+          renderUsageModal({ start: data.get("start"), end: data.get("end"), type: data.get("type") });
+          showToast("使用轨迹已筛选");
+          return;
+        }
+        if (memberForm) {
+          const data = new FormData(memberForm);
+          const members = readJson(membersStorageKey, []);
+          members.push({ id: uid("member"), name: data.get("name"), email: `${data.get("account")}@ai-shrek.local`, account: data.get("account"), password: data.get("password"), role: data.get("role"), joinedAt: Date.now() });
+          writeJson(membersStorageKey, members);
+          renderMembersModal();
+          showToast("成员已添加");
+        }
+        if (cadForm) {
+          const data = new FormData(cadForm);
+          writeJson("ai_shrek_cad_link", { cadType: data.get("cadType"), path: data.get("path"), enabled: data.get("enabled") === "on" });
+          closeAppModal();
+          showToast("CAD 联动配置已保存");
+        }
+        if (modelForm) {
+          const data = new FormData(modelForm);
+          const models = readJson(aiModelsStorageKey, []);
+          models.push({ id: uid("model"), name: data.get("name"), baseUrl: data.get("baseUrl"), model: data.get("model"), apiKey: data.get("apiKey"), isDefault: models.length === 0 });
+          writeJson(aiModelsStorageKey, models);
+          renderModelsModal();
+          showToast("模型已添加");
+        }
+        if (licenseForm) {
+          const data = new FormData(licenseForm);
+          const serviceId = data.get("serviceId");
+          const services = getServices().map((item) => item.id === serviceId ? { ...item, enabled: true, licensedAt: Date.now() } : item);
+          writeJson(serviceStorageKey, services);
+          renderServicesModal();
+          showToast("授权文件已导入");
+        }
+      });
+
+      appModal.addEventListener("click", (event) => {
+        const cadChoice = event.target.closest("[data-cad-choice]");
+        const serviceAuth = event.target.closest("[data-auth-service]");
+        const copyFingerprint = event.target.closest("[data-copy-fingerprint]");
+        const memberPass = event.target.closest("[data-member-pass]");
+        const memberDelete = event.target.closest("[data-member-delete]");
+        const modelDefault = event.target.closest("[data-model-default]");
+        const modelDelete = event.target.closest("[data-model-delete]");
+        if (cadChoice) {
+          const select = appModal.querySelector("[data-cad-form] select[name='cadType']");
+          if (select) select.value = cadChoice.dataset.cadChoice;
+          appModal.querySelectorAll(".cad-card").forEach((card) => card.classList.toggle("active", card === cadChoice));
+        }
+        if (serviceAuth) renderLicenseModal(serviceAuth.dataset.authService);
+        if (copyFingerprint) {
+          navigator.clipboard?.writeText(getStoredValue("ai_shrek_fingerprint", ""));
+          showToast("机器码已复制");
+        }
+        if (memberPass) {
+          const pass = memberPass.closest("tr").querySelector(".masked-pass");
+          const isMasked = pass.textContent.includes("•");
+          pass.textContent = isMasked ? pass.dataset.pass : "••••••";
+          memberPass.textContent = isMasked ? "隐藏" : "显示";
+        }
+        if (memberDelete) {
+          const id = memberDelete.closest("tr").dataset.memberId;
+          writeJson(membersStorageKey, readJson(membersStorageKey, []).filter((item) => item.id !== id || item.id === "m_admin"));
+          renderMembersModal();
+          showToast(id === "m_admin" ? "管理员账号保留" : "成员已删除");
+        }
+        if (modelDefault) {
+          const id = modelDefault.closest("tr").dataset.modelId;
+          writeJson(aiModelsStorageKey, readJson(aiModelsStorageKey, []).map((item) => ({ ...item, isDefault: item.id === id })));
+          renderModelsModal();
+          showToast("默认模型已更新");
+        }
+        if (modelDelete) {
+          const id = modelDelete.closest("tr").dataset.modelId;
+          writeJson(aiModelsStorageKey, readJson(aiModelsStorageKey, []).filter((item) => item.id !== id));
+          renderModelsModal();
+          showToast("模型已删除");
+        }
+      });
+
+      viewButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          viewButtons.forEach((item) => item.classList.remove("active"));
+          button.classList.add("active");
+          grid.classList.toggle("list-view", button.dataset.view === "list");
+        });
+      });
+
+      document.addEventListener("click", (event) => {
+        if (!menu.hidden && !event.target.closest("[data-menu]") && !event.target.closest(".more-button")) {
+          closeMenu();
+        }
+        if (!userMenu.hidden && !event.target.closest(".user-actions")) {
+          userMenu.hidden = true;
+        }
+      });
+
+      document.querySelector("[data-close-app-modal]").addEventListener("click", () => {
+        closeAppModal();
+      });
+
+      appModal.addEventListener("click", (event) => {
+        if (event.target === appModal) closeAppModal();
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          if (!appModal.hidden) closeAppModal();
+        }
+        trapModalFocus(event, appModal);
+      });
+
+      renderProjects();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,641 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>调用日志与审计 · 控制中心 · 大模型智算平台</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230F1418'/%3E%3Cpath d='M9 21V11l4 6 3-4 4 8' fill='none' stroke='%230B6E7F' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/app.css?v=20260924-4">
+<style>
+  /* ============================================================
+     C-07 页面专属样式（只使用 var(--token)，不改动 assets）
+     ============================================================ */
+
+  /* ---------- 主从结构：上半部分选中行 → 下半部分该 trace 的链路 ---------- */
+  .dg tr[aria-selected="true"] td { background: var(--surface-sunken); }
+  .dg tr[aria-selected="true"] td:first-child { box-shadow: inset 3px 0 0 var(--compute); }
+  .dg tr[aria-selected="true"] .dg-primary { color: var(--ink-900); font-weight: 600; }
+  .dg tbody tr { cursor: pointer; }
+  .dg tbody tr:focus-visible { outline: none; box-shadow: var(--ring); }
+
+  /* ---------- 该 trace 的元信息条 ---------- */
+  .tracefacts {
+    display: grid; grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: var(--sp-3);
+    padding: var(--sp-3) var(--sp-4);
+    background: var(--surface-sunken);
+    border: 1px solid var(--line); border-radius: var(--r-2);
+  }
+  .tracefacts b { display: block; font-size: var(--text-micro); font-weight: 500; color: var(--ink-400); margin-bottom: 2px; }
+  .tracefacts span { font-size: var(--text-meta); color: var(--ink-800); overflow-wrap: anywhere; }
+
+  /* ---------- 失败 / 慢节点在泳道旁的标记符（不单靠颜色） ---------- */
+  .trace__flag {
+    position: absolute; top: -5px; transform: translateX(5px);
+    font-family: var(--font-num); font-size: 10px; font-weight: 600; line-height: 1.4;
+    padding: 1px 4px; border-radius: var(--r-1);
+    background: var(--risk); color: #fff; white-space: nowrap;
+  }
+  .trace__flag[data-state="slow"] { background: var(--spend); }
+
+  .tracelegend {
+    display: flex; align-items: center; gap: var(--sp-4); flex-wrap: wrap;
+    margin-top: var(--sp-3); font-size: var(--text-micro); color: var(--ink-500);
+  }
+  .tracelegend i { width: 10px; height: 8px; border-radius: 2px; display: inline-block; margin-right: 5px; }
+  .tracelegend .spacer { flex: 1 1 auto; }
+
+  /* ---------- 失败节点的一句话解释 ---------- */
+  .lanefail {
+    display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap;
+    margin-top: var(--sp-3); padding: var(--sp-3);
+    border: 1px solid var(--risk-line); background: var(--risk-soft);
+    border-radius: var(--r-2);
+  }
+  .lanefail[data-kind="compute"] { border-color: var(--compute-line); background: var(--compute-soft); }
+
+  /* ---------- 仅看失败开关 ---------- */
+  .switch { display: inline-flex; align-items: center; gap: var(--sp-2); cursor: pointer; }
+  .switch input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+  .switch__track {
+    position: relative; width: 34px; height: 18px; flex: none;
+    border-radius: var(--r-full); background: var(--line-strong);
+    transition: background var(--t) var(--ease);
+  }
+  .switch__thumb {
+    position: absolute; top: 2px; left: 2px; width: 14px; height: 14px;
+    border-radius: 50%; background: var(--surface); transition: transform var(--t) var(--ease);
+  }
+  .switch input:checked + .switch__track { background: var(--ink-900); }
+  .switch input:checked + .switch__track .switch__thumb { transform: translateX(16px); }
+  .switch input:focus-visible + .switch__track { box-shadow: var(--ring); }
+
+  [data-icon] { display: inline-flex; align-items: center; flex: none; }
+
+  /* ---------- 密集日志网格：标识类文本 12px 等宽，状态签 + 文字标签同行 ---------- */
+  .cell-id {
+    font-family: var(--font-num); font-size: 12px;
+    font-variant-numeric: tabular-nums; letter-spacing: -.01em;
+  }
+  .cell-state { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+  #logTable th, #logTable td { padding: 0 8px; }
+</style>
+</head>
+<body data-module="console" data-page="C-07" data-title="调用日志与审计"
+      data-search="按 trace_id / 错误码搜索">
+<div class="shell" id="shell">
+  <nav class="rail" id="rail" aria-label="模块导航"></nav>
+
+  <div class="main">
+    <header class="band" id="band"></header>
+
+    <div class="mid">
+      <!-- 控制中心：二级导航 + 本页筛选区（写法与 console-usage.html 一致） -->
+      <aside class="filter" aria-label="控制中心导航与调用日志筛选">
+        <div class="filter__group">
+          <h3>控制中心</h3>
+          <a class="filter__nav" href="console-usage.html">用量概览</a>
+          <a class="filter__nav" href="console-quota.html">预算与配额管理</a>
+          <a class="filter__nav" href="console-consumption.html">消耗明细查询</a>
+          <a class="filter__nav" href="console-usage.html">账单与费用</a>
+          <a class="filter__nav" href="console-keys.html">API 密钥</a>
+          <a class="filter__nav" href="console-logs.html" aria-current="page">调用日志</a>
+          <a class="filter__nav" href="console-quota.html">告警中心</a>
+        </div>
+
+        <div class="filter__group">
+          <h3>时间范围</h3>
+          <select class="select w-full" aria-label="时间范围">
+            <option>近 1 小时</option>
+            <option selected>近 24 小时</option>
+            <option>近 7 天</option>
+            <option>自定义…</option>
+          </select>
+        </div>
+
+        <div class="filter__group">
+          <h3>应用</h3>
+          <label class="filter__opt"><input type="radio" name="fapp" checked> 全部<span class="cnt">3,486</span></label>
+          <label class="filter__opt"><input type="radio" name="fapp"> 知识问答<span class="cnt">2,142</span></label>
+          <label class="filter__opt"><input type="radio" name="fapp"> 视频检查<span class="cnt">386</span></label>
+          <label class="filter__opt"><input type="radio" name="fapp"> 法务合同审查<span class="cnt">142</span></label>
+          <label class="filter__opt"><input type="radio" name="fapp"> 写作助手<span class="cnt">816</span></label>
+        </div>
+
+        <div class="filter__group">
+          <h3>模型</h3>
+          <label class="filter__opt"><input type="radio" name="fmodel" checked> 全部</label>
+          <label class="filter__opt"><input type="radio" name="fmodel"> Qwen3-32B-Instruct</label>
+          <label class="filter__opt"><input type="radio" name="fmodel"> DeepSeek-V3</label>
+          <label class="filter__opt"><input type="radio" name="fmodel"> InternVL2-26B</label>
+          <label class="filter__opt"><input type="radio" name="fmodel"> BGE-M3</label>
+        </div>
+
+        <div class="filter__group">
+          <h3>请求状态</h3>
+          <label class="filter__opt"><input type="radio" name="fstate" checked> 全部</label>
+          <label class="filter__opt"><input type="radio" name="fstate"> 200 成功<span class="cnt">3,474</span></label>
+          <label class="filter__opt"><input type="radio" name="fstate"> 429 限流<span class="cnt">6</span></label>
+          <label class="filter__opt"><input type="radio" name="fstate"> 4xx / 5xx<span class="cnt">6</span></label>
+        </div>
+
+        <div class="filter__group">
+          <h3>错误码</h3>
+          <label class="filter__opt"><input type="checkbox"> 4001 额度不足<span class="cnt">3</span></label>
+          <label class="filter__opt"><input type="checkbox"> 4291 QPS 超限<span class="cnt">6</span></label>
+          <label class="filter__opt"><input type="checkbox"> 5003 上游超时<span class="cnt">3</span></label>
+        </div>
+
+        <div class="filter__group">
+          <h3>API-Key</h3>
+          <label class="filter__opt"><input type="radio" name="fkey" checked> 全部</label>
+          <label class="filter__opt"><input type="radio" name="fkey"> key-kb-qa-svc</label>
+          <label class="filter__opt"><input type="radio" name="fkey"> key-vision-prod</label>
+          <label class="filter__opt"><input type="radio" name="fkey"> key-legal-review</label>
+          <label class="filter__opt"><input type="radio" name="fkey"> key-writing-assist</label>
+        </div>
+
+        <div class="filter__group">
+          <h3>快捷筛选</h3>
+          <label class="switch">
+            <input type="checkbox" id="onlyFail" role="switch" aria-label="仅看失败">
+            <span class="switch__track"><span class="switch__thumb"></span></span>
+            <span class="t-meta">仅看失败</span>
+            <span class="cnt" style="margin-left:auto;font-family:var(--font-num);font-size:var(--text-micro);color:var(--ink-400)">3</span>
+          </label>
+        </div>
+      </aside>
+
+      <main class="stage" id="stage">
+        <div class="row row--between mb-4">
+          <span class="t-meta">调用日志保留 90 天 · 审计日志保留 180 天 · 来源：Token 工厂网关 + 运维监控中心</span>
+          <span class="t-micro">租户：华鲲元启 · 项目：视觉检索平台</span>
+        </div>
+
+        <div class="grid grid--4">
+          <div class="card kpi kpi--accent-quota">
+            <div class="kpi__label">近 7 天调用量</div>
+            <div class="kpi__value"><span class="num-xl">24,208</span><span class="kpi__unit">次</span></div>
+            <div class="kpi__foot">另有服务账号 12 次 · 见访问凭据</div>
+          </div>
+          <div class="card kpi kpi--accent-compute">
+            <div class="kpi__label">请求成功率</div>
+            <div class="kpi__value"><span class="num-xl">99.27</span><span class="kpi__unit">%</span></div>
+            <div class="kpi__foot">失败 176 次 · 4001 额度 34 · 429 限流 118 · 上游 5xx 24</div>
+          </div>
+          <div class="card kpi kpi--accent-spend">
+            <div class="kpi__label">近 7 天消耗</div>
+            <div class="kpi__value">
+              <button class="num-xl" data-receipt style="background:none;border:0;padding:0;cursor:pointer;color:inherit">3.90M</button>
+              <span class="kpi__unit">Token</span>
+            </div>
+            <div class="kpi__foot">密钥 3,879.8k · 服务账号 18.2k</div>
+          </div>
+          <div class="card kpi kpi--accent-risk">
+            <div class="kpi__label">近 24 小时失败</div>
+            <div class="kpi__value"><span class="num-xl">12</span><span class="kpi__unit">次</span></div>
+            <div class="kpi__foot"><span class="chip chip--risk"><i class="chip__dot"></i>近 7 分钟 3 次</span></div>
+          </div>
+        </div>
+
+        <div class="selected-bar mt-4">
+          <span>时间：近 24 小时（09-24）</span><span class="dot-sep">·</span>
+          <span>应用：全部</span><span class="dot-sep">·</span>
+          <span>模型：全部</span><span class="dot-sep">·</span>
+          <span>状态：全部</span><span class="dot-sep">·</span>
+          <span>错误码：全部</span><span class="dot-sep">·</span>
+          <span>API-Key：全部</span>
+          <button class="btn btn--sm btn--ghost" type="button">清空筛选</button>
+          <span class="total" id="hitCount">命中 3,486 条 · 本页 12 条</span>
+        </div>
+
+        <!-- ============================================================
+             上半部分：API 调用日志（DataGrid）
+             点击任意行 → 下半部分切换到该 trace 的工具调用链路
+             ============================================================ -->
+        <div class="card">
+          <div class="card__head">
+            <h2>API 调用日志</h2>
+            <span class="chip chip--compute" id="selChip"><i class="chip__dot"></i>已选中 tr_8f3a91c4e7</span>
+            <span class="spacer"></span>
+            <span class="t-micro">点击行或聚焦后按 Enter，下钻到该 trace 的工具调用链路</span>
+          </div>
+          <div class="dg-wrap" style="border:0;border-radius:0">
+            <div class="dg-scroll">
+              <table class="dg" role="grid" aria-label="API 调用日志" id="logTable">
+                <thead><tr>
+                  <th>时间</th><th>trace_id</th><th>API-Key 名称</th><th>应用</th>
+                  <th>模型</th><th>请求状态</th><th class="num">耗时</th><th>错误码</th><th class="num">Token 消耗</th>
+                </tr></thead>
+                <tbody id="logBody">
+                  <tr tabindex="0" aria-selected="true" data-trace="tr_8f3a91c4e7" data-fail="false">
+                    <td class="dg-primary num">14:35:02</td>
+                    <td><span class="cell-id">tr_8f3a91c4e7</span></td>
+                    <td><span class="cell-id">key-vision-prod</span></td>
+                    <td>视频检查</td>
+                    <td>InternVL2-26B</td>
+                    <td><span class="chip chip--compute"><i class="chip__dot"></i>200</span></td>
+                    <td class="num">4,200 ms</td>
+                    <td>—</td>
+                    <td class="num">1,606</td>
+                  </tr>
+                  <tr tabindex="0" aria-selected="false" data-trace="tr_2b7d10fa93" data-fail="false">
+                    <td class="dg-primary num">14:34:47</td>
+                    <td><span class="cell-id">tr_2b7d10fa93</span></td>
+                    <td><span class="cell-id">key-kb-qa-svc</span></td>
+                    <td>知识问答</td>
+                    <td>Qwen3-32B-Instruct</td>
+                    <td><span class="chip chip--compute"><i class="chip__dot"></i>200</span></td>
+                    <td class="num">1,240 ms</td>
+                    <td>—</td>
+                    <td class="num">1,180</td>
+                  </tr>
+                  <tr tabindex="0" aria-selected="false" data-trace="tr_5c9e8b41d0" data-fail="false">
+                    <td class="dg-primary num">14:34:12</td>
+                    <td><span class="cell-id">tr_5c9e8b41d0</span></td>
+                    <td><span class="cell-id">key-legal-review</span></td>
+                    <td>法务合同审查</td>
+                    <td>DeepSeek-V3</td>
+                    <td><span class="chip chip--compute"><i class="chip__dot"></i>200</span></td>
+                    <td class="num">3,860 ms</td>
+                    <td>—</td>
+                    <td class="num">2,412</td>
+                  </tr>
+                  <tr tabindex="0" aria-selected="false" data-trace="tr_71a4c2fe68" data-fail="true">
+                    <td class="dg-primary num">14:33:58</td>
+                    <td><span class="cell-id">tr_71a4c2fe68</span></td>
+                    <td><span class="cell-id">key-vision-prod</span></td>
+                    <td>视频检查</td>
+                    <td>InternVL2-26B</td>
+                    <td><div class="cell-state"><span class="chip chip--spend"><i class="chip__dot"></i>429</span><span class="t-micro">限流</span></div></td>
+                    <td class="num">12 ms</td>
+                    <td><span class="cell-id" title="4291 · 该密钥 QPS 配额 20，当前 1 秒窗口 47 QPS">4291</span></td>
+                    <td class="num">0</td>
+                  </tr>
+                  <tr tabindex="0" aria-selected="false" data-trace="tr_9e0b3d7a55" data-fail="false">
+                    <td class="dg-primary num">14:33:21</td>
+                    <td><span class="cell-id">tr_9e0b3d7a55</span></td>
+                    <td><span class="cell-id">key-kb-qa-svc</span></td>
+                    <td>知识问答</td>
+                    <td>Qwen3-32B-Instruct</td>
+                    <td><span class="chip chip--compute"><i class="chip__dot"></i>200</span></td>
+                    <td class="num">964 ms</td>
+                    <td>—</td>
+                    <td class="num">842</td>
+                  </tr>
+                  <tr tabindex="0" aria-selected="false" data-trace="tr_4d6f1a08c2" data-fail="false">
+                    <td class="dg-primary num">14:32:49</td>
+                    <td><span class="cell-id">tr_4d6f1a08c2</span></td>
+                    <td><span class="cell-id">key-writing-assist</span></td>
+                    <td>写作助手</td>
+                    <td>Qwen3-32B-Instruct</td>
+                    <td><span class="chip chip--compute"><i class="chip__dot"></i>200</span></td>
+                    <td class="num">1,420 ms</td>
+                    <td>—</td>
+                    <td class="num">768</td>
+                  </tr>
+                  <tr tabindex="0" aria-selected="false" data-trace="tr_3a8c05d9e1" data-fail="true">
+                    <td class="dg-primary num">14:32:07</td>
+                    <td><span class="cell-id">tr_3a8c05d9e1</span></td>
+                    <td><span class="cell-id">key-legal-review</span></td>
+                    <td>法务合同审查</td>
+                    <td>DeepSeek-V3</td>
+                    <td><div class="cell-state"><span class="chip chip--risk"><i class="chip__dot"></i>4001</span><span class="t-micro">额度不足</span></div></td>
+                    <td class="num">8 ms</td>
+                    <td><span class="cell-id" title="4001 · 密钥 key-legal-review 的 DeepSeek-V3 月度配额已耗尽">4001</span></td>
+                    <td class="num">0</td>
+                  </tr>
+                  <tr tabindex="0" aria-selected="false" data-trace="tr_c1b7e2409f" data-fail="false">
+                    <td class="dg-primary num">14:31:36</td>
+                    <td><span class="cell-id">tr_c1b7e2409f</span></td>
+                    <td><span class="cell-id">key-kb-qa-svc</span></td>
+                    <td>知识问答</td>
+                    <td>BGE-M3</td>
+                    <td><span class="chip chip--compute"><i class="chip__dot"></i>200</span></td>
+                    <td class="num">62 ms</td>
+                    <td>—</td>
+                    <td class="num">96</td>
+                  </tr>
+                  <tr tabindex="0" aria-selected="false" data-trace="tr_60d9f4ab17" data-fail="true">
+                    <td class="dg-primary num">14:30:58</td>
+                    <td><span class="cell-id">tr_60d9f4ab17</span></td>
+                    <td><span class="cell-id">key-vision-prod</span></td>
+                    <td>视频检查</td>
+                    <td>InternVL2-26B</td>
+                    <td><div class="cell-state"><span class="chip chip--risk"><i class="chip__dot"></i>500</span><span class="t-micro">上游失败</span></div></td>
+                    <td class="num">5,020 ms</td>
+                    <td><span class="cell-id" title="5003 · 上游视觉检测服务返回 5xx">5003</span></td>
+                    <td class="num">320</td>
+                  </tr>
+                  <tr tabindex="0" aria-selected="false" data-trace="tr_ba27c8e0d4" data-fail="false">
+                    <td class="dg-primary num">14:30:11</td>
+                    <td><span class="cell-id">tr_ba27c8e0d4</span></td>
+                    <td><span class="cell-id">key-writing-assist</span></td>
+                    <td>写作助手</td>
+                    <td>DeepSeek-V3</td>
+                    <td><span class="chip chip--compute"><i class="chip__dot"></i>200</span></td>
+                    <td class="num">2,180 ms</td>
+                    <td>—</td>
+                    <td class="num">1,042</td>
+                  </tr>
+                  <tr tabindex="0" aria-selected="false" data-trace="tr_0f5e93c1b8" data-fail="false">
+                    <td class="dg-primary num">14:29:33</td>
+                    <td><span class="cell-id">tr_0f5e93c1b8</span></td>
+                    <td><span class="cell-id">key-kb-qa-svc</span></td>
+                    <td>知识问答</td>
+                    <td>Qwen3-32B-Instruct</td>
+                    <td><span class="chip chip--compute"><i class="chip__dot"></i>200</span></td>
+                    <td class="num">880 ms</td>
+                    <td>—</td>
+                    <td class="num">640</td>
+                  </tr>
+                  <tr tabindex="0" aria-selected="false" data-trace="tr_7c2a5e0f93" data-fail="false">
+                    <td class="dg-primary num">14:28:47</td>
+                    <td><span class="cell-id">tr_7c2a5e0f93</span></td>
+                    <td><span class="cell-id">key-vision-prod</span></td>
+                    <td>视频检查</td>
+                    <td>InternVL2-26B</td>
+                    <td><span class="chip chip--compute"><i class="chip__dot"></i>200</span></td>
+                    <td class="num">1,240 ms</td>
+                    <td>—</td>
+                    <td class="num">486</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card__foot row">
+            <span class="t-micro">本页 12 条 · 合计消耗 9,392 Token（占近 7 天 0.24%）· 失败 3 条（429 限流 1 · 4001 额度 1 · 5003 上游 1）</span>
+            <span class="spacer"></span>
+            <span class="t-micro">状态不单靠颜色：状态签为「色 + 点 + 错误码文字」三重编码</span>
+          </div>
+        </div>
+
+        <!-- ============================================================
+             下半部分：该 trace 的智能体工具调用链路（TraceCascade）
+             时间瀑布 + 并发泳道，替代缩进树；失败节点整段标红
+             ============================================================ -->
+        <div class="card mt-5">
+          <div class="card__head">
+            <h2>智能体工具调用链路</h2>
+            <span class="chip chip--compute"><i class="chip__dot"></i><span id="tfChipNodes">5 节点</span></span>
+            <span class="chip chip--risk" id="tfChipFail"><i class="chip__dot"></i>1 个节点失败</span>
+            <span class="spacer"></span>
+            <span class="t-micro">与上方选中行一一对应 · 时间对齐</span>
+          </div>
+          <div class="card__body">
+            <div class="tracefacts">
+              <div><b>链路起点</b><span class="num" id="tfStart">14:35:02.118</span></div>
+              <div><b>trace_id</b><span class="num" id="tfId">tr_8f3a91c4e7</span></div>
+              <div><b>应用 / 模型</b><span id="tfApp">视频检查 · InternVL2-26B</span></div>
+              <div><b>总耗时</b><span class="num" id="tfDur">4,200 ms</span></div>
+              <div><b>节点数 / 重试</b><span class="num" id="tfNodes">5 节点 · 1 次重试</span></div>
+              <div><b>总消耗</b><span class="num" id="tfCost">1,606 Token</span></div>
+            </div>
+
+            <div class="mt-4" id="traceChart"></div>
+
+            <div class="tracelegend">
+              <span><i style="background:var(--compute)"></i>正常节点</span>
+              <span><i style="background:var(--spend)"></i>慢节点（超基线）</span>
+              <span><i style="background:var(--risk)"></i>失败节点</span>
+              <span class="spacer"></span>
+              <span class="t-micro">泳道 = 并发节点，横轴 = 时间（ms）；慢基线 1,500 ms，异常节点另加标记符与错误码，不单靠颜色区分</span>
+            </div>
+
+            <div class="lanefail" id="laneFail" data-kind="risk"></div>
+
+            <p class="chart__caption">失败节点在时间瀑布上整段标红并带错误码标记；API 层状态与链路层状态分别判定——主链路降级成功时 API 仍返回 200。</p>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <aside class="ledger" id="ledger" aria-label="消耗上下文"></aside>
+</div>
+
+<template id="band-actions">
+  <select class="select" aria-label="导出时间范围">
+    <option>近 24 小时</option><option>近 7 天</option><option>近 30 天</option>
+  </select>
+  <button class="btn" type="button"><span data-icon="down"></span>导出日志</button>
+</template>
+
+<template id="band-ribbon">
+  <div class="ribbon ribbon--risk">近 7 分钟出现 3 次调用失败：4001 额度不足 1 · 429 限流 1 · 5003 上游超时 1；已生成告警 ALT-20260924-07 并回写运维监控中心
+    <span class="ribbon__more">还有 1 条</span></div>
+</template>
+
+<script src="assets/charts.js"></script>
+<script src="assets/app.js?v=20260924-7"></script>
+<script>
+  /* C-07 主从结构：日志行 ↔ 工具调用链路，一一对应 */
+  document.addEventListener('DOMContentLoaded', function () {
+    Array.prototype.forEach.call(document.querySelectorAll('[data-icon]'), function (n) {
+      n.innerHTML = DSH.icon(n.getAttribute('data-icon'));
+    });
+
+    var TRACES = {
+      'tr_8f3a91c4e7': {
+        start: '14:35:02.118', app: '视频检查 · InternVL2-26B', dur: '4,200 ms',
+        nodes: 5, retries: 1, cost: '1,606 Token', total: 4200,
+        lanes: [
+          { name: '规划推理 · Qwen3-32B', start: 0, dur: 820 },
+          { name: '知识库检索 · RAG', start: 840, dur: 1180 },
+          { name: '工具 · 视觉检测API', start: 1000, dur: 2400, state: 'slow', flag: '慢 +60%' },
+          { name: '工具 · 结构化抽取', start: 2100, dur: 760, state: 'fail', flag: '5003' },
+          { name: '汇总推理 · Qwen3-32B', start: 3450, dur: 700 }
+        ],
+        fail: { node: '工具 · 结构化抽取', code: '5003', reason: '结构化抽取服务响应超时（760 ms > 500 ms 基线），已回退为原文直出；API 层仍返回 200，主链路降级成功。' }
+      },
+      'tr_2b7d10fa93': {
+        start: '14:34:47.006', app: '知识问答 · Qwen3-32B-Instruct', dur: '1,240 ms',
+        nodes: 3, retries: 0, cost: '1,180 Token', total: 1240,
+        lanes: [
+          { name: '规划推理 · Qwen3-32B', start: 0, dur: 520 },
+          { name: '知识库检索 · RAG', start: 540, dur: 420 },
+          { name: '汇总推理 · Qwen3-32B', start: 980, dur: 260 }
+        ]
+      },
+      'tr_5c9e8b41d0': {
+        start: '14:34:12.440', app: '法务合同审查 · DeepSeek-V3', dur: '3,860 ms',
+        nodes: 4, retries: 0, cost: '2,412 Token', total: 3860,
+        lanes: [
+          { name: '规划推理 · DeepSeek-V3', start: 0, dur: 640 },
+          { name: '工具 · 条款抽取', start: 660, dur: 2200, state: 'slow', flag: '慢 +47%' },
+          { name: '知识库检索 · 法规库', start: 1000, dur: 1400 },
+          { name: '汇总推理 · DeepSeek-V3', start: 2900, dur: 960 }
+        ]
+      },
+      'tr_71a4c2fe68': {
+        start: '14:33:58.271', app: '视频检查 · InternVL2-26B', dur: '12 ms',
+        nodes: 1, retries: 0, cost: '0 Token', total: 12,
+        lanes: [
+          { name: '网关准入 · 限流拦截', start: 0, dur: 12, state: 'fail', flag: '4291' }
+        ],
+        fail: { node: '网关准入 · 限流拦截', code: '4291', reason: '该 API-Key 的 QPS 配额为 20，当前 1 秒窗口实测 47 QPS，网关直接拒绝且未产生 Token 消耗；请申请提额或加客户端退避重试。' }
+      },
+      'tr_9e0b3d7a55': {
+        start: '14:33:21.882', app: '知识问答 · Qwen3-32B-Instruct', dur: '964 ms',
+        nodes: 3, retries: 0, cost: '842 Token', total: 964,
+        lanes: [
+          { name: '规划推理 · Qwen3-32B', start: 0, dur: 460 },
+          { name: '知识库检索 · RAG', start: 480, dur: 300 },
+          { name: '汇总推理 · Qwen3-32B', start: 790, dur: 174 }
+        ]
+      },
+      'tr_4d6f1a08c2': {
+        start: '14:32:49.115', app: '写作助手 · Qwen3-32B-Instruct', dur: '1,420 ms',
+        nodes: 3, retries: 0, cost: '768 Token', total: 1420,
+        lanes: [
+          { name: '规划推理 · Qwen3-32B', start: 0, dur: 520 },
+          { name: '工具 · 模板检索', start: 540, dur: 380 },
+          { name: '汇总推理 · Qwen3-32B', start: 930, dur: 490 }
+        ]
+      },
+      'tr_3a8c05d9e1': {
+        start: '14:32:07.703', app: '法务合同审查 · DeepSeek-V3', dur: '8 ms',
+        nodes: 1, retries: 0, cost: '0 Token', total: 8,
+        lanes: [
+          { name: '网关准入 · 额度校验', start: 0, dur: 8, state: 'fail', flag: '4001' }
+        ],
+        fail: { node: '网关准入 · 额度校验', code: '4001', reason: '密钥 key-legal-review 的 DeepSeek-V3 模型配额（月度 1.00M）已耗尽，剩余 0；项目整体可用 4.39M Token 充足，请在预算与配额管理为该密钥追加配额。' }
+      },
+      'tr_c1b7e2409f': {
+        start: '14:31:36.559', app: '知识问答 · BGE-M3', dur: '62 ms',
+        nodes: 1, retries: 0, cost: '96 Token', total: 62,
+        lanes: [
+          { name: '向量化 · BGE-M3', start: 0, dur: 62 }
+        ]
+      },
+      'tr_60d9f4ab17': {
+        start: '14:30:58.240', app: '视频检查 · InternVL2-26B', dur: '5,020 ms',
+        nodes: 2, retries: 1, cost: '320 Token', total: 5020,
+        lanes: [
+          { name: '规划推理 · Qwen3-32B', start: 0, dur: 720 },
+          { name: '工具 · 视觉检测API', start: 740, dur: 4100, state: 'fail', flag: '5003' }
+        ],
+        fail: { node: '工具 · 视觉检测API', code: '5003', reason: '上游视觉检测服务连续返回 5xx，按策略重试 1 次后仍失败，本次链路终止，未进入汇总推理。' }
+      },
+      'tr_ba27c8e0d4': {
+        start: '14:30:11.907', app: '写作助手 · DeepSeek-V3', dur: '2,180 ms',
+        nodes: 3, retries: 0, cost: '1,042 Token', total: 2180,
+        lanes: [
+          { name: '规划推理 · DeepSeek-V3', start: 0, dur: 880 },
+          { name: '工具 · 术语库检索', start: 900, dur: 520 },
+          { name: '汇总推理 · DeepSeek-V3', start: 1440, dur: 740 }
+        ]
+      },
+      'tr_0f5e93c1b8': {
+        start: '14:29:33.318', app: '知识问答 · Qwen3-32B-Instruct', dur: '880 ms',
+        nodes: 2, retries: 0, cost: '640 Token', total: 880,
+        lanes: [
+          { name: '规划推理 · Qwen3-32B', start: 0, dur: 400 },
+          { name: '汇总推理 · Qwen3-32B', start: 420, dur: 460 }
+        ]
+      },
+      'tr_7c2a5e0f93': {
+        start: '14:28:47.662', app: '视频检查 · InternVL2-26B', dur: '1,240 ms',
+        nodes: 3, retries: 0, cost: '486 Token', total: 1240,
+        lanes: [
+          { name: '抽帧预处理', start: 0, dur: 240 },
+          { name: '工具 · 视觉检测API', start: 260, dur: 860 },
+          { name: '汇总推理 · Qwen3-32B', start: 1140, dur: 100 }
+        ]
+      }
+    };
+
+    var chart = document.getElementById('traceChart');
+    var failBox = document.getElementById('laneFail');
+    var chipNodes = document.getElementById('tfChipNodes');
+    var chipFail = document.getElementById('tfChipFail');
+    var hitCount = document.getElementById('hitCount');
+    var rows = Array.prototype.slice.call(document.querySelectorAll('#logBody tr'));
+
+    function render(id) {
+      var d = TRACES[id];
+      if (!d || !chart) return;
+
+      document.getElementById('tfStart').textContent = d.start;
+      document.getElementById('tfId').textContent = id;
+      document.getElementById('tfApp').textContent = d.app;
+      document.getElementById('tfDur').textContent = d.dur;
+      document.getElementById('tfNodes').textContent = d.nodes + ' 节点 · ' + d.retries + ' 次重试';
+      document.getElementById('tfCost').textContent = d.cost;
+      document.getElementById('selChip').innerHTML = '<i class="chip__dot"></i>已选中 ' + id;
+      chipNodes.textContent = d.nodes + ' 节点';
+
+      DSH.chart.trace(chart, { total: d.total, lanes: d.lanes });
+
+      /* 慢 / 失败节点：在泳道末端追加标记符（错误码或超基线幅度） */
+      var laneEls = chart.querySelectorAll('.trace__lane');
+      d.lanes.forEach(function (l, i) {
+        if (!l.flag || !laneEls[i]) return;
+        var track = laneEls[i].querySelector('.trace__track');
+        if (!track) return;
+        var flag = document.createElement('span');
+        flag.className = 'trace__flag';
+        flag.dataset.state = l.state || 'ok';
+        flag.textContent = l.flag;
+        flag.style.left = ((l.start + l.dur) / d.total * 100) + '%';
+        track.appendChild(flag);
+      });
+
+      /* 失败节点旁的一句话定位说明 */
+      if (d.fail) {
+        chipFail.style.display = '';
+        chipFail.innerHTML = '<i class="chip__dot"></i>1 个节点失败';
+        failBox.dataset.kind = 'risk';
+        failBox.innerHTML =
+          '<span class="chip chip--risk"><i class="chip__dot"></i>链路层失败 · ' + d.fail.node + '</span>' +
+          '<span class="t-mono">错误码 ' + d.fail.code + '</span>' +
+          '<span class="t-body">' + d.fail.reason + '</span>';
+      } else {
+        chipFail.style.display = 'none';
+        failBox.dataset.kind = 'compute';
+        failBox.innerHTML =
+          '<span class="chip chip--compute"><i class="chip__dot"></i>全链路 ' + d.nodes + ' 个节点均成功</span>' +
+          '<span class="t-body">本 trace 无失败与慢节点，各节点耗时均低于基线。</span>';
+      }
+    }
+
+    function select(row) {
+      rows.forEach(function (r) { r.setAttribute('aria-selected', String(r === row)); });
+      render(row.getAttribute('data-trace'));
+    }
+
+    rows.forEach(function (r) {
+      r.addEventListener('click', function () { select(r); });
+      r.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') { e.preventDefault(); select(r); }
+      });
+    });
+
+    /* 仅看失败开关：与筛选列联动，命中数同步 */
+    var onlyFail = document.getElementById('onlyFail');
+    if (onlyFail) {
+      onlyFail.addEventListener('change', function () {
+        var on = onlyFail.checked;
+        var shown = 0;
+        rows.forEach(function (r) {
+          var hide = on && r.getAttribute('data-fail') !== 'true';
+          r.hidden = hide;
+          if (!hide) shown++;
+        });
+        hitCount.textContent = on
+          ? '仅失败 ' + shown + ' 条 · 本页 ' + shown + ' 条'
+          : '命中 3,486 条 · 本页 12 条';
+        if (on && rows.length) {
+          var first = rows.filter(function (r) { return !r.hidden; })[0];
+          if (first) select(first);
+        }
+      });
+    }
+
+    render('tr_8f3a91c4e7');
+  });
+</script>
+</body>
+</html>

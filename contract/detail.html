@@ -1,0 +1,696 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>华鲲元启 - 合同审查</title>
+  <style>
+    :root {
+      --blue: #025dff;
+      --ink: #18202e;
+      --text: #191919;
+      --muted: rgba(0, 0, 0, .6);
+      --line: #e8edf4;
+      --canvas: #f6fafe;
+      --tile: #f7f8f8;
+      --page-gap: 20px;
+      --side-width: clamp(240px, calc(30.6vw - 138px), 450px);
+      font-family: "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+      color: var(--ink);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; background: var(--canvas); }
+    body { overflow: hidden; font-size: 14px; display: flex; justify-content: center; align-items: flex-start; }
+    button, input { font: inherit; color: inherit; }
+    button { border: 0; padding: 0; background: none; cursor: pointer; }
+    button:focus-visible { outline: 2px solid rgba(2, 93, 255, .32); outline-offset: 2px; }
+    img { display: block; }
+
+    .viewport {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      margin: 0;
+    }
+
+    .app {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: var(--canvas);
+    }
+
+    .topbar {
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 62px;
+      background: #fff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 43px 0 16px;
+      z-index: 5;
+    }
+
+    .brand-link { width: 300px; height: 50px; display: flex; align-items: center; border-radius: 6px; transition: background .16s ease, opacity .16s ease, transform .12s ease; }
+    .brand-link:hover { background: #f4f7ff; }
+    .brand-link:active { background: #eaf1ff; transform: scale(.985); }
+    .brand-link:focus-visible { outline: 2px solid rgba(2, 93, 255, .32); outline-offset: 2px; }
+    .brand { width: 300px; height: 48px; object-fit: contain; }
+    .profile { height: 40px; padding: 0 8px; border-radius: 6px; display: flex; align-items: center; gap: 10px; transition: background .16s ease, transform .12s ease; }
+    .profile:hover, .profile.open { background: #f4f7ff; }
+    .profile:active { background: #eaf1ff; transform: scale(.98); }
+    .profile-avatar { width: 40px; height: 40px; }
+    .profile-name { color: #1f2026; line-height: 20px; letter-spacing: .15px; }
+    .profile-arrow { width: 11px; height: 6px; transform: rotate(0deg); transition: transform .16s ease; }
+    .profile.open .profile-arrow { transform: rotate(180deg); }
+
+    .panel {
+      position: absolute;
+      top: 91px;
+      bottom: 20px;
+      height: auto;
+      background: #fff;
+      overflow: hidden;
+    }
+    .left { left: var(--page-gap); width: var(--side-width); overflow-y: auto; overflow-x: hidden; }
+    .center { left: calc(var(--side-width) + var(--page-gap) * 2); width: calc(100% - var(--side-width) * 2 - var(--page-gap) * 4); }
+    .right { right: var(--page-gap); width: var(--side-width); }
+
+    .panel-heading {
+      height: 52px;
+      border-bottom: 1px solid var(--line);
+      padding: 13px 20px 0;
+      font-size: 16px;
+      line-height: 26px;
+      font-weight: 500;
+    }
+
+    .upload-zone, .knowledge-add {
+      position: absolute;
+      left: 20px;
+      width: calc(100% - 40px);
+      height: 100px;
+      border: 1px solid rgba(192, 192, 192, .3);
+      border-radius: 10px;
+      background: rgba(232, 232, 232, .3);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      color: var(--muted);
+      line-height: 22px;
+      transition: border-color .16s ease, background .16s ease;
+    }
+    .upload-zone { top: 72px; }
+    .knowledge-add { top: 578px; }
+    .upload-zone:hover, .knowledge-add:hover { border-color: #9ab8ff; background: #f4f7ff; }
+    .upload-zone:active, .knowledge-add:active { border-color: var(--blue); background: #eaf1ff; }
+    .upload-zone img, .knowledge-add img { width: 30px; height: 30px; }
+
+    .source { position: absolute; top: 192px; left: 20px; width: calc(100% - 40px); }
+    .source-head, .knowledge-head {
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--muted);
+      font-weight: 500;
+      line-height: 22px;
+    }
+    .check { width: 16px; height: 16px; flex: none; }
+
+    .soft-button {
+      height: 32px;
+      border: 1px solid #dcdcdc;
+      border-radius: 6px;
+      background: #f6f6f6;
+      padding: 0 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: border-color .16s ease, color .16s ease, background .16s ease;
+    }
+    .soft-button:hover, .soft-button.active { color: var(--blue); border-color: #9ab8ff; background: #eef4ff; }
+    .source .soft-button { margin-top: 12px; }
+    .soft-button img { width: 16px; height: 16px; }
+
+    .file-list { list-style: none; margin: 12px 0 0; padding: 0; }
+    .file-row {
+      width: 100%;
+      height: 48px;
+      padding: 8px 0 8px 8px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      transition: background .15s ease;
+      cursor: pointer;
+    }
+    .file-row:hover, .file-row:focus-visible { background: var(--tile); outline: none; }
+    .file-row:active { background: #edf3ff; }
+    .file-main { min-width: 0; display: flex; align-items: center; gap: 6px; }
+    .file-icon { width: 24px; height: 24px; flex: none; }
+    .file-name { font-size: 15px; line-height: 24px; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .left-divider { position: absolute; left: 0; top: 522px; width: 100%; height: 1px; background: var(--line); }
+    .knowledge-title { position: absolute; left: 23px; top: 542px; font-size: 14px; line-height: 22px; font-weight: 500; color: var(--muted); }
+    .knowledge-files { position: absolute; left: 20px; top: 698px; width: calc(100% - 40px); margin: 0; padding-bottom: 20px; }
+    .selection-toggle { width: 20px; height: 20px; display: grid; place-items: center; border-radius: 4px; }
+    .selection-toggle:hover { background: #eef4ff; }
+    .selection-toggle:active { background: #dfeaff; transform: scale(.94); }
+    .selection-toggle:focus-visible { outline: 2px solid rgba(2, 93, 255, .28); outline-offset: 2px; }
+    .selection-toggle img { width: 16px; height: 16px; }
+
+    .conversation {
+      position: absolute;
+      inset: 52px 0 106px;
+      overflow-x: hidden;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-gutter: stable;
+    }
+    .conversation::-webkit-scrollbar, .records::-webkit-scrollbar { width: 6px; }
+    .conversation::-webkit-scrollbar-thumb, .records::-webkit-scrollbar-thumb { background: #c9d2df; border-radius: 3px; }
+    .project-card { position: absolute; left: 24px; top: 20px; width: calc(100% - 48px); min-height: 390px; border-radius: 18px; background: #f5f5f5; padding: 34px 28px 28px; }
+    .assistant-brand { display: flex; align-items: center; gap: 14px; color: #666; font-size: 24px; line-height: 34px; font-weight: 600; }
+    .assistant-brand img { width: 52px; height: 52px; border-radius: 2px; background: #fff; padding: 8px; }
+    .project-title { position: absolute; left: 28px; top: 120px; font-size: 24px; line-height: 34px; font-weight: 600; color: #30333a; }
+    .project-meta { position: absolute; left: 28px; top: 178px; display: flex; gap: 16px; color: #30333a; line-height: 22px; }
+    .project-meta strong { color: var(--blue); font-weight: 500; }
+    .intro {
+      position: absolute;
+      left: 28px;
+      top: 210px;
+      width: calc(100% - 56px);
+      margin: 0;
+      color: #333;
+      font-size: 14px;
+      line-height: 26px;
+    }
+
+    .save-note {
+      position: absolute;
+      width: 124px;
+      height: 38px;
+      border: 1px solid #dcdcdc;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: border-color .16s ease, background .16s ease, color .16s ease;
+    }
+    .save-note:hover, .save-note.active { border-color: #9ab8ff; background: #eef4ff; color: var(--blue); }
+    .save-note:active { border-color: var(--blue); background: #dfeaff; transform: scale(.98); }
+    .save-note img { width: 18px; height: 18px; }
+    .save-one { left: 40px; top: 434px; }
+    .copy-one { position: absolute; left: 180px; top: 444px; width: 18px; height: 18px; opacity: .65; }
+    .copy-one, .copy-two, .copy-three { border-radius: 4px; transition: opacity .15s ease, background .15s ease, transform .12s ease; }
+    .copy-one:hover, .copy-two:hover, .copy-three:hover { opacity: 1; background: #eef4ff; }
+    .copy-one:active, .copy-two:active, .copy-three:active { background: #dfeaff; transform: scale(.9); }
+
+    .prompt {
+      position: absolute;
+      left: 40px;
+      height: 44px;
+      border-radius: 10px;
+      background: #f7f7f7;
+      padding: 10px 14px 10px 16px;
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      color: #333;
+      font-size: 15px;
+      line-height: 24px;
+      max-width: calc(100% - 80px);
+      white-space: nowrap;
+      transition: background .15s ease, transform .15s ease;
+    }
+    .prompt:hover { background: #eef4ff; transform: translateX(2px); }
+    .prompt:active { background: #dfeaff; transform: translateX(2px) scale(.99); }
+    .prompt span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+    .prompt img { width: 14px; height: 10px; transform: rotate(-90deg); opacity: .6; }
+    .p1 { top: 502px; }
+    .p2 { top: 562px; }
+    .p3 { top: 622px; }
+
+    .user-bubble {
+      position: absolute;
+      right: 40px;
+      min-height: 50px;
+      border: 1px solid #eef1ff;
+      border-radius: 10px;
+      background: #ecf2fe;
+      padding: 15px 16px;
+      color: #333;
+      font-size: 15px;
+      line-height: 18px;
+      text-align: right;
+      max-width: calc(100% - 80px);
+      white-space: normal;
+    }
+    .user-one { top: 696px; }
+
+    .assistant-copy {
+      position: absolute;
+      left: 40px;
+      width: calc(100% - 80px);
+      margin: 0;
+      font-size: 15px;
+      line-height: 26px;
+      color: #333;
+    }
+    .assistant-one { top: 776px; height: 52px; }
+    .save-two { left: 40px; top: 847px; }
+    .copy-two { position: absolute; left: 180px; top: 857px; width: 18px; height: 18px; opacity: .65; }
+    .p4 { top: 909px; }
+    .p5 { top: 969px; }
+    .p6 { top: 1029px; }
+    .user-two { top: 1103px; }
+    .assistant-two { top: 1183px; height: 72px; }
+    .save-three { left: 40px; top: 1278px; }
+    .copy-three { position: absolute; left: 180px; top: 1288px; width: 18px; height: 18px; opacity: .65; }
+    .p7 { top: 1340px; }
+    .p8 { top: 1400px; }
+    .p9 { top: 1460px; }
+
+    .composer {
+      position: absolute;
+      left: 40px;
+      bottom: 20px;
+      width: calc(100% - 80px);
+      height: 66px;
+      border: 1px solid rgba(154, 184, 255, .5);
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .03);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      gap: 16px;
+      transition: border-color .16s ease, box-shadow .16s ease;
+    }
+    .composer:focus-within, .composer.has-content { border-color: var(--blue); box-shadow: 0 0 0 2px rgba(2, 93, 255, .08); }
+    .composer input { min-width: 0; border: 0; outline: 0; flex: 1; font-size: 16px; line-height: 24px; }
+    .composer input::placeholder { color: rgba(0, 0, 0, .4); }
+    .selected-source { color: var(--muted); line-height: 22px; white-space: nowrap; }
+    .selected-source strong { color: var(--blue); font-weight: 500; }
+    .send { width: 47px; height: 26px; border-radius: 13px; overflow: hidden; opacity: .55; transition: filter .15s ease, transform .15s ease, opacity .15s ease, background .15s ease; }
+    .send:disabled { cursor: not-allowed; }
+    .send:not(:disabled) { opacity: 1; background: linear-gradient(100deg, #6f7cff, #9e64f5); }
+    .send:not(:disabled):hover { filter: saturate(1.25); transform: translateY(-1px); }
+    .send:not(:disabled):active { filter: saturate(1.35) brightness(.94); transform: translateY(0) scale(.97); }
+    .send img { width: 47px; height: 26px; }
+
+    .right-collapse { position: absolute; right: 20px; top: 18px; width: 19px; height: 19px; border: 1px solid #6b7280; border-radius: 2px; transition: border-color .15s ease, background .15s ease, transform .12s ease; }
+    .right-collapse:hover { border-color: var(--blue); background: #eef4ff; }
+    .right-collapse:active { background: #dfeaff; transform: scale(.9); }
+    .tool-grid { position: absolute; left: 20px; top: 72px; width: calc(100% - 40px); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 13px; }
+    .tool {
+      height: 64px;
+      border-radius: 10px;
+      padding: 8px 12px 8px 14px;
+      display: grid;
+      grid-template-columns: 22px 1fr 16px;
+      grid-template-rows: 1fr;
+      column-gap: 8px;
+      align-items: center;
+      text-align: left;
+      color: #919191;
+      background: #efefef;
+      transition: filter .15s ease, transform .15s ease, box-shadow .15s ease;
+    }
+    .tool:nth-child(1) { background: #eaf2ff; color: #4770bb; }
+    .tool:not(:disabled):hover, .tool.active { filter: saturate(1.12); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(2, 93, 255, .08); }
+    .tool:not(:disabled):active { filter: saturate(1.18) brightness(.97); transform: translateY(0) scale(.99); }
+    .tool:disabled { cursor: not-allowed; background: #efefef; color: #919191; filter: grayscale(1); box-shadow: none; transform: none; }
+    .tool img { grid-column: 1; grid-row: 1; width: 22px; height: 22px; }
+    .tool:nth-child(1) > img:first-child { filter: invert(42%) sepia(38%) saturate(1150%) hue-rotate(183deg) brightness(88%); }
+    .tool:disabled > img:first-child { opacity: .48; filter: grayscale(1); }
+    .tool span { grid-column: 2; grid-row: 1; line-height: 24px; font-weight: 500; }
+    .tool .tool-arrow { grid-column: 3; grid-row: 1; width: 16px; height: 16px; transform: rotate(-90deg); opacity: .8; }
+
+    .tabs { position: absolute; left: 20px; top: 246px; width: calc(100% - 40px); height: 38px; border-bottom: 1px solid var(--line); display: flex; align-items: flex-start; gap: 40px; }
+    .tab { position: relative; height: 38px; padding: 0 4px; border-radius: 4px 4px 0 0; font-size: 16px; line-height: 24px; color: var(--muted); transition: color .15s ease, background .15s ease; }
+    .tab:hover { color: var(--blue); background: #f4f7ff; }
+    .tab:active { background: #e5edff; }
+    .tab.active { color: var(--ink); font-weight: 600; }
+    .tab.active::after { content: ""; position: absolute; bottom: 0; left: 14px; width: 30px; height: 3px; border-radius: 2px; background: var(--blue); }
+
+    .records { position: absolute; left: 20px; top: 298px; bottom: 20px; width: calc(100% - 40px); list-style: none; margin: 0; padding: 0 4px 0 0; overflow-y: auto; overscroll-behavior: contain; }
+    .record {
+      min-height: 66px;
+      border-radius: 10px;
+      padding: 8px 12px 8px 10px;
+      display: grid;
+      grid-template-columns: 30px 1fr 24px;
+      gap: 10px;
+      align-items: center;
+      transition: background .15s ease;
+      cursor: pointer;
+    }
+    .record:hover, .record.active { background: var(--tile); }
+    .record:active { background: #e8f0ff; }
+    .record + .record { margin-top: 10px; }
+    .record.tall { min-height: 86px; }
+    .record-icon { width: 28px; height: 28px; }
+    .record-icon[src*="tool-contract-review"] { filter: invert(42%) sepia(38%) saturate(1150%) hue-rotate(183deg) brightness(88%); }
+    .record-main { min-width: 0; }
+    .record-title { font-size: 15px; line-height: 24px; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .record-meta, .record-state { color: var(--muted); line-height: 22px; }
+    .record-state { display: flex; justify-content: space-between; gap: 8px; }
+    .success { color: #22a35a; }
+    .danger { color: #f04438; }
+    .more { width: 24px; height: 24px; border-radius: 4px; display: grid; place-items: center; }
+    .more:hover { background: #eef4ff; }
+    .more:active { background: #dfeaff; transform: scale(.92); }
+    .more img { width: 24px; height: 24px; }
+
+    @media (max-width: 1200px) {
+      :root { --side-width: 190px; --page-gap: 14px; }
+      .center { left: calc(var(--side-width) + var(--page-gap) * 2); width: calc(100% - var(--side-width) * 2 - var(--page-gap) * 4); }
+      .tool-grid { grid-template-columns: 1fr; gap: 8px; }
+      .tool { height: 56px; }
+      .tabs { top: 340px; }
+      .records { top: 392px; }
+      .composer { left: 24px; width: calc(100% - 48px); padding: 0 14px; gap: 10px; }
+      .project-title, .project-meta, .intro, .assistant-copy, .prompt { left: 24px; }
+      .intro, .assistant-copy, .prompt { width: calc(100% - 48px); max-width: calc(100% - 48px); }
+      .user-bubble { right: 24px; max-width: calc(100% - 48px); }
+    }
+
+    @media (max-width: 1000px) {
+      body { display: block; overflow-y: auto; }
+      .viewport { width: 100%; height: auto; min-height: 100vh; overflow: visible; }
+      .app { width: 100%; height: auto; min-height: 100vh; padding-top: 74px; }
+      .topbar { position: fixed; }
+      .panel, .left, .center, .right {
+        position: relative;
+        inset: auto;
+        width: calc(100% - 24px);
+        height: calc(100vh - 86px);
+        min-height: 620px;
+        margin: 0 12px 12px;
+      }
+      .left { overflow-y: auto; }
+      .right { min-height: 700px; }
+    }
+
+    @media (max-width: 520px) {
+      .topbar { padding: 0 12px; }
+      .brand-link, .brand { width: 219px; }
+      .profile-name { display: none; }
+      .selected-source { display: none; }
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 28px;
+      transform: translate(-50%, 18px);
+      border-radius: 8px;
+      background: rgba(24, 32, 46, .94);
+      color: #fff;
+      padding: 10px 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .18s ease, transform .18s ease;
+      z-index: 20;
+    }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+  </style>
+</head>
+<body>
+  <div class="viewport">
+    <div class="app">
+      <header class="topbar">
+        <a class="brand-link" href="index.html" aria-label="返回项目首页" title="返回项目首页"><img class="brand" src="assets/huakun-contract-logo.png" alt="华鲲元启 | 合同审查"></a>
+        <button class="profile" type="button" aria-label="打开用户菜单">
+          <img class="profile-avatar" src="assets/avatar.svg" alt="">
+          <span class="profile-name">易天行</span>
+          <img class="profile-arrow" src="assets/chevron-down.svg" alt="">
+        </button>
+      </header>
+
+      <aside class="panel left">
+        <div class="panel-heading">合同</div>
+        <button class="upload-zone" type="button" data-toast="已打开文件上传入口">
+          <img src="assets/upload.svg" alt="">
+          <span>点击或拖拽文件到此处，支持 pdf、docx</span>
+        </button>
+
+        <section class="source" aria-label="合同源文件">
+          <div class="source-head"><span>合同源文件</span><button class="selection-toggle" type="button" data-select-all aria-label="全选合同源文件" aria-checked="false"><img src="assets/checkbox-unchecked.png" alt=""></button></div>
+          <button class="soft-button" type="button" data-toggle><img src="assets/knowledge-include-list.svg" alt=""><span>纳入知识库</span></button>
+          <ul class="file-list">
+            <li class="file-row" data-checked="true"><span class="file-main"><img class="file-icon" src="assets/file-word.svg" alt=""><span class="file-name">【合同】珠海一博消防合同18600000杰能</span></span><img class="check" src="assets/checkbox-checked.svg" alt="已选择"></li>
+            <li class="file-row"><span class="file-main"><img class="file-icon" src="assets/file-word.svg" alt=""><span class="file-name">【发票2A】20211026一博科技一站式硬件创新基地总承包工程2000000.00元</span></span><img class="check" src="assets/checkbox-checked.svg" alt="已选择"></li>
+            <li class="file-row" data-checked="false"><span class="file-main"><img class="file-icon" src="assets/file-pdf.svg" alt=""><span class="file-name">资产五级分类标准</span></span><img class="check" src="assets/checkbox-unchecked.png" alt="未选择"></li>
+            <li class="file-row"><span class="file-main"><img class="file-icon" src="assets/file-pdf.svg" alt=""><span class="file-name">【合同】珠海一博消防合同18600000杰能</span></span><img class="check" src="assets/checkbox-checked.svg" alt="已选择"></li>
+            <li class="file-row"><span class="file-main"><img class="file-icon" src="assets/file-pdf.svg" alt=""><span class="file-name">资产五级分类标准</span></span><img class="check" src="assets/checkbox-checked.svg" alt="已选择"></li>
+          </ul>
+        </section>
+
+        <div class="left-divider"></div>
+        <div class="knowledge-title">引用知识库</div>
+        <button class="knowledge-add" type="button" data-toast="已打开添加知识库入口"><img src="assets/upload.svg" alt=""><span>添加知识库</span></button>
+        <ul class="file-list knowledge-files">
+          <li class="file-row"><span class="file-main"><img class="file-icon" src="assets/file-word.svg" alt=""><span class="file-name">资产五级分类标准</span></span><img class="check" src="assets/checkbox-unchecked.png" alt="未选择"></li>
+          <li class="file-row"><span class="file-main"><img class="file-icon" src="assets/file-word.svg" alt=""><span class="file-name">保理业务风险控制指南</span></span><img class="check" src="assets/checkbox-unchecked.png" alt="未选择"></li>
+          <li class="file-row"><span class="file-main"><img class="file-icon" src="assets/file-pdf.svg" alt=""><span class="file-name">供应链保理合同审查要点</span></span><img class="check" src="assets/checkbox-unchecked.png" alt="未选择"></li>
+          <li class="file-row"><span class="file-main"><img class="file-icon" src="assets/file-pdf.svg" alt=""><span class="file-name">资产五级分类标准</span></span><img class="check" src="assets/checkbox-unchecked.png" alt="未选择"></li>
+        </ul>
+      </aside>
+
+      <main class="panel center">
+        <div class="panel-heading">对话</div>
+        <section class="conversation">
+          <div class="project-card">
+            <div class="assistant-brand"><img src="assets/contract-review.svg" alt=""><span>华鲲合同审查助手</span></div>
+            <h1 class="project-title">供应链保理合同审查项目</h1>
+            <div class="project-meta"><span><strong>5</strong> 份文件</span><span><strong>1</strong> 个知识库</span></div>
+            <p class="intro">这份文档详细规定了供应链项目资产审核的通用标准，旨在确保基础交易的真实性与合规性。指南涵盖了企业身份一致性核查、合同条款录入规范以及总分公司授权处理等关键操作流程。针对建筑工程领域，文件特别强调了对强制招投标、法定监理要求及非法转分包情形的法律合规性审查。此外，该标准为发票验真和各类履约证明材料（如产值文件、结算单据等）设定了严苛的逻辑检验规则。通过明确核心企业与供应商应提供的具体文件清单，该准则为资产入池提供了标准化的风险控制指引。</p>
+          </div>
+          <button class="save-note save-one" type="button" data-toggle><img src="assets/pushpin.svg" alt=""><span>保存为笔记</span></button>
+          <button class="copy-one" type="button" data-toast="内容已复制"><img src="assets/message-copy.svg" alt="复制"></button>
+          <button class="prompt p1" type="button"><span>帮我梳理《【合同】珠海一博消防合同18600000杰能》核心条款与关键权责信息</span><img src="assets/chevron-down.svg" alt=""></button>
+          <button class="prompt p2" type="button"><span>帮我梳理《资产五级分类标准》核心标准</span><img src="assets/chevron-down.svg" alt=""></button>
+          <button class="prompt p3" type="button"><span>帮我梳理《【合同】珠海一博消防合同18600000杰能》核心条款与关键权责信息</span><img src="assets/chevron-down.svg" alt=""></button>
+
+          <div class="user-bubble user-one">帮我审查合同</div>
+          <p class="assistant-copy assistant-one">识别到您项目中有5份合同及协议，您想要对项目中的哪份文件进行审查，基于什么合同标准审查呢？您可以勾选左侧文件，并告知我明确的审查标准，审查标准可在界面右上角的审查清单中查看哦~</p>
+          <button class="save-note save-two" type="button" data-toggle><img src="assets/pushpin.svg" alt=""><span>保存为笔记</span></button>
+          <button class="copy-two" type="button" data-toast="内容已复制"><img src="assets/message-copy.svg" alt="复制"></button>
+          <button class="prompt p4" type="button"><span>对项目中的所有合同基于保理合同审核标准，作为保理商，进行严格的审查</span><img src="assets/chevron-down.svg" alt=""></button>
+          <button class="prompt p5" type="button"><span>审核标准有哪些？</span><img src="assets/chevron-down.svg" alt=""></button>
+          <button class="prompt p6" type="button"><span>我想自定义审核标准</span><img src="assets/chevron-down.svg" alt=""></button>
+
+          <div class="user-bubble user-two">帮我审查合同《【合同】珠海一博消防合同18600000杰能》，我是保理商，按照保理合同审查，要求严格审查</div>
+          <p class="assistant-copy assistant-two">正在为您生成《【合同】珠海一博消防合同18600000杰能》的审查结果。<br>本次执行审查标准为：清单类型：保理合同；签订立场：保理商；审查尺度：严格；<br>您可前往右侧结果区域查看并下载审查报告。</p>
+          <button class="save-note save-three" type="button" data-toggle><img src="assets/pushpin.svg" alt=""><span>保存为笔记</span></button>
+          <button class="copy-three" type="button" data-toast="内容已复制"><img src="assets/message-copy.svg" alt="复制"></button>
+          <button class="prompt p7" type="button"><span>对项目中的所有合同基于保理合同审核标准，作为保理商，进行严格的审查</span><img src="assets/chevron-down.svg" alt=""></button>
+          <button class="prompt p8" type="button"><span>审核标准有哪些？</span><img src="assets/chevron-down.svg" alt=""></button>
+          <button class="prompt p9" type="button"><span>我想自定义审核标准</span><img src="assets/chevron-down.svg" alt=""></button>
+        </section>
+        <form class="composer">
+          <input name="question" autocomplete="off" placeholder="请输入文案...">
+          <span class="selected-source">已选 <strong>4</strong> 个来源文件</span>
+          <button class="send" type="submit" aria-label="发送" disabled><img src="assets/send.svg" alt=""></button>
+        </form>
+      </main>
+
+      <aside class="panel right">
+        <div class="panel-heading">结果</div>
+        <button class="right-collapse" type="button" aria-label="收起结果栏" data-toast="结果栏保持展开"></button>
+        <div class="tool-grid">
+          <button class="tool active" type="button"><img src="assets/tool-contract-review.svg" alt=""><span>合同审查</span><img class="tool-arrow" src="assets/chevron-down.svg" alt=""></button>
+          <button class="tool" type="button" disabled aria-disabled="true"><img src="assets/tool-contract-translate.svg" alt=""><span>合同翻译</span><img class="tool-arrow" src="assets/chevron-down.svg" alt=""></button>
+          <button class="tool" type="button" disabled aria-disabled="true"><img src="assets/tool-contract-compare.svg" alt=""><span>合同对比</span><img class="tool-arrow" src="assets/chevron-down.svg" alt=""></button>
+          <button class="tool" type="button" disabled aria-disabled="true"><img src="assets/tool-content-optimize.svg" alt=""><span>合同生成</span><img class="tool-arrow" src="assets/chevron-down.svg" alt=""></button>
+        </div>
+        <div class="tabs"><button class="tab active" type="button">生成记录</button><button class="tab" type="button">定稿文件</button></div>
+        <ul class="records">
+          <li class="record tall active review-result-link"><img class="record-icon" src="assets/tool-contract-review.svg" alt=""><div class="record-main"><div class="record-title">《【合同】珠海一博消防合同18600000杰能》</div><div class="record-meta">2026年7月22日 14:23:56</div><div class="record-state"><span class="success">审查完成</span><span><b class="danger">10</b> 处合同风险</span></div></div><button class="more" type="button" aria-label="更多操作"><img src="assets/more.png" alt=""></button></li>
+          <li class="record tall review-result-link"><img class="record-icon" src="assets/tool-contract-review.svg" alt=""><div class="record-main"><div class="record-title">《珠海一博消防合同18600000杰能》</div><div class="record-meta">2026年7月21日 12:21:16</div><div class="record-state"><span class="success">审查完成</span><span><b class="danger">6</b> 处合同风险</span></div></div><button class="more" type="button" aria-label="更多操作"><img src="assets/more.png" alt=""></button></li>
+          <li class="record tall"><img class="record-icon" src="assets/tool-contract-review.svg" alt=""><div class="record-main"><div class="record-title">《应收账款融资合同》</div><div class="record-meta">2026年7月20日 11:33:56</div><div class="record-state"><span class="danger">处理失败</span><span><b class="danger">0</b> 处合同风险</span></div></div><button class="more" type="button" aria-label="更多操作"><img src="assets/more.png" alt=""></button></li>
+          <li class="record"><img class="record-icon" src="assets/note-outline.png" alt=""><div class="record-main"><div class="record-title">供应链保理合同审查要点笔记</div><div class="record-meta">2026年7月19日 16:53:06</div></div><button class="more" type="button" aria-label="更多操作"><img src="assets/more.png" alt=""></button></li>
+          <li class="record"><img class="record-icon" src="assets/note-outline.png" alt=""><div class="record-main"><div class="record-title">保理业务风险控制指南笔记</div><div class="record-meta">2026年7月18日 19:24:53</div></div><button class="more" type="button" aria-label="更多操作"><img src="assets/more.png" alt=""></button></li>
+        </ul>
+      </aside>
+    </div>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const toast = document.querySelector('#toast');
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => toast.classList.remove('show'), 1500);
+    }
+
+    document.querySelector('.profile').addEventListener('click', event => {
+      event.currentTarget.classList.toggle('open');
+      showToast('用户菜单已切换');
+    });
+
+    document.querySelectorAll('[data-toast]').forEach(control => {
+      control.addEventListener('click', () => showToast(control.dataset.toast));
+    });
+
+    document.querySelectorAll('[data-toggle]').forEach(control => {
+      control.addEventListener('click', () => {
+        control.classList.toggle('active');
+        showToast(control.classList.contains('active') ? '已选中' : '已取消');
+      });
+    });
+
+    const fileRows = [...document.querySelectorAll('.file-row')];
+    const selectedSourceCount = document.querySelector('.selected-source strong');
+
+    function getGroupRows(toggle) {
+      const sourceGroup = toggle.closest('.source');
+      return sourceGroup
+        ? [...sourceGroup.querySelectorAll('.file-row')]
+        : [...document.querySelectorAll('.knowledge-files .file-row')];
+    }
+
+    function syncSelectAll(toggle) {
+      const rows = getGroupRows(toggle);
+      const checkedCount = rows.filter(row => row.dataset.checked === 'true').length;
+      const state = checkedCount === rows.length ? 'true' : checkedCount === 0 ? 'false' : 'mixed';
+      toggle.setAttribute('aria-checked', state);
+      toggle.querySelector('img').src = state === 'true'
+        ? 'assets/checkbox-checked.svg'
+        : 'assets/checkbox-unchecked.png';
+    }
+
+    function updateSelectedSourceCount() {
+      selectedSourceCount.textContent = fileRows.filter(row => row.dataset.checked === 'true').length;
+      document.querySelectorAll('[data-select-all]').forEach(syncSelectAll);
+    }
+
+    function setRowChecked(row, checked) {
+      const checkbox = row.querySelector('.check');
+      row.dataset.checked = String(checked);
+      row.setAttribute('aria-checked', String(checked));
+      checkbox.src = checked ? 'assets/checkbox-checked.svg' : 'assets/checkbox-unchecked.png';
+      checkbox.alt = checked ? '已选择' : '未选择';
+    }
+
+    fileRows.forEach(row => {
+      const checkbox = row.querySelector('.check');
+      const startsChecked = row.dataset.checked === 'true' || checkbox.getAttribute('src').endsWith('/checkbox-checked.svg');
+      row.setAttribute('role', 'checkbox');
+      row.setAttribute('tabindex', '0');
+      setRowChecked(row, startsChecked);
+
+      const toggleRow = () => {
+        const checked = row.dataset.checked !== 'true';
+        setRowChecked(row, checked);
+        updateSelectedSourceCount();
+        showToast(`${checked ? '已选择' : '已取消'}：${row.querySelector('.file-name').textContent}`);
+      };
+
+      row.addEventListener('click', toggleRow);
+      row.addEventListener('keydown', event => {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        event.preventDefault();
+        toggleRow();
+      });
+    });
+
+    document.querySelectorAll('[data-select-all]').forEach(toggle => {
+      toggle.addEventListener('click', () => {
+        const rows = getGroupRows(toggle);
+        const shouldSelectAll = !rows.every(row => row.dataset.checked === 'true');
+        rows.forEach(row => setRowChecked(row, shouldSelectAll));
+        updateSelectedSourceCount();
+        showToast(shouldSelectAll ? '已全选' : '已取消全选');
+      });
+    });
+
+    updateSelectedSourceCount();
+
+    const composer = document.querySelector('.composer');
+    const composerInput = composer.querySelector('input');
+    const sendButton = composer.querySelector('.send');
+
+    function updateComposerState() {
+      const hasContent = composerInput.value.trim().length > 0;
+      composer.classList.toggle('has-content', hasContent);
+      sendButton.disabled = !hasContent;
+    }
+
+    composerInput.addEventListener('input', updateComposerState);
+
+    document.querySelectorAll('.prompt').forEach(prompt => {
+      prompt.addEventListener('click', () => {
+        const input = document.querySelector('.composer input');
+        input.value = prompt.querySelector('span').textContent;
+        updateComposerState();
+        input.focus();
+      });
+    });
+
+    const records = document.querySelector('.records');
+
+    document.querySelectorAll('.tool').forEach(tool => {
+      tool.addEventListener('click', () => {
+        document.querySelectorAll('.tool').forEach(item => item.classList.remove('active'));
+        tool.classList.add('active');
+        showToast(`已切换到${tool.querySelector('span').textContent}`);
+      });
+    });
+
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(item => item.classList.remove('active'));
+        tab.classList.add('active');
+        showToast(`当前查看：${tab.textContent}`);
+      });
+    });
+
+    records.addEventListener('click', event => {
+      const more = event.target.closest('.more');
+      if (more) {
+        event.stopPropagation();
+        showToast('更多操作已展开');
+        return;
+      }
+
+      const record = event.target.closest('.record');
+      if (!record) return;
+      if (record.classList.contains('review-result-link')) {
+        location.href = 'review-result.html';
+        return;
+      }
+      document.querySelectorAll('.record').forEach(item => item.classList.remove('active'));
+      record.classList.add('active');
+      showToast(`已打开：${record.querySelector('.record-title').textContent}`);
+    });
+
+    composer.addEventListener('submit', event => {
+      event.preventDefault();
+      const input = event.currentTarget.querySelector('input');
+      if (!input.value.trim()) {
+        showToast('请输入问题');
+        input.focus();
+        return;
+      }
+      showToast('问题已发送');
+      input.value = '';
+      updateComposerState();
+    });
+  </script>
+</body>
+</html>

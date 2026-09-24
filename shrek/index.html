@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; connect-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; object-src 'self' data: blob:; worker-src 'none'; frame-src 'self' data: blob:" />
+    <title>AI-shrek 登录</title>
+    <link rel="stylesheet" href="./styles.css?v=20260723-6" />
+  </head>
+  <body>
+    <main class="login-page" aria-label="AI-shrek 登录页">
+      <video class="login-bg-video" src="./assets/login-background-motion.mp4" autoplay muted loop playsinline aria-hidden="true"></video>
+      <section class="hero-brand" aria-label="AI-shrek 3D 设计大师">
+        <img class="hero-title" src="./assets/hero-title.png" alt="AI-shrek 3D 设计大师" />
+        <p>虽然我很丑，但是我很温柔</p>
+      </section>
+
+      <div class="login-panel-wrap">
+      <section class="login-panel" aria-label="登录">
+        <div class="panel-brand">
+          <img class="brand-logo" src="./assets/logo.png" alt="" />
+          <img class="brand-wordmark" src="./assets/brand-wordmark.png" alt="AI-shrek" />
+        </div>
+
+        <form class="login-form" novalidate>
+          <label class="field">
+            <svg class="field-icon" width="22" height="20" viewBox="0 0 22 20" fill="none" aria-hidden="true">
+              <circle cx="11" cy="5.5" r="3.7" stroke="#838486" stroke-width="1.6"/>
+              <path d="M3.5 17.2c0-3.1 3.1-5.2 7.5-5.2s7.5 2.1 7.5 5.2" stroke="#838486" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+            <input type="text" name="username" placeholder="请输入用户名" autocomplete="username" />
+          </label>
+
+          <label class="field">
+            <svg class="field-icon" width="22" height="20" viewBox="0 0 22 20" fill="none" aria-hidden="true">
+              <rect x="4.2" y="8.2" width="13.6" height="9.2" rx="2.2" stroke="#838486" stroke-width="1.6"/>
+              <path d="M7.2 8.2V6.4a3.8 3.8 0 0 1 7.6 0v1.8" stroke="#838486" stroke-width="1.6" stroke-linecap="round"/>
+              <path d="M11 11.6v2.4" stroke="#838486" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+            <input id="password" type="password" name="password" placeholder="请输入密码" autocomplete="current-password" />
+            <button class="icon-button" type="button" aria-label="显示或隐藏密码" data-toggle-password>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4.10679 7.5C2.59876 8.75 1.66602 10 1.66602 10C1.66602 10 5.39697 15 9.99935 15C10.5701 15 11.1275 14.9231 11.666 14.7884M8.34593 5.20833C8.88035 5.07567 9.43327 5 9.99935 5C14.6017 5 18.3327 10 18.3327 10C18.3327 10 17.3999 11.25 15.8919 12.5" stroke="#838486" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.4636 8.59375C8.12356 8.9645 7.91602 9.45879 7.91602 10.0015C7.91602 11.1521 8.84877 12.0849 9.99935 12.0849C10.5671 12.0849 11.0819 11.8577 11.4577 11.4893" stroke="#838486" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M16.5 16L4 4" stroke="#838486" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </label>
+
+          <div class="form-row">
+            <label class="remember">
+              <input type="checkbox" name="remember" checked />
+              <span aria-hidden="true"></span>
+              记住我
+            </label>
+            <a href="#" aria-label="忘记密码请联系管理员">忘记密码请联系管理员</a>
+          </div>
+
+          <p class="login-error" role="alert" aria-live="polite"></p>
+          <button class="submit-button" type="submit" disabled>登录</button>
+        </form>
+      </section>
+      </div>
+    </main>
+
+    <script>
+      const bgVideo = document.querySelector(".login-bg-video");
+      if (bgVideo) bgVideo.playbackRate = 0.75;
+
+      const toggle = document.querySelector("[data-toggle-password]");
+      const password = document.querySelector("#password");
+      const form = document.querySelector(".login-form");
+      const error = document.querySelector(".login-error");
+      const submitButton = document.querySelector(".submit-button");
+      const rememberInput = form.elements.remember;
+      const rememberedLoginKey = "aiShrekRememberedLogin";
+
+      const eyeClosedIcon = '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4.10679 7.5C2.59876 8.75 1.66602 10 1.66602 10C1.66602 10 5.39697 15 9.99935 15C10.5701 15 11.1275 14.9231 11.666 14.7884M8.34593 5.20833C8.88035 5.07567 9.43327 5 9.99935 5C14.6017 5 18.3327 10 18.3327 10C18.3327 10 17.3999 11.25 15.8919 12.5" stroke="#838486" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.4636 8.59375C8.12356 8.9645 7.91602 9.45879 7.91602 10.0015C7.91602 11.1521 8.84877 12.0849 9.99935 12.0849C10.5671 12.0849 11.0819 11.8577 11.4577 11.4893" stroke="#838486" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M16.5 16L4 4" stroke="#838486" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      const eyeOpenIcon = '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M9.99935 15C14.6017 15 18.3327 10 18.3327 10C18.3327 10 14.6017 5 9.99935 5C5.39697 5 1.66602 10 1.66602 10C1.66602 10 5.39697 15 9.99935 15Z" stroke="#838486" stroke-width="1.66667" stroke-linejoin="round"/><path d="M9.99935 12.0832C11.1499 12.0832 12.0827 11.1504 12.0827 9.99984C12.0827 8.84925 11.1499 7.9165 9.99935 7.9165C8.84877 7.9165 7.91602 8.84925 7.91602 9.99984C7.91602 11.1504 8.84877 12.0832 9.99935 12.0832Z" stroke="#838486" stroke-width="1.66667" stroke-linejoin="round"/></svg>';
+
+      function syncPasswordIcon() {
+        const isVisible = password.type === "text";
+        toggle.innerHTML = isVisible ? eyeOpenIcon : eyeClosedIcon;
+        toggle.setAttribute("aria-pressed", String(isVisible));
+      }
+
+      function syncSubmitState() {
+        const hasUsername = form.elements.username.value.trim().length > 0;
+        const hasPassword = form.elements.password.value.length > 0;
+        submitButton.disabled = !(hasUsername && hasPassword);
+
+        if (!submitButton.disabled) {
+          error.textContent = "";
+        }
+      }
+
+      function getCredentials() {
+        return {
+          username: form.elements.username.value.trim(),
+          password: form.elements.password.value
+        };
+      }
+
+      function saveRememberedLogin() {
+        const credentials = getCredentials();
+
+        if (rememberInput.checked && (credentials.username || credentials.password)) {
+          localStorage.setItem(rememberedLoginKey, JSON.stringify(credentials));
+          return;
+        }
+
+        if (!rememberInput.checked) {
+          localStorage.removeItem(rememberedLoginKey);
+        }
+      }
+
+      function restoreRememberedLogin() {
+        const cached = localStorage.getItem(rememberedLoginKey);
+
+        if (!cached) {
+          return;
+        }
+
+        try {
+          const credentials = JSON.parse(cached);
+          form.elements.username.value = credentials.username || "";
+          form.elements.password.value = credentials.password || "";
+          rememberInput.checked = true;
+        } catch {
+          localStorage.removeItem(rememberedLoginKey);
+        }
+      }
+
+      toggle.addEventListener("click", () => {
+        password.type = password.type === "password" ? "text" : "password";
+        syncPasswordIcon();
+      });
+
+      form.elements.username.addEventListener("input", () => {
+        syncSubmitState();
+        saveRememberedLogin();
+      });
+
+      form.elements.password.addEventListener("input", () => {
+        syncSubmitState();
+        saveRememberedLogin();
+      });
+
+      rememberInput.addEventListener("change", saveRememberedLogin);
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        if (submitButton.disabled) {
+          return;
+        }
+
+        const username = form.elements.username.value.trim();
+        const currentPassword = form.elements.password.value;
+
+        if (username === "admin" && currentPassword === "admin123") {
+          saveRememberedLogin();
+          sessionStorage.setItem("aiShrekAuthed", "true");
+          window.location.href = "./home.html";
+          return;
+        }
+
+        error.textContent = "账号或密码错误，请输入 admin / admin123";
+      });
+
+      restoreRememberedLogin();
+      syncPasswordIcon();
+      syncSubmitState();
+    </script>
+  </body>
+</html>

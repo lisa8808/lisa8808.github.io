@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+  <rect width="1200" height="800" fill="#f8fafc"/>
+  <text x="70" y="76" font-family="Arial" font-size="34" font-weight="700" fill="#0f172a">同城双活容灾架构</text>
+  <g font-family="Arial" font-size="17">
+    <rect x="80" y="130" width="420" height="300" rx="20" fill="#fff" stroke="#cbd5e1"/><text x="120" y="175">生产数据中心 · 机房 A</text><text x="120" y="210">核心业务集群 · 64 节点</text><text x="120" y="245">数据库主集群 · 3 副本</text><text x="120" y="280">对象存储 · 1.2PB</text><text x="120" y="315">出口带宽 · 10GbE</text>
+    <rect x="700" y="130" width="420" height="300" rx="20" fill="#fff" stroke="#cbd5e1"/><text x="740" y="175">灾备数据中心 · 机房 B</text><text x="740" y="210">同步业务集群 · 64 节点</text><text x="740" y="245">数据库备集群 · 3 副本</text><text x="740" y="280">对象存储 · 1.2PB</text><text x="740" y="315">出口带宽 · 10GbE</text>
+  </g>
+  <g stroke="#025dff" stroke-width="6" fill="none"><path d="M500 230 C590 200 610 200 700 230"/><path d="M500 300 C590 330 610 330 700 300"/><path d="M700 370 C610 400 590 400 500 370"/></g>
+  <g fill="#025dff" font-family="Arial" font-size="14"><text x="555" y="205">同步复制</text><text x="555" y="322">日志同步</text><text x="555" y="397">心跳检测</text></g>
+  <rect x="80" y="490" width="1040" height="110" rx="18" fill="#eff6ff"/>
+  <g font-family="Arial" font-size="18" fill="#1d4ed8"><text x="120" y="535">RPO ≈ 0</text><text x="350" y="535">RTO ≤ 5 分钟</text><text x="620" y="535">双活切换成功率 99.99%</text><text x="920" y="535">季度演练</text></g>
+  <text x="80" y="660" font-family="Arial" font-size="17" fill="#475569">支持数据库、对象存储、消息队列和应用配置四层同步，故障自动切换无需人工介入。</text>
+</svg>

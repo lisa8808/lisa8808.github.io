@@ -1,0 +1,4 @@
+/* 仅用于偏离响应 Active 详情页。 */
+body.deviation-mode-page #result-panel .result-tabs {
+  margin-left: 0;
+}

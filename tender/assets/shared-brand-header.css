@@ -1,0 +1,233 @@
+.topbar {
+  height: 62px !important;
+  padding: 0 43px 0 16px !important;
+}
+
+.brand {
+  cursor: default;
+  min-width: 0;
+}
+
+.brand-content {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  height: 100%;
+}
+
+.brand-logo-crop {
+  cursor: default;
+  display: block;
+  flex: 0 0 250px;
+  width: 250px;
+  height: 48px;
+  overflow: hidden;
+}
+
+.brand-mark {
+  cursor: default;
+  display: block;
+  flex: 0 0 250px;
+  width: 250px;
+  height: 48px;
+  overflow: hidden;
+}
+
+.brand-mark img {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  width: 250px !important;
+  height: 48px !important;
+  object-fit: contain;
+  object-position: left center;
+}
+
+.brand-logo-crop img {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.brand-logo-crop img {
+  width: 400px !important;
+  height: 64px !important;
+  object-fit: contain;
+  object-position: left center;
+}
+
+.brand-mark img {
+  width: 400px !important;
+  height: 64px !important;
+  object-fit: contain;
+  object-position: left center;
+}
+
+.brand-dot {
+  flex: 0 0 auto;
+  margin: 0 12px;
+  color: #727b8c;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.brand-separator {
+  flex: 0 0 1px;
+  width: 1px;
+  height: 24px;
+  margin: 0 20px;
+  background: #d5d8de;
+}
+
+.shared-brand-product {
+  flex: 0 0 auto;
+  color: #626b7c;
+  white-space: nowrap;
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 26px;
+  margin-left: 0;
+}
+
+.brand-product {
+  cursor: pointer;
+  transition: color 0.16s ease, background-color 0.16s ease;
+}
+
+.brand-product:hover {
+  color: var(--color-primary, #025dff);
+}
+
+.brand-project {
+  cursor: default;
+  font-size: 16px;
+  font-weight: 400;
+  min-width: 0;
+  overflow: hidden;
+  color: #697284;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 720px) {
+  .brand-logo-crop,
+  .brand-mark {
+    flex-basis: 250px;
+    width: 250px;
+    height: 48px;
+  }
+
+  .brand-logo-crop img,
+  .brand-mark img {
+    width: 400px !important;
+    height: 64px !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .topbar { padding: 0 12px !important; }
+}
+
+/* List pages keep the horizontal Huakun wordmark and omit the trailing label. */
+.app.is-list .brand,
+.app.is-list .brand-content {
+  gap: 0 !important;
+}
+
+.app.is-list .brand-dot {
+  flex: 0 0 auto !important;
+  margin: 0 10px !important;
+}
+
+.app.is-list .brand-product {
+  margin-left: 0 !important;
+}
+
+.app.is-list .brand-logo-crop {
+  flex: 0 0 170px !important;
+  min-width: 170px !important;
+  max-width: 170px !important;
+  width: 170px !important;
+  height: 43px !important;
+  overflow: hidden !important;
+}
+
+.app.is-list .brand-logo-crop img {
+  display: block !important;
+  width: 269px !important;
+  height: 43px !important;
+  object-fit: contain !important;
+  object-position: left center !important;
+}
+
+.app.is-list .brand-mark {
+  flex: 0 0 170px !important;
+  min-width: 170px !important;
+  max-width: 170px !important;
+  width: 170px !important;
+  height: 43px !important;
+  overflow: hidden !important;
+}
+
+.app.is-list .brand-mark img {
+  display: block !important;
+  flex: none !important;
+  width: 269px !important;
+  height: 43px !important;
+  object-fit: contain !important;
+  object-position: left center !important;
+}
+
+/* Detail pages use the original horizontal header proportions. */
+.app.is-detail .brand-logo-crop,
+.app.is-detail .brand-mark {
+  flex: 0 0 170px !important;
+  min-width: 170px !important;
+  max-width: 170px !important;
+  width: 170px !important;
+  height: 43px !important;
+  overflow: hidden !important;
+}
+
+.app.is-detail .brand-logo-crop img,
+.app.is-detail .brand-mark img {
+  display: block !important;
+  width: 269px !important;
+  height: 43px !important;
+  object-fit: contain !important;
+  object-position: left center !important;
+}
+
+.app.is-detail .brand-product,
+.app.is-detail .shared-brand-product {
+  font-size: 19px !important;
+  line-height: 26px !important;
+}
+
+@media (max-width: 720px) {
+  .app.is-list .brand-mark {
+    flex-basis: 145px !important;
+    min-width: 145px !important;
+    max-width: 145px !important;
+    width: 145px !important;
+    height: 31px !important;
+  }
+
+  .app.is-list .brand-mark img {
+    width: 229px !important;
+    height: 31px !important;
+  }
+
+  .app.is-list .brand-logo-crop {
+    flex-basis: 145px !important;
+    min-width: 145px !important;
+    max-width: 145px !important;
+    width: 145px !important;
+    height: 31px !important;
+  }
+
+  .app.is-list .brand-logo-crop img {
+    width: 229px !important;
+    height: 31px !important;
+  }
+}

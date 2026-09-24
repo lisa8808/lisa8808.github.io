@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>企业资料引用演示 - AI投标助手</title>
+  <link rel="stylesheet" href="./assets/company-reference-demo.css" />
+  <script defer src="./assets/company-reference-demo.js"></script>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar"><button class="brand" type="button"><span class="brand-content"><span class="brand-logo-crop"><img src="./assets/list-huakun-tender-logo-cczIqQ47.png" alt="华鲲元启" /></span><span class="brand-dot">·</span><span class="brand-product">AI投标助手</span></span></button><button class="profile" type="button"><img src="./assets/figma/avatar.svg" alt="" /><span>易天行</span><span class="chevron">⌄</span></button></header>
+    <div class="breadcrumb"><span>标书撰写</span><b>/</b><strong>供应商情况介绍</strong></div>
+    <main class="workspace">
+      <section class="editor-panel">
+        <header class="editor-header"><div><span class="eyebrow">商务标 · 供应商信息</span><h1>1.1 供应商情况介绍</h1></div><button class="outline-button" id="openReference" type="button"><span class="quote-mark">↗</span>引用企业资料</button></header>
+        <div class="editor-toolbar"><span class="toolbar-label">投标文件内容</span><span class="toolbar-divider"></span><span class="toolbar-note">可直接填写，也可从企业资料库引用</span></div>
+        <div class="editor-wrap">
+          <div class="table-caption"><strong>供应商基本情况</strong><span>带 <i>*</i> 为待填写项</span></div>
+          <div class="table-scroll"><table class="tender-form-table"><tbody>
+            <tr><th>单位名称</th><td class="filled-cell"><span class="cell-value">四川华鲲振宇智能科技有限责任公司</span></td><th>地址</th><td class="filled-cell"><span class="cell-value">成都高新区新程南一路19号</span></td></tr>
+            <tr><th><i>*</i>主管部门</th><td class="fillable-cell" data-field="department"><span class="cell-value" contenteditable="true">请输入</span><button class="cell-reference" type="button" aria-label="引用主管部门资料" title="引用企业资料">↗</button></td><th>法人代表</th><td class="filled-cell"><span class="cell-value">魏靖</span></td></tr>
+            <tr><th><i>*</i>经济类型</th><td class="fillable-cell" data-field="nature"><span class="cell-value" contenteditable="true">请输入</span><button class="cell-reference" type="button" aria-label="引用经济类型资料" title="引用企业资料">↗</button></td><th><i>*</i>授权代表</th><td class="fillable-cell" data-field="representative"><span class="cell-value" contenteditable="true">请输入</span><button class="cell-reference" type="button" aria-label="引用授权代表资料" title="引用企业资料">↗</button></td></tr>
+            <tr><th><i>*</i>邮编</th><td class="fillable-cell" data-field="postcode"><span class="cell-value" contenteditable="true">请输入</span><button class="cell-reference" type="button" aria-label="引用邮编资料" title="引用企业资料">↗</button></td><th>电话</th><td class="filled-cell"><span class="cell-value">028-86510683</span></td></tr>
+            <tr><th><i>*</i>传真</th><td class="fillable-cell" data-field="fax"><span class="cell-value" contenteditable="true">请输入</span><button class="cell-reference" type="button" aria-label="引用传真资料" title="引用企业资料">↗</button></td><th>电子邮箱</th><td class="fillable-cell" data-field="email"><span class="cell-value" contenteditable="true">请输入</span><button class="cell-reference" type="button" aria-label="引用电子邮箱资料" title="引用企业资料">↗</button></td></tr>
+            <tr><th><i>*</i>单位简介及机构设置</th><td class="fillable-cell tall-cell" data-field="introduction" colspan="3"><span class="cell-value" contenteditable="true">请输入单位简介及机构设置</span><button class="cell-reference" type="button" aria-label="引用单位简介资料" title="引用企业资料">↗</button></td></tr>
+            <tr><th><i>*</i>单位优势及特长</th><td class="fillable-cell tall-cell" data-field="advantages" colspan="3"><span class="cell-value" contenteditable="true">请输入单位优势及特长</span><button class="cell-reference" type="button" aria-label="引用单位优势资料" title="引用企业资料">↗</button></td></tr>
+          </tbody></table></div>
+          <div class="slash-tip"><span>/</span> 在待填写项中输入斜杠，也可以快速打开企业资料搜索</div>
+        </div>
+        <footer class="editor-footer"><span>当前企业：<b>四川华鲲振宇智能科技有限责任公司</b></span><span>草稿已自动保存</span></footer>
+      </section>
+      <aside class="reference-panel"><header><div><span class="eyebrow">REFERENCE</span><h2>引用企业资料</h2><p id="targetHint">先选择表格中的待填写项</p></div><button class="panel-close" type="button" aria-label="关闭引用面板">×</button></header><div class="panel-search"><span>⌕</span><input id="panelSearch" placeholder="搜索企业名称、证书、合同" aria-label="搜索企业资料" /></div><nav class="panel-tabs" id="panelTabs"><button class="active" data-category="all">全部</button><button data-category="company">企业信息</button><button data-category="qualification">企业资质</button><button data-category="performance">企业业绩</button><button data-category="finance">财务信息</button></nav><div class="recommendation" id="recommendation" hidden><span>为当前字段推荐</span><b></b></div><div class="reference-list" id="referenceList"></div><section class="reference-preview" id="referencePreview"><div class="preview-empty"><span>↗</span><strong>选择一条资料查看预览</strong><small>资料将填入当前选中的表格项</small></div></section></aside>
+    </main>
+  </div>
+  <div class="toast" id="toast" hidden></div>
+</body>
+</html>

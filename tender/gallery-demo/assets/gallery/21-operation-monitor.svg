@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+  <rect width="1200" height="800" fill="#0f172a"/>
+  <text x="70" y="76" font-family="Arial" font-size="34" font-weight="700" fill="#f8fafc">运维监控大屏</text>
+  <g font-family="Arial" font-size="16">
+    <rect x="70" y="120" width="330" height="180" rx="18" fill="#1e293b"/><text x="105" y="165" fill="#93c5fd">CPU 使用率</text><text x="105" y="245" font-size="42" fill="#fff">46%</text><text x="105" y="275" fill="#94a3b8">峰值 78% · 告警阈值 85%</text>
+    <rect x="440" y="120" width="330" height="180" rx="18" fill="#1e293b"/><text x="475" y="165" fill="#86efac">内存使用率</text><text x="475" y="245" font-size="42" fill="#fff">62%</text><text x="475" y="275" fill="#94a3b8">峰值 74% · 告警阈值 85%</text>
+    <rect x="810" y="120" width="320" height="180" rx="18" fill="#1e293b"/><text x="845" y="165" fill="#fca5a5">在线用户</text><text x="845" y="245" font-size="42" fill="#fff">1,286</text><text x="845" y="275" fill="#94a3b8">并发峰值 1,860</text>
+  </g>
+  <g stroke="#38bdf8" stroke-width="5" fill="none"><path d="M100 500 C180 430 250 520 330 455 C410 390 480 500 560 430 C640 360 710 480 790 410 C870 340 940 460 1050 395"/></g>
+  <g font-family="Arial" font-size="15" fill="#94a3b8"><text x="100" y="550">00:00</text><text x="350" y="550">06:00</text><text x="600" y="550">12:00</text><text x="850" y="550">18:00</text><text x="1030" y="550">24:00</text></g>
+  <g font-family="Arial" font-size="16"><rect x="70" y="600" width="330" height="90" rx="16" fill="#7f1d1d"/><text x="105" y="640" fill="#fecaca">严重告警 1</text><text x="105" y="668" fill="#fca5a5">存储节点延迟升高</text><rect x="440" y="600" width="330" height="90" rx="16" fill="#78350f"/><text x="475" y="640" fill="#fed7aa">一般告警 3</text><text x="475" y="668" fill="#fdba74">队列积压 / 带宽波动</text><rect x="810" y="600" width="320" height="90" rx="16" fill="#14532d"/><text x="845" y="640" fill="#bbf7d0">健康节点 128</text><text x="845" y="668" fill="#86efac">服务可用率 99.998%</text></g>
+</svg>

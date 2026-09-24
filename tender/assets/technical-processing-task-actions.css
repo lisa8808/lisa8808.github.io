@@ -1,0 +1,46 @@
+.technical-task-confirm-open,
+.technical-task-confirm-open body {
+  overflow: hidden;
+}
+
+#result-panel .processing-row.technical-interpretation-processing,
+#result-panel .processing-row.technical-outline-processing,
+#result-panel .processing-row.technical-body-processing,
+#result-panel .processing-row.business-outline-processing,
+#result-panel .processing-row.business-body-processing {
+  position: relative;
+}
+
+#result-panel .technical-task-menu {
+  top: 52px;
+  right: 8px;
+  z-index: 60;
+}
+
+.technical-task-confirm-backdrop {
+  z-index: 120;
+}
+
+.technical-task-confirm-modal {
+  width: min(420px, calc(100vw - 32px));
+}
+
+.technical-task-confirm-modal p {
+  word-break: break-word;
+}
+
+.technical-task-action-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 32px;
+  z-index: 2600;
+  max-width: calc(100vw - 40px);
+  padding: 10px 18px;
+  border-radius: 7px;
+  background: rgba(24, 32, 46, .92);
+  color: #fff;
+  font-size: 14px;
+  line-height: 22px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, .2);
+  transform: translateX(-50%);
+}

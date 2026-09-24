@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>设计原型 · 大模型智算平台</title>
+<meta name="description" content="大模型智算平台 P0 批次高保真设计原型">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230F1418'/%3E%3Cpath d='M9 21V11l4 6 3-4 4 8' fill='none' stroke='%230B6E7F' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/app.css?v=20260924-4">
+<style>
+  body { background: var(--canvas); }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: var(--sp-8) var(--sp-6) var(--sp-12); }
+
+  .masthead { display: flex; align-items: center; gap: var(--sp-4); padding-bottom: var(--sp-6); border-bottom: 1px solid var(--line); }
+  .mark { width: 44px; height: 44px; border-radius: var(--r-2); background: var(--ink-900); display: grid; place-items: center; color: #fff; font-weight: 700; font-size: 18px; flex: none; }
+  .masthead h1 { font-size: 26px; font-weight: 600; color: var(--ink-900); letter-spacing: -.01em; }
+  .masthead p { font-size: var(--text-meta); color: var(--ink-500); margin-top: 4px; }
+
+  .facts { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--sp-4); margin: var(--sp-6) 0 var(--sp-8); }
+  .fact { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-2); padding: var(--sp-4); }
+
+  .grp { margin-bottom: var(--sp-8); }
+  .grp > header { display: flex; align-items: baseline; gap: var(--sp-3); margin-bottom: var(--sp-4); }
+  .grp > header h2 { font-size: var(--text-page); font-weight: 600; color: var(--ink-900); }
+  .grp > header .t-micro { font-family: var(--font-num); }
+
+  .plist { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: var(--sp-3); }
+  .pcard {
+    display: flex; align-items: flex-start; gap: var(--sp-3);
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-2);
+    padding: var(--sp-4); transition: border-color var(--t) var(--ease), box-shadow var(--t) var(--ease), transform var(--t) var(--ease);
+  }
+  .pcard:hover { border-color: var(--ink-300); box-shadow: var(--e-2); transform: translateY(-1px); }
+  .pcard__id {
+    font-family: var(--font-num); font-size: 11px; font-weight: 600; color: var(--ink-400);
+    background: var(--surface-sunken); border-radius: var(--r-1); padding: 2px 6px; flex: none; margin-top: 2px;
+  }
+  .pcard__body { min-width: 0; flex: 1 1 auto; }
+  .pcard__name { font-size: var(--text-section); font-weight: 600; color: var(--ink-900); }
+  .pcard__file { font-family: var(--font-num); font-size: 11px; color: var(--ink-400); margin-top: 3px; word-break: break-all; }
+  .pcard__tags { display: flex; gap: 4px; margin-top: var(--sp-2); flex-wrap: wrap; }
+
+  .note { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-2); padding: var(--sp-4) var(--sp-6); }
+  .note h2 { font-size: var(--text-section); font-weight: 600; color: var(--ink-800); margin-bottom: var(--sp-3); }
+  .note ul { margin: 0; padding-left: 18px; }
+  .note li { font-size: var(--text-meta); color: var(--ink-600); margin-bottom: 6px; }
+  kbd {
+    font-family: var(--font-num); font-size: 11px; background: var(--surface-sunken);
+    border: 1px solid var(--line-strong); border-bottom-width: 2px; border-radius: var(--r-1);
+    padding: 1px 5px; color: var(--ink-700);
+  }
+  .links { display: flex; gap: var(--sp-3); flex-wrap: wrap; margin-top: var(--sp-6); }
+  @media (max-width: 900px) { .facts { grid-template-columns: repeat(2, 1fr); } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="masthead">
+    <div class="mark">智</div>
+    <div>
+      <h1>大模型智算平台 · 设计原型</h1>
+      <p>P0 批次 · 设计系统 + 17 个业务页面 · 依据《大模型智算平台产品设计规划》V2.1 第 10 章</p>
+    </div>
+    <div class="spacer"></div>
+    <span class="chip chip--neutral"><i class="chip__dot"></i>文档管理本期不实现</span>
+  </div>
+
+  <div class="facts">
+    <div class="fact"><div class="t-micro mb-2">设计主张</div><div class="t-section">结构用墨，语义用色</div>
+      <p class="t-micro mt-2">颜色只表达语义，不做装饰</p></div>
+    <div class="fact"><div class="t-micro mb-2">外壳</div><div class="t-section">窄轨 + 页面带 + 主舞台 + 账板</div>
+      <p class="t-micro mt-2">64 / 52 / ≥880 / 320 px</p></div>
+    <div class="fact"><div class="t-micro mb-2">交互主线</div><div class="t-section">预估 → 冻结 → 结算 → 回执</div>
+      <p class="t-micro mt-2">七条强制约定</p></div>
+    <div class="fact"><div class="t-micro mb-2">技术形态</div><div class="t-section">静态 HTML，无构建</div>
+      <p class="t-micro mt-2">双击任一页面即可打开</p></div>
+  </div>
+
+  <div class="grp">
+    <header><h2>设计系统</h2><span class="t-micro">1 页</span></header>
+    <div class="plist">
+      <a class="pcard" href="design-system.html">
+        <span class="pcard__id">D4</span>
+        <span class="pcard__body">
+          <span class="pcard__name">设计系统</span>
+          <span class="pcard__file">design-system.html</span>
+          <span class="pcard__tags"><span class="chip chip--quota">令牌</span><span class="chip chip--spend">账本族</span><span class="chip chip--compute">资源族</span><span class="chip chip--insight">交互模型</span></span>
+        </span>
+      </a>
+    </div>
+  </div>
+
+  <div class="grp">
+    <header><h2>全局页</h2><span class="t-micro">4 页</span></header>
+    <div class="plist">
+      <a class="pcard" href="login.html"><span class="pcard__id">G-01</span><span class="pcard__body">
+        <span class="pcard__name">登录 / SSO 登录</span><span class="pcard__file">login.html</span></span></a>
+      <a class="pcard" href="home.html"><span class="pcard__id">G-02</span><span class="pcard__body">
+        <span class="pcard__name">平台工作台</span><span class="pcard__file">home.html</span>
+        <span class="pcard__tags"><span class="chip chip--quota">双语域并列</span></span></span></a>
+      <a class="pcard" href="403.html"><span class="pcard__id">G-06</span><span class="pcard__body">
+        <span class="pcard__name">无访问权限</span><span class="pcard__file">403.html</span></span></a>
+      <a class="pcard" href="404.html"><span class="pcard__id">G-07</span><span class="pcard__body">
+        <span class="pcard__name">页面不存在</span><span class="pcard__file">404.html</span></span></a>
+    </div>
+  </div>
+
+  <div class="grp">
+    <header><h2>应用中心</h2><span class="t-micro">5 页 · 发现语域</span></header>
+    <div class="plist">
+      <a class="pcard" href="apps-industry.html"><span class="pcard__id">A-01</span><span class="pcard__body">
+        <span class="pcard__name">行业应用</span><span class="pcard__file">apps-industry.html</span>
+        <span class="pcard__tags"><span class="chip chip--quota">类目 Tab</span><span class="chip chip--risk">额度不足态</span></span></span></a>
+      <a class="pcard" href="apps-agents.html"><span class="pcard__id">A-02</span><span class="pcard__body">
+        <span class="pcard__name">智能体</span><span class="pcard__file">apps-agents.html</span></span></a>
+      <a class="pcard" href="apps-products.html"><span class="pcard__id">A-03</span><span class="pcard__body">
+        <span class="pcard__name">平台产品</span><span class="pcard__file">apps-products.html</span></span></a>
+      <a class="pcard" href="app-detail.html"><span class="pcard__id">A-04</span><span class="pcard__body">
+        <span class="pcard__name">应用详情</span><span class="pcard__file">app-detail.html</span></span></a>
+      <a class="pcard" href="app-console.html"><span class="pcard__id">A-05</span><span class="pcard__body">
+        <span class="pcard__name">应用交互工作台</span><span class="pcard__file">app-console.html</span>
+        <span class="pcard__tags"><span class="chip chip--spend">账线闭环</span></span></span></a>
+    </div>
+  </div>
+
+  <div class="grp">
+    <header><h2>模型广场</h2><span class="t-micro">2 页 · 发现 ↔ 处置可切换</span></header>
+    <div class="plist">
+      <a class="pcard" href="models.html"><span class="pcard__id">M-01</span><span class="pcard__body">
+        <span class="pcard__name">模型列表</span><span class="pcard__file">models.html</span>
+        <span class="pcard__tags"><span class="chip chip--quota">发现语域</span><span class="chip chip--neutral">处置语域</span></span></span></a>
+      <a class="pcard" href="model-detail.html"><span class="pcard__id">M-02</span><span class="pcard__body">
+        <span class="pcard__name">模型详情</span><span class="pcard__file">model-detail.html</span></span></a>
+    </div>
+  </div>
+
+  <div class="grp">
+    <header><h2>算力仓库</h2><span class="t-micro">1 页 · 处置语域</span></header>
+    <div class="plist">
+      <a class="pcard" href="compute-overview.html"><span class="pcard__id">R-01</span><span class="pcard__body">
+        <span class="pcard__name">资源看板</span><span class="pcard__file">compute-overview.html</span>
+        <span class="pcard__tags"><span class="chip chip--compute">节点热格</span><span class="chip chip--compute">双轨图</span></span></span></a>
+    </div>
+  </div>
+
+  <div class="grp">
+    <header><h2>控制中心</h2><span class="t-micro">5 页 · 处置语域</span></header>
+    <div class="plist">
+      <a class="pcard" href="console-usage.html"><span class="pcard__id">C-01</span><span class="pcard__body">
+        <span class="pcard__name">用量概览</span><span class="pcard__file">console-usage.html</span></span></a>
+      <a class="pcard" href="console-quota.html"><span class="pcard__id">C-02</span><span class="pcard__body">
+        <span class="pcard__name">预算与配额管理</span><span class="pcard__file">console-quota.html</span>
+        <span class="pcard__tags"><span class="chip chip--spend">差异矩阵</span></span></span></a>
+      <a class="pcard" href="console-consumption.html"><span class="pcard__id">C-03</span><span class="pcard__body">
+        <span class="pcard__name">消耗明细查询</span><span class="pcard__file">console-consumption.html</span></span></a>
+      <a class="pcard" href="console-keys.html"><span class="pcard__id">C-05</span><span class="pcard__body">
+        <span class="pcard__name">API 密钥</span><span class="pcard__file">console-keys.html</span></span></a>
+      <a class="pcard" href="console-logs.html"><span class="pcard__id">C-07</span><span class="pcard__body">
+        <span class="pcard__name">调用日志与审计</span><span class="pcard__file">console-logs.html</span>
+        <span class="pcard__tags"><span class="chip chip--insight">链路级联</span></span></span></a>
+    </div>
+  </div>
+
+  <div class="note">
+    <h2>怎么看这套原型</h2>
+    <ul>
+      <li><b>外壳是统一的</b>：左侧 64px 窄轨（底部是常驻的额度水位环）、顶部 52px 页面带、右侧 320px 账板。账板把"钱"从控制中心解放到了每一个页面。</li>
+      <li><b>键盘</b>：<kbd>⌘K</kbd> 命令面板 · <kbd>⌥L</kbd> 账板 · <kbd>⌥R</kbd> 消耗回执 · <kbd>Esc</kbd> 关闭浮层。</li>
+      <li><b>数字是一扇门</b>：页面上任何消耗数字都可以点开，看到那一次调用的预估 / 结算 / 偏差与工具调用链路。</li>
+      <li><b>颜色只表达语义</b>：青绿=算力、琥珀=消耗、靛蓝=额度、朱红=风险、紫罗兰=洞察。主操作是墨黑按钮，不用品牌色——这样彩色才能保住"这里有事发生"的信号价值。</li>
+      <li><b>两个语域</b>：集市类页面（应用中心、模型广场）是<b>发现语域</b>，低密度讲能力；控制中心、算力仓库与各后台是<b>处置语域</b>，高密度讲状态。模型列表可在两者间切换。</li>
+      <li><b>额度不足不置灰</b>：因额度或授权不足而不可操作时，界面会告诉你缺多少、为什么、去哪里补。</li>
+    </ul>
+    <div class="links">
+      <a class="btn btn--primary" href="design-system.html">先看设计系统</a>
+      <a class="btn" href="apps-industry.html">发现语域样板</a>
+      <a class="btn" href="console-usage.html">处置语域样板</a>
+      <a class="btn" href="DESIGN-CONTRACT.md">设计契约</a>
+    </div>
+  </div>
+
+  <p class="t-micro mt-8">本原型共 18 个页面，覆盖 P0 批次全部范围。P1 / P2 批次（模型与算力后台、账单、告警、运维后台域等）尚未开始。</p>
+
+</div>
+</body>
+</html>

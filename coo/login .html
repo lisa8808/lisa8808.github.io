@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>华鲲元启 · 经管之星登录页</title>
+<style>
+:root{
+  --purple:#6122e5;
+  --panel:#030333;
+  --input:#10003a;
+}
+*{box-sizing:border-box}
+html,body{width:100%;min-height:100%;margin:0}
+body{
+  overflow:auto;
+  background:#030333;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Arial,sans-serif;
+  color:#fff;
+  -webkit-font-smoothing:antialiased;
+}
+button,input{font:inherit}
+.login-page{
+  position:relative;
+  min-height:100vh;
+  min-height:100svh;
+  overflow:hidden;
+  background:#030333;
+}
+.stage{
+  --card-w:clamp(420px,25.3vw,485px);
+  --card-right:clamp(56px,13.6vw,261px);
+  --card-top:clamp(228px,30.5vh,329px);
+  --form-pad-x:clamp(24px,1.8vw,34px);
+  --bg-cover-w:max(100vw,177.7778vh);
+  --bg-cover-h:max(56.25vw,100vh);
+  --copy-offset-y:4px;
+  position:relative;
+  width:100%;
+  min-height:100vh;
+  min-height:100svh;
+}
+.art{
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+  background:#070024;
+  z-index:0;
+}
+.art img{
+  position:absolute;
+  display:block;
+  max-width:none;
+  pointer-events:none;
+  user-select:none;
+}
+.bg-video{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:var(--bg-cover-w);
+  height:var(--bg-cover-h);
+  object-fit:cover;
+  transform:translate(-50%,-50%);
+  pointer-events:none;
+  user-select:none;
+}
+.right-gradient{
+  position:absolute;
+  right:-1vw;
+  top:-3vh;
+  width:50.2vw;
+  min-width:520px;
+  height:106vh;
+  background:linear-gradient(86.53deg,rgba(77,3,199,0) 8.22%,#120553 87.98%);
+}
+.left-gradient{
+  position:absolute;
+  left:0;
+  top:-3vh;
+  width:20.1vw;
+  min-width:240px;
+  height:106vh;
+  background:linear-gradient(272.56deg,rgba(77,3,199,0) 14.44%,rgba(48,4,143,.31) 50.45%,#120553 88.79%);
+}
+.right-deep{
+  position:absolute;
+  right:0;
+  top:-5vh;
+  width:31.2vw;
+  min-width:360px;
+  height:110vh;
+  background:linear-gradient(88.47deg,rgba(77,3,199,0) 6.74%,rgba(48,4,145,.529) 41.17%,#1a056b 71.84%);
+}
+.copy{
+  position:absolute;
+  left:max(48px,21.7vw);
+  top:calc(clamp(72px,13.6vh,147px) + var(--copy-offset-y));
+  width:min(44vw,690px);
+  z-index:2;
+}
+.badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:clamp(128px,8.4vw,161px);
+  height:clamp(36px,4.1vh,44px);
+  border-radius:20px 22px 22px 4px;
+  background:linear-gradient(89.57deg,#a30fff 8.35%,#725dff 86.66%);
+}
+.badge span{
+  font-size:clamp(18px,1.25vw,24px);
+  line-height:1.1;
+  font-weight:500;
+  color:#fff;
+  white-space:nowrap;
+}
+.copy h1{
+  margin:6px 0 0;
+  color:#fff;
+  font-family:"Alimama ShuHeiTi","PingFang SC","Microsoft YaHei",sans-serif;
+  font-size:clamp(34px,2.7vw,52px);
+  line-height:1.24;
+  font-weight:800;
+  letter-spacing:0;
+  white-space:nowrap;
+}
+.copy p{
+  margin:14px 0 0 2px;
+  color:rgba(255,255,255,.8);
+  font-size:clamp(18px,1.35vw,26px);
+  line-height:1.38;
+  font-weight:400;
+  white-space:nowrap;
+}
+.login-card{
+  position:absolute;
+  right:var(--card-right);
+  top:var(--card-top);
+  width:var(--card-w);
+  height:clamp(460px,47.2vh,510px);
+  border-radius:16px;
+  background:rgba(2,2,43,.8);
+  box-shadow:0 4px 4px rgba(0,0,0,.25);
+  backdrop-filter:blur(6px);
+  opacity:.9;
+  z-index:3;
+}
+.brand{
+  position:absolute;
+  right:calc(var(--card-right) + (var(--card-w) - clamp(190px,12.3vw,236px))/2);
+  top:calc(var(--card-top) + clamp(56px,7.2vh,78px));
+  width:236px;
+  height:auto;
+  z-index:4;
+}
+.brand-logo{width:clamp(190px,12.3vw,236px);height:auto;object-fit:contain;display:block}
+.form{
+  position:absolute;
+  right:calc(var(--card-right) + var(--form-pad-x));
+  top:calc(var(--card-top) + clamp(150px,15.6vh,169px));
+  width:calc(var(--card-w) - var(--form-pad-x)*2);
+  z-index:4;
+}
+.form-group{position:relative;margin:0 0 30px}
+.form-group.password-group{margin-bottom:14px}
+.form-group label{display:none}
+.field{
+  position:relative;
+  width:100%;
+  height:56px;
+  margin:0;
+  border:1px solid #25214A;
+  border-radius:8px;
+  background:#01012A;
+  transition:border .18s,box-shadow .18s,background .18s;
+}
+.field:hover{
+  border-color:#6E2BFF;
+}
+.field:focus-within{
+  border-color:#6E2BFF;
+  background:#01012A;
+  box-shadow:0 0 0 2px rgba(110,43,255,.22);
+}
+.field-icon,
+.field svg{
+  position:absolute;
+  left:16px;
+  top:17px;
+  width:22px;
+  height:22px;
+}
+.field-icon{
+  object-fit:contain;
+  pointer-events:none;
+  user-select:none;
+}
+.field svg{
+  color:rgba(255,255,255,.3);
+}
+.field input{
+  position:absolute;
+  left:49px;
+  top:0;
+  width:calc(100% - 98px);
+  height:54px;
+  border:0;
+  outline:0;
+  background:transparent;
+  color:rgba(255,255,255,.86);
+  font-size:16px;
+  line-height:56px;
+}
+.field input::placeholder{color:rgba(255,255,255,.3)}
+.field .eye{
+  position:absolute;
+  left:auto;
+  right:21px;
+  top:18px;
+  width:22px;
+  height:20px;
+  padding:0;
+  border:0;
+  background:transparent;
+  color:rgba(255,255,255,.3);
+  cursor:pointer;
+}
+.field .eye img{
+  position:static;
+  width:22px;
+  height:20px;
+  display:block;
+  object-fit:contain;
+}
+.remember-password{
+  display:flex;
+  align-items:center;
+  width:max-content;
+  min-height:24px;
+  margin:0 0 24px;
+  color:rgba(255,255,255,.66);
+  font-size:15px;
+  line-height:22px;
+  cursor:pointer;
+  user-select:none;
+}
+.remember-password input{
+  position:absolute;
+  opacity:0;
+  pointer-events:none;
+}
+.remember-password .checkmark{
+  position:relative;
+  width:18px;
+  height:18px;
+  margin-right:8px;
+  border:1px solid rgba(255,255,255,.32);
+  border-radius:4px;
+  background:#01012A;
+  transition:border-color .18s,background .18s,box-shadow .18s;
+}
+.remember-password .checkmark::after{
+  content:"";
+  position:absolute;
+  left:5px;
+  top:2px;
+  width:5px;
+  height:9px;
+  border:solid #fff;
+  border-width:0 2px 2px 0;
+  opacity:0;
+  transform:rotate(45deg) scale(.75);
+  transition:opacity .18s,transform .18s;
+}
+.remember-password:hover .checkmark,
+.remember-password input:focus-visible + .checkmark{
+  border-color:#5608FF;
+  box-shadow:0 0 0 2px rgba(86,8,255,.2);
+}
+.remember-password input:checked + .checkmark{
+  border-color:#5608FF;
+  background:#5608FF;
+}
+.remember-password input:checked + .checkmark::after{
+  opacity:1;
+  transform:rotate(45deg) scale(1);
+}
+.remember-password + .login-btn{margin-top:10px}
+.login-btn{
+  width:100%;
+  height:56px;
+  margin:20px 0 0;
+  border:0;
+  border-radius:8px;
+  background:linear-gradient(89.57deg,#a30fff 8.35%,#725dff 86.66%);
+  color:#fff;
+  font-size:20px;
+  line-height:28px;
+  font-weight:500;
+  cursor:pointer;
+  opacity:.6;
+  transition:background .18s,box-shadow .18s,transform .18s,opacity .18s;
+}
+.login-btn.active{
+  opacity:1;
+}
+.login-btn.active:hover{
+  background:linear-gradient(89.57deg,#b63aff 8.35%,#8371ff 86.66%);
+  box-shadow:0 8px 24px rgba(114,93,255,.32);
+  transform:translateY(-1px);
+}
+.message{
+  width:100%;
+  min-height:22px;
+  margin:16px 0 0;
+  color:#ff7bb0;
+  font-size:15px;
+  line-height:22px;
+  text-align:center;
+  opacity:0;
+  transition:opacity .18s;
+}
+.message.show{opacity:1}
+@media (max-width:1200px){
+  .stage{
+    --card-right:clamp(32px,6vw,72px);
+    --card-top:clamp(260px,31vh,340px);
+  }
+  .copy{
+    left:clamp(32px,8vw,96px);
+    top:calc(clamp(56px,10vh,110px) + var(--copy-offset-y));
+    width:calc(100% - var(--card-w) - var(--card-right) - 80px);
+  }
+}
+@media (max-width:900px){
+  .login-page{overflow:auto}
+  .stage{
+    --card-w:min(520px,calc(100vw - 48px));
+    --card-right:24px;
+    --card-top:clamp(220px,34vh,300px);
+    min-height:820px;
+    padding-bottom:48px;
+  }
+  .copy{
+    left:24px;
+    right:24px;
+    top:calc(56px + var(--copy-offset-y));
+    width:auto;
+    text-align:left;
+  }
+  .copy h1{
+    white-space:normal;
+    max-width:560px;
+  }
+  .copy p{white-space:normal}
+  .login-card{
+    left:24px;
+    right:24px;
+    top:var(--card-top);
+    width:auto;
+  }
+  .brand{
+    left:50%;
+    right:auto;
+    top:calc(var(--card-top) + 54px);
+    transform:translateX(-50%);
+    width:auto;
+  }
+  .form{
+    left:48px;
+    right:48px;
+    top:calc(var(--card-top) + 142px);
+    width:auto;
+  }
+  .right-gradient,.right-deep{opacity:.72}
+  .left-gradient{opacity:.45}
+  .stage{
+    --bg-cover-w:max(160vw,177.7778vh);
+    --bg-cover-h:max(90vw,100vh);
+  }
+}
+@media (max-width:520px){
+  .stage{
+    --card-top:260px;
+    min-height:780px;
+  }
+  .copy{top:calc(36px + var(--copy-offset-y))}
+  .badge{width:112px;height:34px}
+  .badge span{font-size:16px}
+  .copy h1{font-size:30px}
+  .copy p{font-size:16px;margin-top:10px}
+  .login-card{
+    left:16px;
+    right:16px;
+    height:430px;
+  }
+  .brand{top:calc(var(--card-top) + 44px)}
+  .brand-logo{width:178px}
+  .form{
+    left:32px;
+    right:32px;
+    top:calc(var(--card-top) + 124px);
+  }
+  .form-group{margin-bottom:22px}
+  .field,.login-btn{height:52px}
+  .field svg{top:15px}
+  .field input{height:50px;line-height:52px}
+  .field .eye{top:16px}
+  .right-gradient,.right-deep{min-width:260px}
+}
+</style>
+</head>
+<body>
+<main class="login-page" aria-label="华鲲元启经管之星登录页">
+  <section class="stage">
+    <div class="art" aria-hidden="true">
+      <video class="bg-video" src="login/bg-video.mp4" poster="login/bg-base.png" autoplay muted loop playsinline preload="auto"></video>
+      <div class="right-gradient"></div>
+      <div class="left-gradient"></div>
+      <div class="right-deep"></div>
+    </div>
+    <div class="copy">
+      <div class="badge"><span>华鲲元启</span></div>
+      <h1>华鲲元启&nbsp;&nbsp;经管之星</h1>
+      <p>用自然语言，问出数据答案</p>
+    </div>
+
+    <div class="login-card"></div>
+    <div class="brand" aria-hidden="true">
+      <img class="brand-logo" src="login/logo.svg" alt="">
+    </div>
+
+    <form class="form" id="loginForm">
+      <div class="form-group">
+        <label for="loginUser">用户名</label>
+        <div class="field" aria-label="用户名">
+          <img class="field-icon" src="login/icon-people.svg" alt="">
+          <input id="loginUser" name="username" autocomplete="username" placeholder="请填写用户名">
+        </div>
+      </div>
+      <div class="form-group password-group">
+        <label for="loginPass">密码</label>
+        <div class="field" aria-label="用户密码">
+          <img class="field-icon" src="login/icon-lock.svg" alt="">
+          <input id="loginPass" name="password" type="password" autocomplete="current-password" placeholder="请填写用户密码">
+          <button class="eye" type="button" id="togglePass" aria-label="显示或隐藏密码">
+            <img id="togglePassIcon" src="login/icon-password-hide.svg" alt="">
+          </button>
+        </div>
+      </div>
+      <label class="remember-password" for="rememberPassword">
+        <input id="rememberPassword" type="checkbox" name="rememberPassword">
+        <span class="checkmark" aria-hidden="true"></span>
+        <span>记住密码</span>
+      </label>
+      <button class="login-btn" type="submit">登录</button>
+      <p class="message" id="loginMessage">用户名或密码错误</p>
+    </form>
+  </section>
+</main>
+<script>
+const form=document.getElementById('loginForm');
+const user=document.getElementById('loginUser');
+const pass=document.getElementById('loginPass');
+const msg=document.getElementById('loginMessage');
+const loginBtn=form.querySelector('.login-btn');
+const togglePassIcon=document.getElementById('togglePassIcon');
+const rememberPassword=document.getElementById('rememberPassword');
+const rememberedLoginKey='jingguanStarRememberedLogin';
+const bgVideo=document.querySelector('.bg-video');
+const bgPlaybackRate=.82;
+if(bgVideo){
+  bgVideo.playbackRate=bgPlaybackRate;
+  bgVideo.addEventListener('loadedmetadata',function(){
+    bgVideo.playbackRate=bgPlaybackRate;
+  });
+}
+function updateLoginButtonState(){
+  loginBtn.classList.toggle('active',Boolean(user.value.trim()&&pass.value.trim()));
+}
+function getCredentials(){
+  return {username:user.value.trim(),password:pass.value};
+}
+function saveRememberedLogin(){
+  const credentials=getCredentials();
+  if(rememberPassword.checked&&credentials.username&&credentials.password){
+    localStorage.setItem(rememberedLoginKey,JSON.stringify(credentials));
+    return;
+  }
+  if(!rememberPassword.checked||!credentials.username||!credentials.password){
+    localStorage.removeItem(rememberedLoginKey);
+  }
+}
+function restoreRememberedLogin(){
+  const cached=localStorage.getItem(rememberedLoginKey);
+  if(!cached){
+    return;
+  }
+  try{
+    const credentials=JSON.parse(cached);
+    user.value=credentials.username||'';
+    pass.value=credentials.password||'';
+    rememberPassword.checked=true;
+  }catch{
+    localStorage.removeItem(rememberedLoginKey);
+  }
+}
+user.addEventListener('input',function(){
+  updateLoginButtonState();
+  saveRememberedLogin();
+});
+pass.addEventListener('input',function(){
+  updateLoginButtonState();
+  saveRememberedLogin();
+});
+rememberPassword.addEventListener('change',saveRememberedLogin);
+restoreRememberedLogin();
+updateLoginButtonState();
+document.getElementById('togglePass').addEventListener('click',function(){
+  const isHidden=pass.type==='password';
+  pass.type=isHidden?'text':'password';
+  togglePassIcon.src=isHidden?'login/icon-password-show.svg':'login/icon-password-hide.svg';
+});
+form.addEventListener('submit',function(e){
+  e.preventDefault();
+  if(!user.value.trim()||!pass.value.trim()){
+    msg.textContent='请输入用户名和密码';
+    msg.style.color='#ff7bb0';
+    msg.classList.add('show');
+    return;
+  }
+  if((user.value.trim()==='admin'||user.value.trim()==='user')&&pass.value==='123456'){
+    saveRememberedLogin();
+    msg.textContent='登录成功，正在进入系统';
+    msg.style.color='rgba(255,255,255,.78)';
+    window.location.href='index.html';
+  }else{
+    msg.textContent='用户名或密码错误';
+    msg.style.color='#ff7bb0';
+  }
+  msg.classList.add('show');
+});
+</script>
+</body>
+</html>

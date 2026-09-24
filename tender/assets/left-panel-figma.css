@@ -1,0 +1,214 @@
+/* Left source-material panel aligned to Figma node 906:14589. */
+#app .upload-panel .panel-title {
+  color: #18202e;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 22px;
+}
+
+#app .upload-panel .upload-group h3,
+#app .upload-panel .company-group h3 {
+  color: #18202e;
+  margin: 0 0 18px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 22px;
+}
+
+#app .upload-panel .field-label,
+#app .upload-panel .list-title {
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 14px;
+  line-height: 22px;
+}
+
+#app .upload-panel .list-title {
+  height: 28px;
+  margin-top: 16px;
+  margin-bottom: 4px;
+}
+
+#app .upload-panel .list-title strong {
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 22px;
+}
+
+#app .upload-panel .dropzone {
+  width: 100%;
+  height: 115px;
+  padding: 16px;
+  gap: 10px;
+  color: rgba(0, 0, 0, 0.6);
+  background: rgba(232, 232, 232, 0.3);
+  border: 1px solid rgba(192, 192, 192, 0.3);
+  border-radius: 10px;
+}
+
+#app .upload-panel .dropzone span {
+  max-width: 100%;
+  padding: 0;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+#app .upload-panel .upload-image {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+}
+
+#app .upload-panel .file-row {
+  position: relative;
+  width: 100%;
+  height: 48px;
+  padding: 10px 0 10px 2px;
+  gap: 8px;
+  border-radius: 0;
+  overflow: visible;
+}
+
+#app .upload-panel .file-row[aria-pressed='true'] {
+  background: transparent;
+}
+
+#app .upload-panel .file-row[aria-pressed='true']:hover {
+  background: #f7f8f8;
+}
+
+#app .upload-panel .file-type-image {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+}
+
+#app .upload-panel .ellipsis {
+  color: rgba(0, 0, 0, 0.9);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+#app .upload-panel .check-button {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 14px;
+  padding: 0;
+  border: 1px solid rgba(0, 0, 0, 0.4);
+  border-radius: 2px;
+}
+
+#app .upload-panel .check-button.checked {
+  border-color: #025dff;
+  background: #025dff;
+}
+
+#app .upload-panel .check-button svg {
+  width: 13px;
+  height: 13px;
+}
+
+#app .upload-panel .reference-group .check-button {
+  width: 16px;
+  height: 16px;
+  flex-basis: 16px;
+}
+
+#app .upload-panel .file-more-button {
+  position: absolute;
+  top: 50%;
+  right: 22px;
+  z-index: 2;
+  display: grid;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  pointer-events: none;
+  cursor: pointer;
+  opacity: 0;
+  place-items: center;
+  transform: translateY(-50%);
+  background: #f7f8f8;
+  border-radius: 8px;
+  transition: opacity 0.12s ease, background 0.12s ease;
+}
+
+#app .upload-panel .file-row:hover .file-more-button,
+#app .upload-panel .file-row:focus-within .file-more-button,
+#app .upload-panel .file-row.menu-open .file-more-button {
+  pointer-events: auto;
+  opacity: 1;
+}
+
+#app .upload-panel .file-more-button:hover {
+  background: #eef1f5;
+}
+
+#app .upload-panel .file-more-button img {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+
+#app .upload-panel .file-row-menu {
+  position: absolute;
+  top: 42px;
+  right: 0;
+  z-index: 20;
+  display: block;
+  width: 152px;
+  min-height: 72px;
+  padding: 12px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(31, 44, 72, 0.16);
+}
+
+#app .upload-panel .file-row-menu[hidden] {
+  display: none;
+}
+
+#app .upload-panel .file-delete-action {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 48px;
+  gap: 10px;
+  padding: 0 12px;
+  color: #18202e;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  font-size: 16px;
+  line-height: 22px;
+}
+
+#app .upload-panel .file-delete-action:hover {
+  background: #f7f8f8;
+}
+
+#app .upload-panel .file-delete-action img {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+
+#app .upload-panel .company-group select {
+  width: 100%;
+  height: 46px;
+  padding: 0 44px 0 20px;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 14px;
+  line-height: 22px;
+  background-color: #fff;
+  background-image: url('./figma/detail-chevron.svg');
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 18px 18px;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  appearance: none;
+}

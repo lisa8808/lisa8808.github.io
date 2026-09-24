@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>用量概览 · 控制中心 · 大模型智算平台</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230F1418'/%3E%3Cpath d='M9 21V11l4 6 3-4 4 8' fill='none' stroke='%230B6E7F' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/app.css?v=20260924-4">
+</head>
+<body data-module="console" data-page="C-01" data-title="用量概览">
+<div class="shell" id="shell">
+  <nav class="rail" id="rail" aria-label="模块导航"></nav>
+
+  <div class="main">
+    <header class="band" id="band"></header>
+
+    <div class="mid">
+      <!-- 控制中心：二级导航占用筛选列（该模块无筛选需求）—— 来自 PRD 的 7 项导航 -->
+      <aside class="filter" aria-label="控制中心导航">
+        <div class="filter__group">
+          <h3>控制中心</h3>
+          <a class="filter__nav" href="console-usage.html" aria-current="page">用量概览</a>
+          <a class="filter__nav" href="console-quota.html">预算与配额管理</a>
+          <a class="filter__nav" href="console-consumption.html">消耗明细查询</a>
+          <a class="filter__nav" href="console-usage.html">账单与费用</a>
+          <a class="filter__nav" href="console-keys.html">API 密钥</a>
+          <a class="filter__nav" href="console-logs.html">调用日志</a>
+          <a class="filter__nav" href="console-quota.html">告警中心</a>
+        </div>
+        <div class="filter__group">
+          <h3>项目</h3>
+          <label class="filter__opt"><input type="radio" name="proj" checked> 视觉检索平台<span class="cnt">61.8%</span></label>
+          <label class="filter__opt"><input type="radio" name="proj"> 合同审查<span class="cnt">34.2%</span></label>
+          <label class="filter__opt"><input type="radio" name="proj"> 标书撰写<span class="cnt">92.6%</span></label>
+        </div>
+      </aside>
+
+      <main class="stage" id="stage">
+        <div class="row row--between mb-4">
+          <span class="t-meta">数据来源 Token 银行计量结果 · 数据截至 14:35（同步延迟 &lt; 1 分钟）</span>
+          <span class="t-micro">项目：视觉检索平台</span>
+        </div>
+
+        <!-- 双轨主指标：Token 与卡时并列，禁止折算为单一数字（10.1） -->
+        <div class="grid grid--4">
+          <div class="card kpi kpi--accent-quota">
+            <div class="kpi__label">Token 可用</div>
+            <div class="kpi__value"><span class="num-xl">4.39M</span><span class="kpi__unit">Token</span></div>
+            <div class="levelbar levelbar--sm mt-3"><div class="levelbar__track">
+              <div class="levelbar__seg levelbar__seg--used" style="width:61.83%"></div>
+              <div class="levelbar__seg levelbar__seg--frozen" style="width:1.55%"></div>
+              <div class="levelbar__seg levelbar__seg--avail" style="width:36.62%"></div>
+            </div></div>
+            <div class="kpi__foot">总额度 12.00M · 已用 61.8%</div>
+          </div>
+          <div class="card kpi kpi--accent-spend">
+            <div class="kpi__label">Token 冻结中</div>
+            <div class="kpi__value">
+              <button class="num-xl" data-receipt style="background:none;border:0;padding:0;cursor:pointer;color:inherit">186.0k</button>
+              <span class="kpi__unit">Token</span>
+            </div>
+            <div class="kpi__foot"><span class="chip chip--spend"><i class="chip__dot"></i>运行中 12 个任务</span></div>
+          </div>
+          <div class="card kpi kpi--accent-compute">
+            <div class="kpi__label">卡时可用</div>
+            <div class="kpi__value"><span class="num-xl">2 098.0</span><span class="kpi__unit">卡时</span></div>
+            <div class="levelbar levelbar--sm mt-3"><div class="levelbar__track">
+              <div class="levelbar__seg levelbar__seg--used" style="width:57.2%"></div>
+              <div class="levelbar__seg levelbar__seg--frozen" style="width:0.84%"></div>
+              <div class="levelbar__seg levelbar__seg--avail" style="width:41.96%"></div>
+            </div></div>
+            <div class="kpi__foot">总额度 5 000 · 已用 57.2%</div>
+          </div>
+          <div class="card kpi">
+            <div class="kpi__label">本月费用（分摊前）</div>
+            <div class="kpi__value"><span class="num-xl">¥ 41,286</span></div>
+            <div class="kpi__foot">较上月 <span class="variance variance--over">+12.4%</span></div>
+          </div>
+        </div>
+
+        <!-- 双轨图：Token 柱 + 卡时线，双轴并列 -->
+        <div class="card mt-5">
+          <div class="card__head">
+            <h2>消耗趋势</h2>
+            <span class="chip chip--spend"><i class="chip__dot"></i>Token（左轴）</span>
+            <span class="chip chip--compute"><i class="chip__dot"></i>卡时（右轴）</span>
+            <span class="spacer"></span>
+            <div class="seg" role="group" aria-label="时间范围">
+              <button class="btn btn--sm" aria-pressed="false" style="width:auto;padding:0 10px">1 天</button>
+              <button class="btn btn--sm" aria-pressed="true" style="width:auto;padding:0 10px">7 天</button>
+              <button class="btn btn--sm" aria-pressed="false" style="width:auto;padding:0 10px">30 天</button>
+              <button class="btn btn--sm" aria-pressed="false" style="width:auto;padding:0 10px">90 天</button>
+            </div>
+          </div>
+          <div class="card__body">
+            <div id="chartDual" style="height:210px"></div>
+            <p class="chart__caption">朱红虚线为当日 Token 预警阈值。两轨单位不可换算，故双轴并列；一次时间范围切换驱动本分组全部子图。</p>
+          </div>
+        </div>
+
+        <div class="grid grid--2 mt-5">
+          <!-- 额度水位 -->
+          <div class="card">
+            <div class="card__head"><h2>额度水位</h2><button class="btn btn--sm">调整配额</button></div>
+            <div class="card__body">
+              <div class="t-micro mb-3">TOKEN</div>
+              <div class="levelbar"><div class="levelbar__track">
+                <div class="levelbar__seg levelbar__seg--used" style="width:61.83%"></div>
+                <div class="levelbar__seg levelbar__seg--frozen" style="width:1.55%"></div>
+                <div class="levelbar__seg levelbar__seg--avail" style="width:36.62%"></div>
+              </div>
+              <div class="levelbar__tick" style="left:80%"></div>
+              <div class="levelbar__tick levelbar__tick--limit" style="left:100%"></div>
+              <div class="levelbar__legend">
+                <span><i style="background:var(--ink-700)"></i>已用 7.42M</span>
+                <span><i style="background:var(--spend)"></i>冻结 186.0k</span>
+                <span><i style="background:var(--quota)"></i>可用 4.39M</span>
+              </div></div>
+
+              <div class="t-micro mb-3 mt-6">卡时</div>
+              <div class="levelbar"><div class="levelbar__track">
+                <div class="levelbar__seg levelbar__seg--used" style="width:57.2%"></div>
+                <div class="levelbar__seg levelbar__seg--frozen" style="width:0.84%"></div>
+                <div class="levelbar__seg levelbar__seg--avail" style="width:41.96%"></div>
+              </div>
+              <div class="levelbar__tick" style="left:80%"></div>
+              <div class="levelbar__tick levelbar__tick--limit" style="left:100%"></div>
+              <div class="levelbar__legend">
+                <span><i style="background:var(--ink-700)"></i>已用 2 860.0</span>
+                <span><i style="background:var(--spend)"></i>冻结 42.0</span>
+                <span><i style="background:var(--quota)"></i>可用 2 098.0</span>
+              </div></div>
+            </div>
+          </div>
+
+          <!-- Top 消耗排行 -->
+          <div class="card">
+            <div class="card__head"><h2>消耗排行（近 7 天）</h2>
+              <div class="register" role="group"><button aria-pressed="true">模型</button><button aria-pressed="false">应用</button><button aria-pressed="false">用户</button></div>
+            </div>
+            <div class="card__body">
+              <div class="col" style="gap:var(--sp-3)">
+                <div class="row" style="gap:var(--sp-3)">
+                  <span class="t-meta" style="width:132px">Qwen3-32B</span>
+                  <div class="capacity" style="flex:1"><div class="capacity__track"><div class="capacity__fill" style="width:100%"></div></div></div>
+                  <button class="num-sm" data-receipt style="background:none;border:0;cursor:pointer;color:inherit;width:64px;text-align:right">412.6k</button>
+                </div>
+                <div class="row" style="gap:var(--sp-3)">
+                  <span class="t-meta" style="width:132px">DeepSeek-V3</span>
+                  <div class="capacity" style="flex:1"><div class="capacity__track"><div class="capacity__fill" style="width:65%"></div></div></div>
+                  <button class="num-sm" data-receipt style="background:none;border:0;cursor:pointer;color:inherit;width:64px;text-align:right">268.1k</button>
+                </div>
+                <div class="row" style="gap:var(--sp-3)">
+                  <span class="t-meta" style="width:132px">InternVL2-26B</span>
+                  <div class="capacity" style="flex:1"><div class="capacity__track"><div class="capacity__fill" data-state="warn" style="width:23%"></div></div></div>
+                  <span class="num-sm" style="width:64px;text-align:right">96.4k</span>
+                </div>
+                <div class="row" style="gap:var(--sp-3)">
+                  <span class="t-meta" style="width:132px">BGE-M3</span>
+                  <div class="capacity" style="flex:1"><div class="capacity__track"><div class="capacity__fill" style="width:9%"></div></div></div>
+                  <span class="num-sm" style="width:64px;text-align:right">38.2k</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 按应用维度：PRD 明确要求区分「行业应用 / 智能体」 -->
+        <div class="card mt-5">
+          <div class="card__head"><h2>按应用维度消耗</h2>
+            <span class="chip chip--quota"><i class="chip__dot"></i>行业应用</span>
+            <span class="chip chip--insight"><i class="chip__dot"></i>智能体</span>
+            <span class="spacer"></span>
+            <a class="btn btn--sm" href="console-consumption.html">查看消耗明细</a>
+          </div>
+          <div class="dg-wrap" style="border:0;border-radius:0">
+            <table class="dg">
+              <thead><tr>
+                <th>应用</th><th>类目</th><th class="num">Token 消耗</th><th class="num">卡时</th>
+                <th class="num">调用次数</th><th class="num">单次均值</th><th class="num">偏差</th>
+              </tr></thead>
+              <tbody>
+                <tr><td class="dg-primary">知识问答</td><td><span class="chip chip--insight"><i class="chip__dot"></i>智能体</span></td>
+                  <td class="num">1,842.6k</td><td class="num">0.0</td><td class="num">18,420</td><td class="num">100</td>
+                  <td class="num"><span class="variance variance--under">-3.2%</span></td></tr>
+                <tr><td class="dg-primary">法务合同审查</td><td><span class="chip chip--quota"><i class="chip__dot"></i>行业应用</span></td>
+                  <td class="num">968.4k</td><td class="num">0.0</td><td class="num">1,240</td><td class="num">781</td>
+                  <td class="num"><span class="variance variance--under">-6.8%</span></td></tr>
+                <tr><td class="dg-primary">视频检查</td><td><span class="chip chip--insight"><i class="chip__dot"></i>智能体</span></td>
+                  <td class="num">742.0k</td><td class="num">186.0</td><td class="num">462</td><td class="num">1,606</td>
+                  <td class="num"><span class="variance variance--over">+21.4%</span></td></tr>
+                <tr><td class="dg-primary">写作助手</td><td><span class="chip chip--quota"><i class="chip__dot"></i>行业应用</span></td>
+                  <td class="num">326.8k</td><td class="num">0.0</td><td class="num">4,086</td><td class="num">80</td>
+                  <td class="num"><span class="variance variance--under">-1.1%</span></td></tr>
+                <tr><td class="dg-primary">模型微调服务</td><td><span class="chip chip--neutral">平台产品</span></td>
+                  <td class="num">18.2k</td><td class="num">2,674.0</td><td class="num">12</td><td class="num">222.8</td>
+                  <td class="num">—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <aside class="ledger" id="ledger" aria-label="消耗上下文"></aside>
+</div>
+
+<template id="band-actions">
+  <select class="select" aria-label="项目切换">
+    <option>视觉检索平台</option><option>合同审查</option><option>标书撰写</option>
+  </select>
+  <button class="btn">导出报表</button>
+</template>
+
+<template id="band-ribbon">
+  <div class="ribbon ribbon--spend">项目「视觉检索平台」Token 已用 61.8%，将在达到 80% 时触发预警并通知租户管理员
+    <span class="ribbon__more">还有 1 条</span></div>
+</template>
+
+<script src="assets/charts.js"></script>
+<script src="assets/app.js?v=20260924-7"></script>
+<script>
+  DSH.chart.dualScale(document.getElementById('chartDual'), {
+    labels: ['09-18', '09-19', '09-20', '09-21', '09-22', '09-23', '09-24'],
+    token: [620, 780, 540, 910, 1020, 880, 760],
+    cardhour: [180, 240, 160, 320, 420, 300, 260],
+    tokenLimit: 1000
+  });
+</script>
+</body>
+</html>

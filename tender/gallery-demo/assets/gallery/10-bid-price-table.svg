@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+  <rect width="1200" height="800" fill="#fff"/>
+  <text x="70" y="76" font-family="Arial" font-size="34" font-weight="700" fill="#0f172a">投标分项报价表</text>
+  <g stroke="#cbd5e1"><line x1="70" y1="130" x2="1130" y2="130"/><line x1="70" y1="180" x2="1130" y2="180"/><line x1="70" y1="610" x2="1130" y2="610"/><line x1="70" y1="700" x2="1130" y2="700"/></g>
+  <g font-family="Arial" font-size="18" fill="#475569">
+    <text x="90" y="163">设备名称</text><text x="430" y="163">规格</text><text x="730" y="163">数量</text><text x="880" y="163">单价</text><text x="1030" y="163">合计</text>
+    <text x="90" y="225">AI 训练服务器</text><text x="430" y="225">Atlas 800I 9000</text><text x="730" y="225">4</text><text x="880" y="225">285,000</text><text x="1030" y="225">1,140,000</text>
+    <text x="90" y="285">AI 推理服务器</text><text x="430" y="285">Atlas 800I 3000</text><text x="730" y="285">8</text><text x="880" y="285">168,000</text><text x="1030" y="285">1,344,000</text>
+    <text x="90" y="345">核心交换机</text><text x="430" y="345">CE12804</text><text x="730" y="345">2</text><text x="880" y="345">95,000</text><text x="1030" y="345">190,000</text>
+    <text x="90" y="405">分布式存储</text><text x="430" y="405">OceanStor 9000</text><text x="730" y="405">1</text><text x="880" y="405">360,000</text><text x="1030" y="405">360,000</text>
+    <text x="90" y="465">安全设备</text><text x="430" y="465">防火墙 / IPS</text><text x="730" y="465">2</text><text x="880" y="465">58,000</text><text x="1030" y="465">116,000</text>
+    <text x="90" y="525">实施服务</text><text x="430" y="525">部署 / 迁移 / 培训</text><text x="730" y="525">1</text><text x="880" y="525">118,000</text><text x="1030" y="525">118,000</text>
+  </g>
+  <rect x="880" y="620" width="250" height="60" rx="10" fill="#025dff"/>
+  <text x="920" y="658" font-family="Arial" font-size="22" fill="#fff">总价 3,268,000</text>
+  <text x="90" y="670" font-family="Arial" font-size="17" fill="#64748b">报价含税，含 3 年原厂质保与驻场运维服务</text>
+</svg>

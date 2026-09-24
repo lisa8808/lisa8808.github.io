@@ -1,0 +1,1853 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="算力资源管理可视化界面" />
+<meta name="theme-color" content="#0f1a2e" />
+<title>算力资源管理 · 华鲲元启</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23246cff'/%3E%3Cpath d='M7 20l5-10 4 8 4-8 5 10' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+<style>
+  /* ============================================================
+     1. Design tokens
+     ============================================================ */
+  :root {
+    color-scheme: light;
+
+    /* brand + accents */
+    --brand:        #2f6bff;
+    --brand-strong: #1f52d6;
+    --brand-soft:   #eef4ff;
+    --brand-line:   #c9dbff;
+    --violet:       #7b5cff;
+    --green:        #12b886;
+    --orange:       #ff8a3d;
+    --cyan:         #17b0d8;
+    --danger:       #ef4444;
+
+    /* neutrals */
+    --ink-1: #0f1a2e;
+    --ink-2: #25324a;
+    --ink-3: #4a5a75;
+    --ink-4: #6b7a92;
+    --ink-5: #93a0b5;
+
+    --bg:        #f4f6fb;
+    --surface:   #ffffff;
+    --surface-2: #f8fafc;
+    --surface-3: #eef2f8;
+    --line:      #e4e9f2;
+    --line-soft: #eef1f7;
+    --line-strong:#d3dbe8;
+
+    /* shape */
+    --r-sm: 8px;
+    --r-md: 10px;
+    --r-lg: 14px;
+    --r-pill: 999px;
+
+    /* elevation */
+    --sh-1: 0 1px 2px rgba(16, 30, 54, .06);
+    --sh-2: 0 2px 6px rgba(16, 30, 54, .06), 0 1px 2px rgba(16, 30, 54, .04);
+    --sh-3: 0 18px 40px -12px rgba(16, 30, 54, .28);
+
+    /* motion + focus */
+    --t: 170ms cubic-bezier(.4, 0, .2, 1);
+    --ring: 0 0 0 3px rgba(47, 107, 255, .22);
+
+    /* layout */
+    --topbar-h: 58px;
+    --sidebar-w: 214px;
+    --font: Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "SF Mono", ui-monospace, "JetBrains Mono", Menlo, Consolas, monospace;
+  }
+
+  /* ============================================================
+     2. Base
+     ============================================================ */
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    margin: 0;
+    min-width: 320px;
+    background: var(--bg);
+    color: var(--ink-2);
+    font: 400 14px/1.55 var(--font);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, p { margin: 0; }
+  button, select, input { font: inherit; color: inherit; }
+  svg { display: block; }
+  a { color: var(--brand); text-decoration: none; }
+
+  :focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+  [hidden] { display: none !important; }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .skip-link {
+    position: absolute;
+    left: 50%;
+    top: 8px;
+    z-index: 200;
+    transform: translate(-50%, -160%);
+    padding: 8px 16px;
+    border-radius: var(--r-sm);
+    background: var(--ink-1);
+    color: #fff;
+    font-size: 13px;
+    transition: transform var(--t);
+  }
+  .skip-link:focus { transform: translate(-50%, 0); }
+
+  /* ============================================================
+     3. App shell
+     ============================================================ */
+  .app {
+    display: grid;
+    grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
+    grid-template-rows: var(--topbar-h) minmax(0, 1fr);
+    min-height: 100vh;
+  }
+
+  /* --- top bar --- */
+  .topbar {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    height: var(--topbar-h);
+    padding: 0 18px 0 16px;
+    background: rgba(255, 255, 255, .88);
+    backdrop-filter: saturate(180%) blur(12px);
+    border-bottom: 1px solid var(--line);
+  }
+  .topbar-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .topbar-right { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+
+  .brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .brand-mark { width: 30px; height: 30px; flex: none; border-radius: 9px; box-shadow: 0 4px 10px -3px rgba(63, 74, 196, .55); }
+  .brand-text { display: flex; flex-direction: column; line-height: 1.15; min-width: 0; }
+  .brand-text strong { font-size: 15px; font-weight: 800; color: var(--ink-1); letter-spacing: .2px; }
+  .brand-text small { font-size: 10.5px; color: var(--ink-5); letter-spacing: .3px; }
+
+  .icon-btn {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    flex: none;
+    border: 1px solid transparent;
+    border-radius: var(--r-sm);
+    background: transparent;
+    color: var(--ink-4);
+    cursor: pointer;
+    transition: background var(--t), color var(--t), border-color var(--t);
+  }
+  .icon-btn:hover { background: var(--surface-3); color: var(--ink-2); }
+  .icon-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .menu-btn { display: none; }
+
+  .user-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 36px;
+    padding: 0 10px 0 6px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-pill);
+    background: var(--surface);
+    color: var(--ink-2);
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color var(--t), box-shadow var(--t), background var(--t);
+  }
+  .user-chip:hover { border-color: var(--brand-line); background: var(--brand-soft); box-shadow: var(--sh-1); }
+  .user-chip svg { width: 13px; height: 13px; stroke: var(--ink-5); fill: none; stroke-width: 2; }
+  .avatar {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    flex: none;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #6f9bff, #a9c4ff);
+    color: #fff;
+  }
+  .avatar svg { width: 16px; height: 16px; stroke: #fff; fill: none; stroke-width: 1.9; stroke-linecap: round; }
+
+  /* --- sidebar --- */
+  .sidebar {
+    grid-column: 1;
+    grid-row: 2;
+    position: sticky;
+    top: var(--topbar-h);
+    align-self: start;
+    height: calc(100vh - var(--topbar-h));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 14px 12px 22px;
+    background: var(--surface);
+    border-right: 1px solid var(--line);
+  }
+  .sidebar::-webkit-scrollbar { width: 8px; }
+  .sidebar::-webkit-scrollbar-thumb { background: #dfe5ef; border-radius: 99px; border: 2px solid var(--surface); }
+
+  .nav { list-style: none; margin: 0; padding: 0; }
+  .nav + .nav { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line-soft); }
+  .nav li + li { margin-top: 2px; }
+
+  .nav-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    height: 40px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: var(--r-md);
+    background: transparent;
+    color: var(--ink-3);
+    font-size: 13.5px;
+    font-weight: 500;
+    text-align: left;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background var(--t), color var(--t), transform var(--t);
+  }
+  .nav-item > svg:first-child { width: 18px; height: 18px; flex: none; stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+  .nav-item .chev { width: 12px; height: 12px; margin-left: auto; stroke: currentColor; fill: none; stroke-width: 2; opacity: .55; }
+  .nav-item:hover { background: var(--surface-3); color: var(--ink-1); }
+  .nav-item:active { transform: scale(.985); }
+  .nav-item.active {
+    background: linear-gradient(100deg, #2f6bff, #5b3ce0);
+    color: #fff;
+    font-weight: 700;
+    box-shadow: 0 6px 16px -8px rgba(47, 107, 255, .9);
+  }
+  .nav-item.active > svg:first-child { stroke: #fff; }
+
+  .nav-label { overflow: hidden; text-overflow: ellipsis; }
+
+  /* --- content --- */
+  .content {
+    grid-column: 2;
+    grid-row: 2;
+    min-width: 0;
+    padding: 22px 26px 64px;
+  }
+
+  .page-head { margin-bottom: 18px; }
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+    font-size: 12px;
+    color: var(--ink-5);
+  }
+  .breadcrumb .sep { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; opacity: .7; }
+  .breadcrumb .current { color: var(--brand); font-weight: 600; }
+  .page-title { font-size: 21px; font-weight: 800; color: var(--ink-1); letter-spacing: -.2px; }
+
+  .group-title {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 26px 0 12px;
+    font-size: 14.5px;
+    font-weight: 800;
+    color: var(--ink-1);
+    letter-spacing: .2px;
+  }
+  .group-title::before {
+    content: "";
+    width: 4px;
+    height: 16px;
+    border-radius: 2px;
+    background: linear-gradient(180deg, #4c86ff, #7b5cff);
+  }
+  .page-head + .group-title { margin-top: 0; }
+
+  /* group heading with its own toolbar (e.g. the 应用分析 time-range presets) */
+  .group-head {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px 14px;
+    margin: 26px 0 12px;
+  }
+  .group-head .group-title { margin: 0; }
+  .group-tools { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-left: auto; }
+  .group-tools-label { font-size: 11.5px; color: var(--ink-5); }
+
+  /* ============================================================
+     4. Cards
+     ============================================================ */
+  .card {
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    box-shadow: var(--sh-1);
+    transition: box-shadow var(--t), border-color var(--t);
+  }
+  .card:hover { box-shadow: var(--sh-2); }
+
+  .card-head {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px 14px;
+    min-height: 54px;
+    padding: 11px 16px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .card-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 750;
+    color: var(--ink-1);
+  }
+  .card-title::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--brand);
+    box-shadow: 0 0 0 3px var(--brand-soft);
+  }
+  /* inline "tips" hint next to a card title */
+  .tip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    color: var(--ink-5);
+    cursor: help;
+    transition: color var(--t);
+  }
+  .tip > svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; }
+  .card-head > .tip { margin-left: -6px; }
+  .tip:hover, .tip:focus { color: var(--brand); }
+  .tip-bubble {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 50%;
+    z-index: 20;
+    width: max-content;
+    max-width: 260px;
+    padding: 7px 10px;
+    border-radius: var(--r-sm);
+    background: rgba(15, 26, 46, .95);
+    color: #fff;
+    font-size: 11.5px;
+    font-weight: 400;
+    line-height: 1.55;
+    letter-spacing: 0;
+    text-align: left;
+    white-space: normal;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-50%) translateY(-4px);
+    box-shadow: 0 10px 24px -8px rgba(15, 26, 46, .6);
+    transition: opacity 120ms linear, transform 120ms ease;
+  }
+  .tip:hover .tip-bubble,
+  .tip:focus .tip-bubble { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .card-note {
+    padding: 2px 8px;
+    border-radius: var(--r-pill);
+    background: var(--surface-3);
+    color: var(--ink-4);
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .card-tools { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-left: auto; }
+  .card-body { padding: 16px; }
+  .card-body.flush { padding: 0; flex: 1 1 auto; display: flex; flex-direction: column; }
+
+  .card-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    font-size: 11.5px;
+    color: var(--ink-5);
+    font-variant-numeric: tabular-nums;
+  }
+  .card-meta.is-ok { color: var(--green); }
+  .card-meta.is-error { color: var(--danger); }
+
+  /* one shared two-column grid: 1:1, used by both 基础信息 and 应用分析 */
+  .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .grid-2 + .grid-2 { margin-top: 16px; }
+  .stack { display: grid; gap: 16px; margin-top: 16px; }
+
+  /* ============================================================
+     5. Form controls
+     ============================================================ */
+  .field {
+    height: 32px;
+    padding: 0 10px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-sm);
+    background: var(--surface);
+    color: var(--ink-2);
+    font-size: 12.5px;
+    font-variant-numeric: tabular-nums;
+    transition: border-color var(--t), box-shadow var(--t);
+  }
+  .field:hover { border-color: #bcc7d8; }
+  .field:focus { outline: none; border-color: var(--brand); box-shadow: var(--ring); }
+  .field[aria-invalid="true"] { border-color: var(--danger); box-shadow: 0 0 0 3px rgba(239, 68, 68, .16); }
+
+  input[type="date"].field { width: 142px; }
+
+  .range { display: flex; align-items: center; gap: 7px; }
+  .range .sep { color: var(--ink-5); font-size: 12px; }
+
+  /* segmented control (tab switch) */
+  .segmented {
+    display: inline-flex;
+    gap: 2px;
+    padding: 3px;
+    border-radius: var(--r-md);
+    background: var(--surface-3);
+  }
+  .segmented .pill {
+    height: 26px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: var(--ink-4);
+    font-size: 12px;
+    font-weight: 650;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background var(--t), color var(--t), box-shadow var(--t);
+  }
+  .segmented .pill:hover { color: var(--ink-1); }
+  .segmented .pill.active { background: var(--surface); color: var(--brand); box-shadow: var(--sh-1); }
+
+
+  /* ============================================================
+     6. Spec cards
+     ============================================================ */
+  /* narrow CPU column: 2x2 cards */
+  .specs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 1fr; gap: 12px; }
+
+  /* AI Core 使用 shares a row with the CPU 使用 card, whose two views differ in
+     height, so its body grows and the chart fills whatever height the row gives. */
+  .card-core .card-body { flex: 1 1 auto; display: flex; flex-direction: column; }
+  .card-core .chart-host { flex: 1 1 250px; min-height: 250px; }
+
+  /* The CPU card is stretched to match the taller GPU card beside it, so let the
+     body take the slack and keep the four specs vertically centred in the card. */
+  .card-cpu .card-body {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .spec {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    min-height: 78px;
+    padding: 13px 14px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    overflow: hidden;
+    transition: transform var(--t), box-shadow var(--t), border-color var(--t);
+  }
+  .spec:hover { transform: translateY(-2px); box-shadow: var(--sh-2); }
+  .spec-label { font-size: 11.5px; font-weight: 600; color: var(--ink-4); }
+  .spec-value {
+    font-size: 15px;
+    font-weight: 750;
+    color: var(--ink-1);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -.2px;
+    word-break: break-word;
+  }
+  .spec-icon {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 7px;
+  }
+  .spec-icon svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+  .spec.blue   { background: linear-gradient(140deg, #f7faff, #eef4ff); border-color: #dbe7ff; }
+  .spec.blue   .spec-icon { color: var(--brand);  background: #e2ecff; }
+  .spec.violet { background: linear-gradient(140deg, #faf9ff, #f2eeff); border-color: #e3dbff; }
+  .spec.violet .spec-icon { color: var(--violet); background: #ebe4ff; }
+  .spec.green  { background: linear-gradient(140deg, #f8fefb, #ecfbf6); border-color: #d3f0e7; }
+  .spec.green  .spec-icon { color: var(--green);  background: #d9f5ec; }
+  .spec.orange { background: linear-gradient(140deg, #fffcf9, #fff4ec); border-color: #f8e2d3; }
+  .spec.orange .spec-icon { color: var(--orange); background: #ffead9; }
+  .spec.cyan   { background: linear-gradient(140deg, #f7fdfe, #ecf9fc); border-color: #d2eef5; }
+  .spec.cyan   .spec-icon { color: var(--cyan);   background: #d9f2f9; }
+
+  /* ============================================================
+     7. Tables
+     ============================================================ */
+  .table-wrap { border-radius: var(--r-md); background: var(--surface); }
+  .card-body.flush .table-wrap { border: 0; border-radius: var(--r-lg); }
+  .table-wrap.bordered { border: 1px solid var(--line); }
+  .table-scroll { overflow-x: auto; }
+  .table-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
+  .table-scroll::-webkit-scrollbar-thumb { background: #dfe5ef; border-radius: 99px; border: 2px solid var(--surface); }
+  .table-scroll::-webkit-scrollbar-thumb:hover { background: #c6d0de; }
+
+  /* Scrollable table viewport. The flex basis is the natural height
+     (sticky header 38 + 5 rows of 39) so it never shows a half row by default,
+     and it grows to fill the card when the neighbouring card is taller. */
+  .table-scroll-y {
+    flex: 1 1 233px;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+  }
+
+  .data-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 12.5px; }
+  .data-table th,
+  .data-table td {
+    padding: 9px 12px;
+    text-align: left;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .data-table th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: var(--surface-2);
+    color: var(--ink-4);
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: .02em;
+    box-shadow: inset 0 -1px 0 var(--line);
+  }
+  .data-table tbody tr { transition: background var(--t); }
+  .data-table tbody tr:hover { background: var(--brand-soft); }
+  .data-table tbody tr:last-child td { border-bottom: 0; }
+  .data-table td { color: var(--ink-3); }
+  .data-table .strong { color: var(--ink-1); font-weight: 650; }
+  .data-table .num { font-variant-numeric: tabular-nums; }
+  .data-table .vram { margin-left: 4px; font-size: 11px; color: var(--ink-5); }
+  .data-table .bus { font-family: var(--mono); font-size: 11.5px; color: var(--ink-2); letter-spacing: -.1px; }
+
+  .meter { display: inline-flex; align-items: center; gap: 8px; }
+  .meter-track { width: 62px; height: 6px; flex: none; border-radius: var(--r-pill); background: var(--surface-3); overflow: hidden; }
+  .meter-fill { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #6f9bff, #2f6bff); }
+  .meter-fill.is-high { background: linear-gradient(90deg, #ffb066, #ff8a3d); }
+  .meter-val { font-size: 12px; font-weight: 650; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+
+  /* ============================================================
+     8. Charts
+     ============================================================ */
+  .chart-host { position: relative; width: 100%; }
+  .chart-svg { width: 100%; height: auto; overflow: visible; }
+  .chart-svg .grid { stroke: var(--line-soft); stroke-width: 1; }
+  .chart-svg .axis { stroke: var(--line-strong); stroke-width: 1; }
+  .chart-svg .y-label,
+  .chart-svg .x-label { fill: var(--ink-5); font-size: 10.5px; font-family: var(--font); font-variant-numeric: tabular-nums; }
+  .chart-svg .crosshair { stroke: var(--line-strong); stroke-width: 1; stroke-dasharray: 3 3; }
+  .chart-svg .mean-line { stroke: var(--ink-5); stroke-width: 1; stroke-dasharray: 5 4; }
+  .chart-svg .mean-label { fill: var(--ink-4); font-size: 10px; font-family: var(--font); }
+  .chart-svg .value-label { fill: var(--ink-3); font-size: 10px; font-weight: 700; font-family: var(--font); font-variant-numeric: tabular-nums; }
+
+  .chart-caption {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--ink-5);
+  }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-bottom: 12px; }
+  .legend-item { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--ink-4); }
+  .legend-swatch { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+  .legend-swatch.line { width: 14px; height: 3px; border-radius: 2px; }
+
+  .chart-tip {
+    position: absolute;
+    z-index: 6;
+    pointer-events: none;
+    opacity: 0;
+    transform: translate(-50%, -100%);
+    padding: 8px 10px;
+    border-radius: var(--r-sm);
+    background: rgba(15, 26, 46, .95);
+    color: #fff;
+    font-size: 11.5px;
+    line-height: 1.6;
+    white-space: nowrap;
+    box-shadow: 0 10px 24px -8px rgba(15, 26, 46, .6);
+    transition: opacity 120ms linear;
+  }
+  .chart-tip.show { opacity: 1; }
+  .chart-tip .tip-title { margin-bottom: 4px; color: #b9ccff; font-weight: 700; }
+  .chart-tip .tip-row { display: flex; align-items: center; gap: 7px; }
+  .chart-tip .tip-label { display: inline-flex; align-items: center; gap: 7px; }
+  .chart-tip .tip-dot { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+  .chart-tip .tip-val { margin-left: auto; padding-left: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .chart-tip .tip-total { margin-top: 4px; padding-top: 4px; border-top: 1px solid rgba(255, 255, 255, .18); }
+
+  /* rich rows: name | cards | vram (rate). Fixed value column keeps all three columns aligned. */
+  .chart-tip.rich .tip-row { display: grid; grid-template-columns: 1fr max-content 130px; gap: 10px; }
+  .chart-tip.rich .tip-note { color: #9fb2d9; font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+  .chart-tip.rich .tip-val { margin-left: 0; padding-left: 0; text-align: right; white-space: nowrap; }
+  .chart-tip.rich .tip-total { display: flex; align-items: center; }
+  .chart-tip.rich .tip-total .tip-val { margin-left: auto; padding-left: 12px; }
+
+  /* ============================================================
+     9. Responsive
+     ============================================================ */
+  .scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 55;
+    background: rgba(15, 26, 46, .48);
+    backdrop-filter: blur(2px);
+    animation: fade-in 160ms ease;
+  }
+  @keyframes fade-in { from { opacity: 0; } }
+
+  /* tablet: icon-only rail (labels stay in the accessibility tree) */
+  @media (max-width: 1180px) and (min-width: 881px) {
+    :root { --sidebar-w: 74px; }
+    .nav-item .chev, .brand-text small { display: none; }
+    .nav-item .nav-label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    .nav-item { justify-content: center; padding: 0; }
+    .sidebar { padding: 14px 12px; }
+  }
+
+  /* mobile: off-canvas drawer */
+  @media (max-width: 880px) {
+    .app { display: block; }
+    .menu-btn { display: grid; }
+    .content { padding: 16px 14px 56px; }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      z-index: 60;
+      width: 258px;
+      height: 100vh;
+      padding: 14px 12px 24px;
+      border-right: 0;
+      box-shadow: var(--sh-3);
+      transform: translateX(-102%);
+      transition: transform var(--t);
+    }
+    .sidebar.open { transform: none; }
+    .sidebar .nav-label { display: inline; }
+    .sidebar .chev { display: block; }
+
+    .grid-2 { grid-template-columns: minmax(0, 1fr); }
+    .table-scroll-y { max-height: 325px; }
+    .page-title { font-size: 19px; }
+    .card-head { align-items: flex-start; }
+    .card-tools { margin-left: 0; width: 100%; }
+    .range { flex: 1 1 auto; }
+    input[type="date"].field { width: 100%; min-width: 0; flex: 1 1 120px; }
+    .segmented { width: 100%; flex-wrap: wrap; }
+    .segmented .pill { flex: 1 1 auto; }
+    .group-head { align-items: flex-start; }
+    .group-tools { margin-left: 0; width: 100%; }
+  }
+
+  @media (max-width: 620px) {
+    .specs { grid-template-columns: minmax(0, 1fr); }
+    .spec { min-height: 68px; }
+    .topbar { padding: 0 12px 0 10px; }
+    .user-name { display: none; }
+    .data-table { font-size: 12px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">跳到主要内容</a>
+
+<div class="app">
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="icon-btn menu-btn" id="menuBtn" type="button" aria-label="打开导航菜单" aria-expanded="false" aria-controls="sidebar">
+        <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <div class="brand">
+        <svg class="brand-mark" viewBox="0 0 28 28" aria-hidden="true">
+          <defs><linearGradient id="logoG" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#3554de"/><stop offset="1" stop-color="#6c2eb7"/></linearGradient></defs>
+          <circle cx="14" cy="14" r="14" fill="url(#logoG)"/>
+          <path d="M4.5 16.5 9 8.8l5 8.7 4.8-7.6 4.5 7.8" fill="none" stroke="#9bd18c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="brand-text">
+          <strong>华鲲元启</strong>
+          <small>算力运营平台</small>
+        </span>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <button class="icon-btn" type="button" aria-label="帮助">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.4 2.3c-.6.3-.9.8-.9 1.5v.4"/><path d="M12 17h.01"/></svg>
+      </button>
+      <button class="user-chip" type="button">
+        <span class="avatar" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8.6" r="3.4"/><path d="M5.4 19.6a6.6 6.6 0 0 1 13.2 0"/></svg></span>
+        <span class="user-name">mashengnan</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <aside class="sidebar" id="sidebar">
+    <nav aria-label="主导航">
+      <ul class="nav">
+        <li><button class="nav-item" type="button"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="8" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="15" width="7" height="6" rx="1"/></svg><span class="nav-label">应用广场</span></button></li>
+        <li><button class="nav-item" type="button"><svg viewBox="0 0 24 24"><path d="M4 5h3M4 12h3M4 19h3M11 5h9M11 12h9M11 19h9"/></svg><span class="nav-label">任务中心</span></button></li>
+        <li><button class="nav-item" type="button"><svg viewBox="0 0 24 24"><path d="M5 5h5l2-2h3l2 2h2v14H5z"/><path d="M9 12h6M12 9v6"/></svg><span class="nav-label">知识工程</span><svg class="chev" viewBox="0 0 24 24"><path d="m8 10 4 4 4-4"/></svg></button></li>
+        <li><button class="nav-item" type="button"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="4" r="2"/><circle cx="20" cy="12" r="2"/><circle cx="12" cy="20" r="2"/><circle cx="4" cy="12" r="2"/></svg><span class="nav-label">推理中心</span><svg class="chev" viewBox="0 0 24 24"><path d="m8 10 4 4 4-4"/></svg></button></li>
+        <li><button class="nav-item" type="button"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span class="nav-label">数据工厂</span></button></li>
+        <li><button class="nav-item" type="button"><svg viewBox="0 0 24 24"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9z"/><path d="m8 10 4 2.5 4-2.5M12 12.5V17"/></svg><span class="nav-label">训练中心</span></button></li>
+        <li><button class="nav-item" type="button"><svg viewBox="0 0 24 24"><path d="M4 20h16V4H4zM7 16l3-4 3 2 4-6"/></svg><span class="nav-label">评估中心</span></button></li>
+        <li><button class="nav-item" type="button"><svg viewBox="0 0 24 24"><path d="M3 20h18M4 17l5-6 4 3 7-9"/><path d="M16 5h4v4"/></svg><span class="nav-label">增值服务</span></button></li>
+      </ul>
+      <ul class="nav">
+        <li><button class="nav-item" type="button"><svg viewBox="0 0 24 24"><path d="M3 7h8M13 7l3-3M13 7l3 3M21 17h-8M11 17l-3-3M11 17l-3 3"/></svg><span class="nav-label">流程编排</span></button></li>
+        <li><button class="nav-item" type="button"><svg viewBox="0 0 24 24"><path d="m12 3 9 7-9 7-9-7z"/><path d="m5 14 7 6 7-6"/></svg><span class="nav-label">模型仓库</span></button></li>
+        <li><button class="nav-item active" type="button" aria-current="page"><svg viewBox="0 0 24 24"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9z"/><path d="m8 10 4 2.5 4-2.5M12 12.5V17"/></svg><span class="nav-label">算力中心</span></button></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main class="content" id="main">
+    <div class="page-head">
+      <nav class="breadcrumb" aria-label="面包屑">
+        <span>算力中心</span>
+        <svg class="sep" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+        <span class="current">算力管理</span>
+      </nav>
+      <h1 class="page-title">算力资源管理</h1>
+    </div>
+
+    <!-- ============ 基础信息 ============ -->
+    <h2 class="group-title">基础信息</h2>
+    <div class="grid-2">
+      <section class="card card-cpu">
+        <div class="card-head">
+          <h3 class="card-title">CPU信息</h3>
+        </div>
+        <div class="card-body">
+          <div class="specs">
+            <div class="spec blue">
+              <div class="spec-label">CPU厂商</div>
+              <div class="spec-value">HiSilicon</div>
+              <div class="spec-icon"><svg viewBox="0 0 24 24"><path d="M6 20V8l6-4 6 4v12M9 20v-4h6v4M9 10h1M14 10h1M9 13h1M14 13h1"/></svg></div>
+            </div>
+            <div class="spec violet">
+              <div class="spec-label">CPU型号</div>
+              <div class="spec-value">Kunpeng-920</div>
+              <div class="spec-icon"><svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1"/><path d="M9 10h6M9 14h6M9 2v4M15 2v4M9 18v4M15 18v4"/></svg></div>
+            </div>
+            <div class="spec green">
+              <div class="spec-label">CPU数量</div>
+              <div class="spec-value">12</div>
+              <div class="spec-icon"><svg viewBox="0 0 24 24"><path d="M5 19V9M10 19V5M15 19v-8M20 19V3M3 21h19"/></svg></div>
+            </div>
+            <div class="spec cyan">
+              <div class="spec-label">当前使用</div>
+              <div class="spec-value">328（99%）</div>
+              <div class="spec-icon"><svg viewBox="0 0 24 24"><path d="M3 12h4l3-7 4 14 3-7h4"/></svg></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <h3 class="card-title">显卡信息</h3>
+          <span class="card-note">8 张 · 滚动查看</span>
+        </div>
+        <div class="card-body flush">
+          <div class="table-wrap table-scroll table-scroll-y" tabindex="0" role="region" aria-label="显卡信息列表，可滚动查看全部 8 张显卡">
+            <table class="data-table">
+              <thead>
+                <tr><th>显卡 bus 信息</th><th>驱动版本</th><th>设备型号</th><th>显存使用量</th><th>core 使用率</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><span class="bus">0000:81:00.0</span><span class="vram">（64G）</span></td><td class="num">25.2.0</td><td class="strong">910B2</td><td class="num">61.93 GB</td><td><span class="meter"><span class="meter-track"><span class="meter-fill is-high" style="width:70%"></span></span><span class="meter-val">70%</span></span></td></tr>
+                <tr><td><span class="bus">0000:C2:00.0</span><span class="vram">（64G）</span></td><td class="num">25.2.0</td><td class="strong">910B2</td><td class="num">16.9 GB</td><td><span class="meter"><span class="meter-track"><span class="meter-fill" style="width:30%"></span></span><span class="meter-val">30%</span></span></td></tr>
+                <tr><td><span class="bus">0000:43:00.0</span><span class="vram">（64G）</span></td><td class="num">25.2.0</td><td class="strong">910B2</td><td class="num">48.2 GB</td><td><span class="meter"><span class="meter-track"><span class="meter-fill is-high" style="width:55%"></span></span><span class="meter-val">55%</span></span></td></tr>
+                <tr><td><span class="bus">0000:44:00.0</span><span class="vram">（64G）</span></td><td class="num">25.2.0</td><td class="strong">910B2</td><td class="num">39.6 GB</td><td><span class="meter"><span class="meter-track"><span class="meter-fill" style="width:45%"></span></span><span class="meter-val">45%</span></span></td></tr>
+                <tr><td><span class="bus">0000:45:00.0</span><span class="vram">（64G）</span></td><td class="num">25.2.0</td><td class="strong">910B2</td><td class="num">28.4 GB</td><td><span class="meter"><span class="meter-track"><span class="meter-fill" style="width:38%"></span></span><span class="meter-val">38%</span></span></td></tr>
+                <tr><td><span class="bus">0000:46:00.0</span><span class="vram">（64G）</span></td><td class="num">25.2.0</td><td class="strong">910B2</td><td class="num">52.1 GB</td><td><span class="meter"><span class="meter-track"><span class="meter-fill is-high" style="width:62%"></span></span><span class="meter-val">62%</span></span></td></tr>
+                <tr><td><span class="bus">0000:47:00.0</span><span class="vram">（64G）</span></td><td class="num">25.2.0</td><td class="strong">910B2</td><td class="num">22.7 GB</td><td><span class="meter"><span class="meter-track"><span class="meter-fill" style="width:34%"></span></span><span class="meter-val">34%</span></span></td></tr>
+                <tr><td><span class="bus">0000:48:00.0</span><span class="vram">（64G）</span></td><td class="num">25.2.0</td><td class="strong">910B2</td><td class="num">44.8 GB</td><td><span class="meter"><span class="meter-track"><span class="meter-fill" style="width:50%"></span></span><span class="meter-val">50%</span></span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ============ 应用分析 ============ -->
+    <div class="group-head">
+      <h2 class="group-title">应用分析</h2>
+      <div class="group-tools">
+        <span class="group-tools-label">时间范围</span>
+        <div class="segmented" role="group" aria-label="应用分析时间范围" data-range-presets>
+          <button class="pill" type="button" aria-pressed="false" data-days="1">最近 1 天</button>
+          <button class="pill" type="button" aria-pressed="false" data-days="7">最近 7 天</button>
+          <button class="pill active" type="button" aria-pressed="true" data-days="30">最近 30 天</button>
+          <button class="pill" type="button" aria-pressed="false" data-days="90">最近 90 天</button>
+          <button class="pill" type="button" aria-pressed="false" data-custom>自定义</button>
+        </div>
+        <div class="range" id="groupCustomRange" role="group" aria-label="应用分析自定义时间区间" hidden>
+          <input class="field" id="groupStartDate" type="date" value="2026-02-19" aria-label="自定义开始日期" />
+          <span class="sep">~</span>
+          <input class="field" id="groupEndDate" type="date" value="2026-03-20" aria-label="自定义结束日期" />
+        </div>
+      </div>
+    </div>
+    <div class="grid-2">
+      <section class="card">
+        <div class="card-head">
+          <h3 class="card-title">模型占用分析</h3>
+          <span class="tip" tabindex="0"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.6h.01"/></svg><span class="tip-bubble" role="tooltip">仅支持元启平台相关任务的统计</span></span>
+          <div class="card-tools">
+            <div class="range" role="group" aria-label="模型占用分析时间区间">
+              <input class="field" id="modelStartDate" type="date" value="2026-02-19" aria-label="模型占用分析开始日期" />
+              <span class="sep">~</span>
+              <input class="field" id="modelEndDate" type="date" value="2026-03-20" aria-label="模型占用分析结束日期" />
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="chart-caption">显存占用 · 节点共 8 卡 / 512 GB</div>
+          <div class="legend">
+            <span class="legend-item"><span class="legend-swatch" style="background:#7b5cff"></span>Qwen-72B</span>
+            <span class="legend-item"><span class="legend-swatch" style="background:#12b886"></span>Llama-3-70B</span>
+            <span class="legend-item"><span class="legend-swatch" style="background:#ff8a3d"></span>Baichuan2-13B</span>
+            <span class="legend-item"><span class="legend-swatch" style="background:#17b0d8"></span>ChatGLM3-6B</span>
+            <span class="legend-item"><span class="legend-swatch line" style="background:#2f6bff"></span>总占用</span>
+          </div>
+          <div class="chart-host" data-chart="model"></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <h3 class="card-title">任务占用分析</h3>
+          <span class="tip" tabindex="0"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.6h.01"/></svg><span class="tip-bubble" role="tooltip">仅支持元启平台相关任务的统计</span></span>
+          <div class="card-tools">
+            <div class="range" role="group" aria-label="任务占用分析时间区间">
+              <input class="field" id="taskStartDate" type="date" value="2026-02-19" aria-label="任务占用分析开始日期" />
+              <span class="sep">~</span>
+              <input class="field" id="taskEndDate" type="date" value="2026-03-20" aria-label="任务占用分析结束日期" />
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="chart-caption">显存占用 · 节点共 8 卡 / 512 GB</div>
+          <div class="legend">
+            <span class="legend-item"><span class="legend-swatch" style="background:#2f6bff"></span>推理</span>
+            <span class="legend-item"><span class="legend-swatch" style="background:#12b886"></span>训练</span>
+            <span class="legend-item"><span class="legend-swatch" style="background:#ff8a3d"></span>评估</span>
+          </div>
+          <div class="chart-host" data-chart="task"></div>
+        </div>
+      </section>
+    </div>
+
+    <div class="grid-2">
+      <!-- ============ AI Core 使用 ============ -->
+      <section class="card card-core">
+        <div class="card-head">
+          <h3 class="card-title">AI Core 使用</h3>
+          <div class="card-tools">
+            <div class="range" role="group" aria-label="AI Core 使用时间区间">
+              <input class="field" id="coreStartDate" type="date" value="2026-02-19" aria-label="AI Core 开始日期" />
+              <span class="sep">~</span>
+              <input class="field" id="coreEndDate" type="date" value="2026-03-20" aria-label="AI Core 结束日期" />
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-meta" id="coreQueryStatus" aria-live="polite">数据区间 2026-02-19 ~ 2026-03-20 · 占用率基准 512 GB</div>
+          <div class="chart-host" data-chart="core"></div>
+        </div>
+      </section>
+
+      <!-- ============ CPU 使用 ============ -->
+      <section class="card">
+        <div class="card-head">
+          <h3 class="card-title">CPU 使用</h3>
+          <div class="card-tools">
+            <div class="segmented" role="tablist" aria-label="CPU 使用视图切换" data-panels>
+              <button class="pill active" type="button" role="tab" aria-selected="true" data-panel-to="chart">CPU使用</button>
+              <button class="pill" type="button" role="tab" aria-selected="false" data-panel-to="table">PID明细</button>
+            </div>
+            <div class="range" role="group" aria-label="CPU 使用时间区间">
+              <input class="field" id="cpuStartDate" type="date" value="2026-02-19" aria-label="CPU 开始日期" />
+              <span class="sep">~</span>
+              <input class="field" id="cpuEndDate" type="date" value="2026-03-20" aria-label="CPU 结束日期" />
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-meta" id="cpuQueryStatus" aria-live="polite">数据区间 2026-02-19 ~ 2026-03-20 · 占用率基准 1536 GB</div>
+          <div class="chart-host" data-chart="cpu" data-panel="chart"></div>
+          <div class="table-wrap table-scroll bordered" data-panel="table" hidden>
+            <table class="data-table">
+              <thead><tr><th>PID</th><th>进程名</th><th>CPU利用率</th></tr></thead>
+              <tbody>
+                <tr><td class="num strong">12043</td><td class="bus">python3</td><td><span class="meter"><span class="meter-track"><span class="meter-fill is-high" style="width:62.4%"></span></span><span class="meter-val">62.4%</span></span></td></tr>
+                <tr><td class="num strong">8817</td><td class="bus">mindspore</td><td><span class="meter"><span class="meter-track"><span class="meter-fill" style="width:28.3%"></span></span><span class="meter-val">28.3%</span></span></td></tr>
+                <tr><td class="num strong">20355</td><td class="bus">vllm-worker</td><td><span class="meter"><span class="meter-track"><span class="meter-fill" style="width:12.4%"></span></span><span class="meter-val">12.4%</span></span></td></tr>
+                <tr><td class="num strong">4021</td><td class="bus">nginx</td><td><span class="meter"><span class="meter-track"><span class="meter-fill" style="width:6.8%"></span></span><span class="meter-val">6.8%</span></span></td></tr>
+                <tr><td class="num strong">6620</td><td class="bus">redis-server</td><td><span class="meter"><span class="meter-track"><span class="meter-fill" style="width:3.1%"></span></span><span class="meter-val">3.1%</span></span></td></tr>
+                <tr><td class="num strong">1128</td><td class="bus">containerd</td><td><span class="meter"><span class="meter-track"><span class="meter-fill" style="width:1.2%"></span></span><span class="meter-val">1.2%</span></span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <div class="stack">
+      <!-- ============ 内存使用 ============ -->
+      <section class="card">
+        <div class="card-head">
+          <h3 class="card-title">内存使用</h3>
+          <div class="card-tools">
+            <div class="segmented" role="tablist" aria-label="内存使用视图切换" data-panels>
+              <button class="pill active" type="button" role="tab" aria-selected="true" data-panel-to="chart">内存使用</button>
+              <button class="pill" type="button" role="tab" aria-selected="false" data-panel-to="table">PID明细</button>
+            </div>
+            <div class="range" role="group" aria-label="内存使用时间区间">
+              <input class="field" id="memStartDate" type="date" value="2026-03-20" aria-label="内存开始日期" />
+              <span class="sep">~</span>
+              <input class="field" id="memEndDate" type="date" value="2026-03-20" aria-label="内存结束日期" />
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-meta" id="memQueryStatus" aria-live="polite">数据区间 2026-03-20 ~ 2026-03-20 · 占用率基准 1536 GB</div>
+          <div class="chart-host" data-chart="mem" data-panel="chart"></div>
+          <div class="table-wrap table-scroll bordered" data-panel="table" hidden>
+            <table class="data-table">
+              <thead><tr><th>进程名</th><th>PID</th><th>内存使用率</th></tr></thead>
+              <tbody>
+                <tr><td class="bus">vllm-worker</td><td class="num strong">20355</td><td><span class="meter"><span class="meter-track"><span class="meter-fill" style="width:18.6%"></span></span><span class="meter-val">18.6%</span></span></td></tr>
+                <tr><td class="bus">mindspore</td><td class="num strong">8817</td><td><span class="meter"><span class="meter-track"><span class="meter-fill" style="width:12.4%"></span></span><span class="meter-val">12.4%</span></span></td></tr>
+                <tr><td class="bus">python3</td><td class="num strong">12043</td><td><span class="meter"><span class="meter-track"><span class="meter-fill" style="width:6.2%"></span></span><span class="meter-val">6.2%</span></span></td></tr>
+                <tr><td class="bus">redis-server</td><td class="num strong">6620</td><td><span class="meter"><span class="meter-track"><span class="meter-fill" style="width:1.8%"></span></span><span class="meter-val">1.8%</span></span></td></tr>
+                <tr><td class="bus">containerd</td><td class="num strong">1128</td><td><span class="meter"><span class="meter-track"><span class="meter-fill" style="width:0.9%"></span></span><span class="meter-val">0.9%</span></span></td></tr>
+                <tr><td class="bus">nginx</td><td class="num strong">4021</td><td><span class="meter"><span class="meter-track"><span class="meter-fill" style="width:0.4%"></span></span><span class="meter-val">0.4%</span></span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 磁盘分析 ============ -->
+      <section class="card">
+        <div class="card-head">
+          <h3 class="card-title">磁盘分析</h3>
+          <div class="card-tools">
+            <div class="segmented" role="tablist" aria-label="磁盘指标切换" data-segmented="disk">
+              <button class="pill active" type="button" role="tab" aria-selected="true" data-variant="iops">磁盘读写 IOPS</button>
+              <button class="pill" type="button" role="tab" aria-selected="false" data-variant="bandwidth">磁盘读写带宽</button>
+              <button class="pill" type="button" role="tab" aria-selected="false" data-variant="latency">磁盘读写时延</button>
+              <button class="pill" type="button" role="tab" aria-selected="false" data-variant="service">磁盘读写耗时</button>
+              <button class="pill" type="button" role="tab" aria-selected="false" data-variant="queue">磁盘平均</button>
+            </div>
+            <div class="range" role="group" aria-label="磁盘分析时间区间">
+              <input class="field" id="diskStartDate" type="date" value="2026-02-19" aria-label="磁盘分析开始日期" />
+              <span class="sep">~</span>
+              <input class="field" id="diskEndDate" type="date" value="2026-03-20" aria-label="磁盘分析结束日期" />
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-meta" id="diskQueryStatus" aria-live="polite">数据区间 2026-02-19 ~ 2026-03-20</div>
+          <div class="legend" data-legend="disk"></div>
+          <div class="chart-host" data-chart="disk" data-variant="iops"></div>
+        </div>
+      </section>
+
+      <!-- ============ 网络分析 ============ -->
+      <section class="card">
+        <div class="card-head">
+          <h3 class="card-title">网络分析</h3>
+          <div class="card-tools">
+            <div class="segmented" role="tablist" aria-label="网络指标切换" data-segmented="net">
+              <button class="pill active" type="button" role="tab" aria-selected="true" data-variant="traffic">带宽使用</button>
+              <button class="pill" type="button" role="tab" aria-selected="false" data-variant="loss">丢包率</button>
+            </div>
+            <div class="range" role="group" aria-label="网络分析时间区间">
+              <input class="field" id="netStartDate" type="date" value="2026-02-19" aria-label="网络分析开始日期" />
+              <span class="sep">~</span>
+              <input class="field" id="netEndDate" type="date" value="2026-03-20" aria-label="网络分析结束日期" />
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-meta" id="netQueryStatus" aria-live="polite">数据区间 2026-02-19 ~ 2026-03-20</div>
+          <div class="legend" data-legend="net"></div>
+          <div class="chart-host" data-chart="net" data-variant="traffic"></div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<div class="scrim" id="scrim" hidden></div>
+
+<script>
+(function () {
+  'use strict';
+
+  var NS = 'http://www.w3.org/2000/svg';
+  var COLOR = { blue: '#2f6bff', green: '#12b886', orange: '#ff8a3d', violet: '#7b5cff', cyan: '#17b0d8' };
+  var VRAM_PER_CARD = 64; /* GB per 910B2 card */
+  var uid = 0;
+
+  /* ---------- tiny SVG helpers ---------- */
+  function el(tag, attrs) {
+    var n = document.createElementNS(NS, tag);
+    if (attrs) { for (var k in attrs) { if (attrs[k] != null) n.setAttribute(k, attrs[k]); } }
+    return n;
+  }
+  function r2(n) { return Math.round(n * 100) / 100; }
+  function xLabel(x, y, str) {
+    var t = el('text', { x: r2(x), y: r2(y), class: 'x-label', 'text-anchor': 'middle' });
+    t.textContent = str;
+    return t;
+  }
+  function fmt(v) {
+    if (v == null || isNaN(v)) return '';
+    if (Math.abs(v) >= 1000) return Math.round(v).toLocaleString('en-US');
+    return String(Math.round(v * 100) / 100);
+  }
+  /* Catmull-Rom -> cubic bezier */
+  function smooth(pts) {
+    if (!pts.length) return '';
+    if (pts.length < 2) return 'M' + pts[0][0] + ' ' + pts[0][1];
+    var d = 'M' + pts[0][0] + ' ' + pts[0][1];
+    for (var i = 0; i < pts.length - 1; i++) {
+      var p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
+      d += ' C' + r2(p1[0] + (p2[0] - p0[0]) / 6) + ' ' + r2(p1[1] + (p2[1] - p0[1]) / 6) +
+           ' ' + r2(p2[0] - (p3[0] - p1[0]) / 6) + ' ' + r2(p2[1] - (p3[1] - p1[1]) / 6) +
+           ' ' + r2(p2[0]) + ' ' + r2(p2[1]);
+    }
+    return d;
+  }
+  function tickIndexes(n, want) {
+    var step = Math.max(1, Math.ceil(n / want)), idx = [], i;
+    for (i = 0; i < n; i += step) idx.push(i);
+    if (idx.length > 1 && (n - 1) - idx[idx.length - 1] < step * 0.6) idx.pop();
+    if (idx[idx.length - 1] !== n - 1) idx.push(n - 1);
+    return idx;
+  }
+  function makeTip(host) {
+    var tip = host.querySelector('.chart-tip');
+    if (!tip) { tip = document.createElement('div'); tip.className = 'chart-tip'; host.appendChild(tip); }
+    return tip;
+  }
+  function placeTip(tip, host, x, y) {
+    var half = (tip.offsetWidth || 120) / 2;
+    var cx = Math.min(Math.max(x, half + 2), Math.max(half + 2, host.clientWidth - half - 2));
+    tip.style.left = r2(cx) + 'px';
+    tip.style.top = r2(Math.max(y, (tip.offsetHeight || 60) + 4)) + 'px';
+    tip.classList.add('show');
+  }
+  function setTip(tip, res) {
+    tip.innerHTML = res.html;
+    tip.classList.toggle('rich', res.rich);
+  }
+  function tipRows(rows, title, total) {
+    var rich = rows.some(function (rw) { return rw.note; });
+    var html = title ? '<div class="tip-title">' + title + '</div>' : '';
+    rows.forEach(function (rw) {
+      html += '<div class="tip-row"><span class="tip-label">' +
+              '<span class="tip-dot" style="background:' + rw.color + '"></span>' +
+              '<span>' + rw.name + '</span></span>' +
+              (rw.note ? '<span class="tip-note">' + rw.note + '</span>' : '') +
+              '<span class="tip-val">' + rw.value + '</span></div>';
+    });
+    if (total) html += '<div class="tip-row tip-total"><span>合计</span><span class="tip-val">' + total + '</span></div>';
+    return { html: html, rich: rich };
+  }
+
+  /* ---------- line / area chart ---------- */
+  function drawLine(host, cfg) {
+    Array.prototype.forEach.call(host.querySelectorAll('svg'), function (n) { n.remove(); });
+    var W = Math.max(240, Math.round(host.clientWidth || 640));
+    var H = (cfg.fillHeight && Math.round(host.clientHeight)) || cfg.height || 240;
+    var P = { t: 14, r: 18, b: 30, l: cfg.padLeft || 48 };
+    var iw = W - P.l - P.r, ih = H - P.t - P.b;
+    var labels = cfg.labels, n = labels.length;
+    var X = function (i) { return n === 1 ? P.l + iw / 2 : P.l + (iw * i) / (n - 1); };
+    var Y = function (v) { return P.t + ih - (Math.max(0, Math.min(v, cfg.yMax)) / cfg.yMax) * ih; };
+
+    /* When cfg.capacity (GB) is set the series values are still percentages —
+       they are scaled to GB for the axis, and the tooltip reports both. */
+    var scale = cfg.capacity ? function (p) { return cfg.capacity * p / 100; } : function (p) { return p; };
+    var tipValue = cfg.capacity
+      ? function (p) { return scale(p).toFixed(1) + ' GB (' + p.toFixed(1) + '%)'; }
+      : function (p) { return fmt(p) + (cfg.unit || ''); };
+
+    var svg = el('svg', { width: W, height: H, viewBox: '0 0 ' + W + ' ' + H, class: 'chart-svg', role: 'img', 'aria-label': cfg.aria || '折线图' });
+    var defs = el('defs');
+    var gid = 'grad-' + (++uid);
+    var lg = el('linearGradient', { id: gid, x1: 0, y1: 0, x2: 0, y2: 1 });
+    lg.appendChild(el('stop', { offset: '0', 'stop-color': cfg.series[0].color, 'stop-opacity': '.26' }));
+    lg.appendChild(el('stop', { offset: '1', 'stop-color': cfg.series[0].color, 'stop-opacity': '0' }));
+    defs.appendChild(lg);
+    svg.appendChild(defs);
+
+    cfg.yTicks.forEach(function (v) {
+      var y = r2(Y(v));
+      svg.appendChild(el('line', { x1: P.l, y1: y, x2: r2(P.l + iw), y2: y, class: v === cfg.yTicks[0] ? 'axis' : 'grid' }));
+      var t = el('text', { x: r2(P.l - 10), y: r2(y + 3.5), class: 'y-label', 'text-anchor': 'end' });
+      t.textContent = fmt(v);
+      svg.appendChild(t);
+    });
+
+    tickIndexes(n, cfg.xTickCount || 8).forEach(function (i) {
+      svg.appendChild(xLabel(X(i), H - 9, labels[i]));
+    });
+
+    cfg.series.forEach(function (ser) {
+      var pts = ser.values.map(function (v, i) { return [r2(X(i)), r2(Y(scale(v)))]; });
+      var d = smooth(pts);
+      if (cfg.area && cfg.series.length === 1) {
+        svg.appendChild(el('path', {
+          d: d + ' L' + r2(X(n - 1)) + ' ' + r2(Y(0)) + ' L' + r2(X(0)) + ' ' + r2(Y(0)) + ' Z',
+          fill: 'url(#' + gid + ')', stroke: 'none'
+        }));
+      }
+      svg.appendChild(el('path', {
+        d: d, fill: 'none', stroke: ser.color,
+        'stroke-width': cfg.series.length > 2 ? 1.9 : 2.1,
+        'stroke-linecap': 'round', 'stroke-linejoin': 'round'
+      }));
+      if (n <= 14) {
+        pts.forEach(function (p) {
+          svg.appendChild(el('circle', { cx: p[0], cy: p[1], r: 2.6, fill: '#fff', stroke: ser.color, 'stroke-width': 1.6 }));
+        });
+      }
+    });
+
+    var hover = el('g', { opacity: 0 });
+    var vline = el('line', { class: 'crosshair', y1: P.t, y2: r2(P.t + ih) });
+    hover.appendChild(vline);
+    var hdots = cfg.series.map(function (ser) {
+      var c = el('circle', { r: 4.2, fill: '#fff', stroke: ser.color, 'stroke-width': 2.2 });
+      hover.appendChild(c);
+      return c;
+    });
+    svg.appendChild(hover);
+
+    var tip = makeTip(host);
+    var hit = el('rect', { x: P.l, y: P.t, width: iw, height: ih, fill: 'transparent' });
+    hit.style.cursor = 'crosshair';
+    hit.addEventListener('mousemove', function (ev) {
+      var box = svg.getBoundingClientRect();
+      var i = Math.round((((ev.clientX - box.left) - P.l) / iw) * (n - 1));
+      i = Math.max(0, Math.min(n - 1, i));
+      hover.setAttribute('opacity', 1);
+      vline.setAttribute('x1', r2(X(i)));
+      vline.setAttribute('x2', r2(X(i)));
+      var rows = [], top = H;
+      cfg.series.forEach(function (ser, si) {
+        var y = Y(scale(ser.values[i]));
+        hdots[si].setAttribute('cx', r2(X(i)));
+        hdots[si].setAttribute('cy', r2(y));
+        top = Math.min(top, y);
+        rows.push({ color: ser.color, name: ser.name, value: tipValue(ser.values[i]) });
+      });
+      setTip(tip, tipRows(rows, labels[i] + (cfg.xSuffix || '')));
+      placeTip(tip, host, X(i), top - 14);
+    });
+    hit.addEventListener('mouseleave', function () {
+      hover.setAttribute('opacity', 0);
+      tip.classList.remove('show');
+    });
+    svg.appendChild(hit);
+    host.appendChild(svg);
+  }
+
+  /* ---------- mirrored chart: read above the zero line, write below ---------- */
+  function drawMirror(host, cfg) {
+    Array.prototype.forEach.call(host.querySelectorAll('svg'), function (n) { n.remove(); });
+    var W = Math.max(240, Math.round(host.clientWidth || 640));
+    var H = cfg.height || 260;
+    var P = { t: 16, r: 18, b: 30, l: cfg.padLeft || 66 };
+    var iw = W - P.l - P.r, ih = H - P.t - P.b;
+    var labels = cfg.labels, n = labels.length;
+    var mid = P.t + ih / 2, half = ih / 2;
+    var X = function (i) { return n === 1 ? P.l + iw / 2 : P.l + (iw * i) / (n - 1); };
+    var Y = function (v) { return mid - (Math.max(-cfg.yMax, Math.min(cfg.yMax, v)) / cfg.yMax) * half; };
+
+    var svg = el('svg', { width: W, height: H, viewBox: '0 0 ' + W + ' ' + H, class: 'chart-svg', role: 'img', 'aria-label': cfg.aria || '读写对比图' });
+
+    var defs = el('defs');
+    var gids = cfg.series.map(function (ser) {
+      var id = 'grad-' + (++uid);
+      var down = Math.max.apply(null, ser.values) <= 0; /* write side: strongest at the bottom */
+      var lg = el('linearGradient', { id: id, x1: 0, y1: 0, x2: 0, y2: 1 });
+      lg.appendChild(el('stop', { offset: '0', 'stop-color': ser.color, 'stop-opacity': down ? '0' : '.26' }));
+      lg.appendChild(el('stop', { offset: '1', 'stop-color': ser.color, 'stop-opacity': down ? '.26' : '0' }));
+      defs.appendChild(lg);
+      return id;
+    });
+    svg.appendChild(defs);
+
+    cfg.yTicks.forEach(function (v) {
+      var y = r2(Y(v));
+      svg.appendChild(el('line', { x1: P.l, y1: y, x2: r2(P.l + iw), y2: y, class: v === 0 ? 'axis' : 'grid' }));
+      var t = el('text', { x: r2(P.l - 10), y: r2(y + 3.5), class: 'y-label', 'text-anchor': 'end' });
+      t.textContent = fmt(v);
+      svg.appendChild(t);
+    });
+
+    tickIndexes(n, cfg.xTickCount || 13).forEach(function (i) {
+      svg.appendChild(xLabel(X(i), H - 9, labels[i]));
+    });
+
+    cfg.series.forEach(function (ser, si) {
+      var pts = ser.values.map(function (v, i) { return [r2(X(i)), r2(Y(v))]; });
+      var d = smooth(pts);
+      svg.appendChild(el('path', {
+        d: d + ' L' + r2(X(n - 1)) + ' ' + r2(Y(0)) + ' L' + r2(X(0)) + ' ' + r2(Y(0)) + ' Z',
+        fill: 'url(#' + gids[si] + ')', stroke: 'none'
+      }));
+      svg.appendChild(el('path', {
+        d: d, fill: 'none', stroke: ser.color, 'stroke-width': 2,
+        'stroke-linecap': 'round', 'stroke-linejoin': 'round'
+      }));
+    });
+
+    var hover = el('g', { opacity: 0 });
+    var vline = el('line', { class: 'crosshair', y1: P.t, y2: r2(P.t + ih) });
+    hover.appendChild(vline);
+    var hdots = cfg.series.map(function (ser) {
+      var c = el('circle', { r: 4.2, fill: '#fff', stroke: ser.color, 'stroke-width': 2.2 });
+      hover.appendChild(c);
+      return c;
+    });
+    svg.appendChild(hover);
+
+    var tip = makeTip(host);
+    var hit = el('rect', { x: P.l, y: P.t, width: iw, height: ih, fill: 'transparent' });
+    hit.style.cursor = 'crosshair';
+    hit.addEventListener('mousemove', function (ev) {
+      var box = svg.getBoundingClientRect();
+      var i = Math.round((((ev.clientX - box.left) - P.l) / iw) * (n - 1));
+      i = Math.max(0, Math.min(n - 1, i));
+      hover.setAttribute('opacity', 1);
+      vline.setAttribute('x1', r2(X(i)));
+      vline.setAttribute('x2', r2(X(i)));
+      var rows = [], top = H;
+      cfg.series.forEach(function (ser, si) {
+        var y = Y(ser.values[i]);
+        hdots[si].setAttribute('cx', r2(X(i)));
+        hdots[si].setAttribute('cy', r2(y));
+        top = Math.min(top, y);
+        rows.push({ color: ser.color, name: ser.name, value: fmt(ser.values[i]) + (cfg.unit || '') });
+      });
+      setTip(tip, tipRows(rows, labels[i] + (cfg.xSuffix || '')));
+      placeTip(tip, host, X(i), top - 14);
+    });
+    hit.addEventListener('mouseleave', function () {
+      hover.setAttribute('opacity', 0);
+      tip.classList.remove('show');
+    });
+    svg.appendChild(hit);
+    host.appendChild(svg);
+  }
+
+  /* ---------- combo: stacked bars over time (+ optional total line) ---------- */
+  function drawCombo(host, cfg) {
+    Array.prototype.forEach.call(host.querySelectorAll('svg'), function (n) { n.remove(); });
+    var W = Math.max(240, Math.round(host.clientWidth || 640));
+    var H = cfg.height || 240;
+    var P = { t: 16, r: 18, b: 34, l: 50 };
+    var iw = W - P.l - P.r, ih = H - P.t - P.b;
+    var labels = cfg.labels, n = labels.length;
+    var band = iw / n;
+    var bw = Math.min(46, band * 0.58);
+    var Y = function (v) { return P.t + ih - (Math.max(0, Math.min(v, cfg.yMax)) / cfg.yMax) * ih; };
+
+    /* one source of truth, per series:
+       - ser.cards present -> values are that model's own occupancy (%), scaled by cards x 64GB
+       - otherwise         -> values are already GB
+       either way `used` is GB, so the stacked bars stay additive */
+    var used = cfg.series.map(function (ser) {
+      if (!ser.cards) return ser.values.slice();
+      var cap = ser.cards * VRAM_PER_CARD;
+      return ser.values.map(function (p) { return cap * p / 100; });
+    });
+    var totals = labels.map(function (_, i) {
+      return used.reduce(function (s, arr) { return s + arr[i]; }, 0);
+    });
+    var rate = function (gb) { return (gb / cfg.nodeCap * 100).toFixed(1) + '%'; };
+
+    var svg = el('svg', { width: W, height: H, viewBox: '0 0 ' + W + ' ' + H, class: 'chart-svg', role: 'img', 'aria-label': cfg.aria || '组合图' });
+
+    if (cfg.line) {
+      var defs = el('defs');
+      var gid = 'grad-' + (++uid);
+      var lg = el('linearGradient', { id: gid, x1: 0, y1: 0, x2: 0, y2: 1 });
+      lg.appendChild(el('stop', { offset: '0', 'stop-color': cfg.line.color, 'stop-opacity': '.26' }));
+      lg.appendChild(el('stop', { offset: '1', 'stop-color': cfg.line.color, 'stop-opacity': '0' }));
+      defs.appendChild(lg);
+      svg.appendChild(defs);
+      var pts = totals.map(function (v, i) { return [r2(P.l + band * i + band / 2), r2(Y(v))]; });
+      var totalPath = smooth(pts);
+      /* area under the total line, same treatment as the AI Core chart;
+         it sits behind the bars so the stacked segments stay pure */
+      svg.appendChild(el('path', {
+        d: totalPath + ' L' + r2(pts[n - 1][0]) + ' ' + r2(Y(0)) + ' L' + r2(pts[0][0]) + ' ' + r2(Y(0)) + ' Z',
+        fill: 'url(#' + gid + ')', stroke: 'none'
+      }));
+    }
+
+    cfg.yTicks.forEach(function (v) {
+      var y = r2(Y(v));
+      svg.appendChild(el('line', { x1: P.l, y1: y, x2: r2(P.l + iw), y2: y, class: v === cfg.yTicks[0] ? 'axis' : 'grid' }));
+      var t = el('text', { x: r2(P.l - 10), y: r2(y + 3.5), class: 'y-label', 'text-anchor': 'end' });
+      t.textContent = fmt(v);
+      svg.appendChild(t);
+    });
+
+    if (cfg.meanLine) {
+      var mean = totals.reduce(function (a, b) { return a + b; }, 0) / n;
+      var my = r2(Y(mean));
+      svg.appendChild(el('line', { x1: P.l, y1: my, x2: r2(P.l + iw), y2: my, class: 'mean-line' }));
+      var ml = el('text', { x: r2(P.l + iw), y: r2(my - 5), class: 'mean-label', 'text-anchor': 'end' });
+      ml.textContent = '均值 ' + mean.toFixed(1) + ' GB';
+      svg.appendChild(ml);
+    }
+
+    var hl = el('rect', { y: P.t, width: r2(band), height: ih, rx: 8, fill: '#eef3fb', opacity: 0 });
+    svg.appendChild(hl);
+
+    labels.forEach(function (name, i) {
+      var cx = P.l + band * i + band / 2;
+      var cursor = Y(0);
+      var g = el('g', { class: 'bar-group' });
+      cfg.series.forEach(function (ser, si) {
+        var h = (used[si][i] / cfg.yMax) * ih;
+        g.appendChild(el('rect', {
+          x: r2(cx - bw / 2), y: r2(cursor - h), width: r2(bw), height: Math.max(1.5, r2(h - 2)),
+          rx: 3, fill: ser.color, class: 'bar'
+        }));
+        cursor -= h;
+      });
+      svg.appendChild(g);
+      svg.appendChild(xLabel(cx, H - 12, name));
+      /* total on top of the stack: readable without hovering */
+      svg.appendChild((function () {
+        var vl = el('text', { x: r2(cx), y: r2(Y(totals[i]) - 9), class: 'value-label', 'text-anchor': 'middle' });
+        vl.textContent = Math.round(totals[i]);
+        return vl;
+      })());
+    });
+
+    var hoverDot = null;
+    if (cfg.line) {
+      /* total line rides on top of the stack.
+         no static dots: they would sit exactly on the stack top and hide the
+         smallest segment (ChatGLM3-6B is only ~6px tall at this scale). */
+      svg.appendChild(el('path', {
+        d: totalPath, fill: 'none', stroke: cfg.line.color,
+        'stroke-width': 2.2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round'
+      }));
+      hoverDot = el('circle', { r: 5, fill: '#fff', stroke: cfg.line.color, 'stroke-width': 2.4, opacity: 0 });
+      svg.appendChild(hoverDot);
+    }
+
+    var tip = makeTip(host);
+    var hit = el('rect', { x: P.l, y: P.t, width: iw, height: ih, fill: 'transparent' });
+    hit.style.cursor = 'crosshair';
+    hit.addEventListener('mousemove', function (ev) {
+      var box = svg.getBoundingClientRect();
+      var i = Math.floor(((ev.clientX - box.left) - P.l) / band);
+      i = Math.max(0, Math.min(n - 1, i));
+      var cx = P.l + band * i + band / 2;
+      hl.setAttribute('x', r2(P.l + band * i));
+      hl.setAttribute('opacity', 1);
+      if (hoverDot) {
+        hoverDot.setAttribute('cx', r2(cx));
+        hoverDot.setAttribute('cy', r2(Y(totals[i])));
+        hoverDot.setAttribute('opacity', 1);
+      }
+
+      var rows = cfg.series.map(function (ser, si) {
+        var row = { color: ser.color, name: ser.name };
+        if (ser.cards) {
+          row.note = ser.cards + ' 卡';
+          row.value = used[si][i].toFixed(1) + ' GB (' + ser.values[i].toFixed(1) + '%)';
+        } else {
+          row.value = used[si][i].toFixed(1) + ' GB (' + rate(used[si][i]) + ')';
+        }
+        return row;
+      });
+      setTip(tip, tipRows(rows, labels[i], totals[i].toFixed(1) + ' GB (' + rate(totals[i]) + ')'));
+      placeTip(tip, host, cx, Y(totals[i]) - 16);
+    });
+    hit.addEventListener('mouseleave', function () {
+      hl.setAttribute('opacity', 0);
+      hoverDot.setAttribute('opacity', 0);
+      tip.classList.remove('show');
+    });
+    svg.appendChild(hit);
+    host.appendChild(svg);
+  }
+
+  /* ---------- data ---------- */
+  var coreLabels = [], i;
+  for (i = 0; i < 25; i++) coreLabels.push(String(i * 2.5));
+  var memLabels = ['13:56', '14:01', '14:06', '14:11', '14:16', '14:21', '14:26', '14:31', '14:36', '14:41', '14:46', '14:51'];
+
+  var CHARTS = {
+    model: {
+      type: 'combo', height: 232, unit: '%', nodeCap: 512, valueLabels: true, meanLine: true,
+      labels: ['03-13', '03-14', '03-15', '03-16', '03-17', '03-18', '03-19', '03-20'],
+      yMax: 512, yTicks: [0, 128, 256, 384, 512], xTickCount: 8,
+      line: { name: '总占用', color: COLOR.blue },
+      aria: '模型占用分析组合图：堆叠柱为各模型显存占用，折线为总占用',
+      series: [
+        { name: 'Qwen-72B', color: COLOR.violet, cards: 4, values: [60.0, 66.2, 74.6, 83.0, 93.8, 73.8, 64.6, 44.6] },
+        { name: 'Llama-3-70B', color: COLOR.green, cards: 2, values: [45.4, 50.8, 60.0, 62.4, 73.0, 58.4, 50.8, 40.0] },
+        { name: 'Baichuan2-13B', color: COLOR.orange, cards: 1, values: [32.4, 33.0, 40.0, 41.6, 40.8, 33.0, 32.4, 23.8] },
+        { name: 'ChatGLM3-6B', color: COLOR.cyan, cards: 1, values: [23.8, 24.6, 30.0, 33.8, 27.6, 22.4, 23.0, 16.2] }
+      ]
+    },
+    task: {
+      type: 'combo', height: 232, nodeCap: 512, valueLabels: true, meanLine: true,
+      labels: ['03-13', '03-14', '03-15', '03-16', '03-17', '03-18', '03-19', '03-20'],
+      yMax: 512, yTicks: [0, 128, 256, 384, 512], xTickCount: 8,
+      aria: '任务占用分析堆叠柱状图，纵轴为显存占用大小，单位 GB',
+      series: [
+        { name: '推理', color: COLOR.blue, values: [132, 145, 168, 182, 205, 160, 142, 104] },
+        { name: '训练', color: COLOR.green, values: [78, 86, 99, 108, 122, 95, 84, 61] },
+        { name: '评估', color: COLOR.orange, values: [30, 33, 38, 42, 47, 36, 32, 23] }
+      ]
+    },
+    core: {
+      type: 'line', height: 250, fillHeight: true, capacity: 512, area: true, padLeft: 52,
+      labels: coreLabels, yMax: 512, yTicks: [0, 128, 256, 384, 512], xTickCount: 13, xSuffix: ' 分钟',
+      aria: 'AI Core 占用大小折线图，纵轴为显存占用大小，单位 GB',
+      series: [{ name: 'AI Core 占用大小', color: COLOR.blue, values: [78, 71, 64, 69, 74, 68, 61, 57, 63, 72, 81, 88, 92, 76, 66, 58, 63, 71, 79, 86, 90, 82, 73, 68, 75] }]
+    },
+    cpu: {
+      type: 'line', height: 250, capacity: 1536, area: true, padLeft: 62,
+      labels: coreLabels, yMax: 1536, yTicks: [0, 384, 768, 1152, 1536], xTickCount: 13, xSuffix: ' 分钟',
+      aria: 'CPU 占用大小折线图，纵轴为内存占用大小，单位 GB',
+      series: [{ name: 'CPU 占用大小', color: COLOR.blue, values: [66, 58, 52, 57, 63, 60, 55, 49, 54, 62, 70, 76, 81, 68, 59, 52, 56, 64, 71, 78, 83, 74, 66, 60, 67] }]
+    },
+    mem: {
+      type: 'line', height: 238, capacity: 1536, area: true, padLeft: 62,
+      labels: memLabels, yMax: 1536, yTicks: [0, 384, 768, 1152, 1536], xTickCount: 3,
+      aria: '内存占用大小面积图，纵轴为内存占用大小，单位 GB',
+      series: [{ name: '内存占用大小', color: COLOR.violet, values: [18, 22, 26, 24, 31, 36, 34, 29, 33, 38, 41, 37] }]
+    },
+    disk: {
+      variants: {
+        /* 磁盘读写 IOPS —— 读为正、写为负，衡量 IO 请求频次 */
+        iops: {
+          type: 'mirror', height: 260, padLeft: 70, unit: ' 次/s',
+          labels: coreLabels, yMax: 24000, yTicks: [-24000, -16000, -8000, 0, 8000, 16000, 24000],
+          xTickCount: 13, xSuffix: ' 分钟',
+          aria: '磁盘读写 IOPS 图，零轴上方为读、下方为写，单位次每秒',
+          series: [
+            { name: '读 IOPS (+)', color: COLOR.blue, values: [12800, 13600, 15200, 16400, 18900, 17400, 15200, 14100, 15600, 17800, 20100, 22400, 21800, 18200, 15900, 14300, 15100, 16900, 19200, 21300, 20600, 18100, 16400, 14900, 15800] },
+            { name: '写 IOPS (-)', color: COLOR.orange, values: [-6400, -6900, -7800, -8600, -9800, -9100, -7900, -7200, -8100, -9400, -10800, -12400, -11900, -9600, -8200, -7300, -7800, -8800, -10100, -11500, -10900, -9300, -8400, -7600, -8100] }
+          ]
+        },
+        /* 磁盘读写带宽 —— 读为正、写为负，单位 GB/s */
+        bandwidth: {
+          type: 'mirror', height: 260, padLeft: 58, unit: ' GB/s',
+          labels: coreLabels, yMax: 3, yTicks: [-3, -2, -1, 0, 1, 2, 3],
+          xTickCount: 13, xSuffix: ' 分钟',
+          aria: '磁盘读写带宽图，零轴上方为读、下方为写，单位 GB/s',
+          series: [
+            { name: '读带宽 (+)', color: COLOR.blue, values: [1.42, 1.51, 1.68, 1.82, 2.08, 1.94, 1.70, 1.58, 1.73, 1.96, 2.21, 2.46, 2.38, 2.02, 1.77, 1.60, 1.69, 1.86, 2.10, 2.32, 2.26, 1.99, 1.81, 1.65, 1.75] },
+            { name: '写带宽 (-)', color: COLOR.orange, values: [-0.72, -0.78, -0.88, -0.97, -1.10, -1.02, -0.89, -0.81, -0.91, -1.05, -1.20, -1.38, -1.32, -1.07, -0.92, -0.82, -0.87, -0.98, -1.12, -1.27, -1.21, -1.03, -0.93, -0.85, -0.90] }
+          ]
+        },
+        /* 磁盘读写时延 —— 单次 IO 操作耗时 (ms) */
+        latency: {
+          type: 'line', height: 260, area: true, padLeft: 52, unit: ' ms',
+          labels: coreLabels, yMax: 2, yTicks: [0, 0.5, 1, 1.5, 2],
+          xTickCount: 13, xSuffix: ' 分钟',
+          aria: '磁盘读写时延折线图，单位毫秒',
+          series: [{ name: '磁盘 I/O 操作耗时', color: COLOR.violet, values: [0.82, 0.79, 0.88, 0.95, 1.12, 1.05, 0.92, 0.86, 0.94, 1.08, 1.26, 1.48, 1.41, 1.09, 0.96, 0.87, 0.93, 1.04, 1.19, 1.36, 1.29, 1.06, 0.97, 0.90, 0.95] }]
+        },
+        /* 磁盘读写耗时 —— 排队等待 + 实际读写的平均服务时间 (ms) */
+        service: {
+          type: 'line', height: 260, area: true, padLeft: 52, unit: ' ms',
+          labels: coreLabels, yMax: 8, yTicks: [0, 2, 4, 6, 8],
+          xTickCount: 13, xSuffix: ' 分钟',
+          aria: '磁盘读写耗时折线图，I/O 平均服务时间，单位毫秒',
+          series: [{ name: 'I/O 平均服务时间', color: COLOR.cyan, values: [2.4, 2.3, 2.6, 2.9, 3.5, 3.2, 2.8, 2.5, 2.9, 3.4, 4.1, 4.9, 4.6, 3.6, 3.0, 2.7, 2.9, 3.3, 3.9, 4.5, 4.2, 3.4, 3.1, 2.8, 3.0] }]
+        },
+        /* 磁盘平均 —— IO 队列长度 */
+        queue: {
+          type: 'line', height: 260, area: true, padLeft: 52,
+          labels: coreLabels, yMax: 32, yTicks: [0, 8, 16, 24, 32],
+          xTickCount: 13, xSuffix: ' 分钟',
+          aria: '磁盘 IO 队列数折线图',
+          series: [{ name: 'IO 队列数', color: COLOR.green, values: [6, 5, 7, 9, 13, 11, 8, 6, 9, 12, 17, 23, 21, 14, 10, 7, 9, 12, 16, 21, 19, 13, 10, 8, 9] }]
+        }
+      }
+    },
+    net: {
+      variants: {
+        /* 带宽使用 —— 上行为正、下行为负，单位 Mbps */
+        traffic: {
+          type: 'mirror', height: 260, padLeft: 62, unit: ' Mbps',
+          labels: coreLabels, yMax: 2000, yTicks: [-2000, -1000, 0, 1000, 2000],
+          xTickCount: 13, xSuffix: ' 分钟',
+          aria: '网络带宽使用图，零轴上方为上行、下方为下行，单位 Mbps',
+          series: [
+            { name: '上行带宽 (+)', color: COLOR.blue, values: [320, 348, 402, 466, 512, 488, 430, 396, 442, 508, 596, 682, 648, 540, 470, 418, 452, 512, 590, 668, 634, 528, 470, 428, 452] },
+            { name: '下行带宽 (-)', color: COLOR.orange, values: [-860, -920, -1040, -1180, -1420, -1320, -1120, -980, -1080, -1240, -1460, -1680, -1620, -1380, -1160, -1020, -1080, -1220, -1420, -1620, -1560, -1300, -1140, -1010, -1080] }
+          ]
+        },
+        /* 丢包率 —— 丢失报文占总报文比例 (%) */
+        loss: {
+          type: 'line', height: 260, area: true, padLeft: 52, unit: ' %',
+          labels: coreLabels, yMax: 0.3, yTicks: [0, 0.1, 0.2, 0.3],
+          xTickCount: 13, xSuffix: ' 分钟',
+          aria: '网络丢包率折线图，单位百分比',
+          series: [{ name: '网络丢包百分比', color: COLOR.violet, values: [0.04, 0.03, 0.05, 0.07, 0.11, 0.09, 0.06, 0.04, 0.07, 0.10, 0.15, 0.24, 0.21, 0.13, 0.08, 0.05, 0.07, 0.10, 0.14, 0.20, 0.18, 0.11, 0.08, 0.06, 0.07] }]
+        }
+      }
+    }
+  };
+
+  /* ---------- render + responsive redraw ---------- */
+  var lastSize = new WeakMap();
+
+  function cfgFor(host) {
+    var def = CHARTS[host.dataset.chart];
+    if (!def) return null;
+    if (!def.variants) return def;
+    return def.variants[host.dataset.variant] || def.variants[Object.keys(def.variants)[0]];
+  }
+
+  function render(host) {
+    var cfg = cfgFor(host);
+    if (!cfg) return;
+    if (cfg.type === 'mirror') drawMirror(host, cfg);
+    else if (cfg.type === 'combo') drawCombo(host, cfg);
+    else drawLine(host, cfg);
+
+    /* charts whose series change with a tab rebuild their legend each render */
+    var legend = document.querySelector('[data-legend="' + host.dataset.chart + '"]');
+    if (legend) {
+      legend.innerHTML = cfg.series.map(function (s) {
+        return '<span class="legend-item"><span class="legend-swatch" style="background:' + s.color + '"></span>' + s.name + '</span>';
+      }).join('');
+    }
+  }
+
+  var hosts = Array.prototype.slice.call(document.querySelectorAll('[data-chart]'));
+
+  function renderAll() {
+    hosts.forEach(function (host) {
+      render(host);
+      lastSize.set(host, { w: Math.round(host.clientWidth), h: Math.round(host.clientHeight) });
+    });
+  }
+
+  renderAll();
+  /* charts that fill their container depend on the final box size, which is only
+     known once webfonts and the last layout pass have settled */
+  window.addEventListener('load', renderAll);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(renderAll);
+
+  if (window.ResizeObserver) {
+    var ro = new ResizeObserver(function (entries) {
+      entries.forEach(function (e) {
+        var host = e.target;
+        if (!host.clientWidth || !host.clientHeight) return; /* hidden panel */
+        var w = Math.round(host.clientWidth);
+        var h = Math.round(host.clientHeight);
+        var cfg = cfgFor(host);
+        var last = lastSize.get(host) || { w: 0, h: 0 };
+        /* charts that fill their container must also redraw on height changes */
+        if (Math.abs(w - last.w) < 2 && !(cfg && cfg.fillHeight && Math.abs(h - last.h) >= 2)) return;
+        lastSize.set(host, { w: w, h: h });
+        /* deferred out of the observer callback so a redraw cannot re-enter it */
+        clearTimeout(host._redraw);
+        host._redraw = setTimeout(function () { render(host); }, 0);
+      });
+    });
+    hosts.forEach(function (h) { ro.observe(h); });
+  }
+
+  /* ---------- panel switch (one card, several views) ---------- */
+  Array.prototype.forEach.call(document.querySelectorAll('[data-panels]'), function (group) {
+    var card = group.closest('.card');
+    if (!card) return;
+    group.addEventListener('click', function (ev) {
+      var btn = ev.target.closest('.pill');
+      if (!btn || !btn.dataset.panelTo) return;
+      Array.prototype.forEach.call(group.querySelectorAll('.pill'), function (b) {
+        var on = b === btn;
+        b.classList.toggle('active', on);
+        b.setAttribute('aria-selected', String(on));
+      });
+      Array.prototype.forEach.call(card.querySelectorAll('[data-panel]'), function (p) {
+        p.hidden = p.dataset.panel !== btn.dataset.panelTo;
+      });
+      /* a chart in a hidden panel has no box, and the switch also changes the card
+         height, so redraw every chart once the new boxes are in place */
+      renderAll();
+      setTimeout(renderAll, 0); /* again after any still-pending reflow */
+    });
+  });
+
+  /* ---------- segmented controls (tab switch) ---------- */
+  Array.prototype.forEach.call(document.querySelectorAll('[data-segmented]'), function (group) {
+    var host = document.querySelector('[data-chart="' + group.dataset.segmented + '"]');
+    group.addEventListener('click', function (ev) {
+      var btn = ev.target.closest('.pill');
+      if (!btn || !host || !btn.dataset.variant) return;
+      Array.prototype.forEach.call(group.querySelectorAll('.pill'), function (b) {
+        var on = b === btn;
+        b.classList.toggle('active', on);
+        b.setAttribute('aria-selected', String(on));
+      });
+      host.dataset.variant = btn.dataset.variant;
+      render(host);
+    });
+  });
+
+  /* ---------- date range: same widget + same behaviour on every card.
+       No separate trigger button: the range applies as soon as it changes. ---------- */
+  var ranges = [];          /* every bound range, so a group preset can drive them all */
+  var applyingPreset = false;
+
+  function bindRange(o) {
+    var start = document.getElementById(o.startId);
+    var end = document.getElementById(o.endId);
+    var status = o.statusId ? document.getElementById(o.statusId) : null;
+    if (!start || !end) return function () {};
+
+    function apply() {
+      var s = start.value, e = end.value;
+      var incomplete = !s || !e;
+      var inverted = !incomplete && s > e;
+      var invalid = incomplete || inverted;
+
+      start.setAttribute('aria-invalid', String(invalid));
+      end.setAttribute('aria-invalid', String(invalid));
+
+      if (status) {
+        if (inverted) {
+          status.textContent = '开始日期不能晚于结束日期';
+          status.className = 'card-meta is-error';
+        } else if (incomplete) {
+          status.textContent = '请选择完整的时间区间';
+          status.className = 'card-meta is-error';
+        } else {
+          status.textContent = '数据区间 ' + s + ' ~ ' + e + (o.base ? ' · ' + o.base : '');
+          status.className = 'card-meta is-ok';
+        }
+      }
+      /* a hand-edited range no longer matches any preset */
+      if (!applyingPreset) clearRangePreset();
+    }
+
+    start.addEventListener('change', apply);
+    end.addEventListener('change', apply);
+    ranges.push({ start: start, end: end, apply: apply });
+    return apply;
+  }
+
+  bindRange({ startId: 'modelStartDate', endId: 'modelEndDate' });
+  bindRange({ startId: 'taskStartDate', endId: 'taskEndDate' });
+  bindRange({ startId: 'coreStartDate', endId: 'coreEndDate', statusId: 'coreQueryStatus', base: '占用率基准 512 GB' });
+  bindRange({ startId: 'cpuStartDate', endId: 'cpuEndDate', statusId: 'cpuQueryStatus', base: '占用率基准 1536 GB' });
+  bindRange({ startId: 'diskStartDate', endId: 'diskEndDate', statusId: 'diskQueryStatus' });
+  bindRange({ startId: 'netStartDate', endId: 'netEndDate', statusId: 'netQueryStatus' });
+
+  bindRange({
+    startId: 'memStartDate', endId: 'memEndDate', statusId: 'memQueryStatus',
+    base: '占用率基准 1536 GB'
+  });
+
+  /* ---------- 应用分析 group time range: one preset drives every card ---------- */
+  var RANGE_TODAY = '2026-03-20'; /* the mock data's "today" */
+
+  function isoAddDays(iso, delta) {
+    var d = new Date(iso + 'T00:00:00');
+    d.setDate(d.getDate() + delta);
+    var m = String(d.getMonth() + 1);
+    var day = String(d.getDate());
+    return d.getFullYear() + '-' + (m.length < 2 ? '0' + m : m) + '-' + (day.length < 2 ? '0' + day : day);
+  }
+
+  var presetGroup = document.querySelector('[data-range-presets]');
+
+  function clearRangePreset() {
+    if (!presetGroup) return;
+    Array.prototype.forEach.call(presetGroup.querySelectorAll('.pill'), function (b) {
+      b.classList.remove('active');
+      b.setAttribute('aria-pressed', 'false');
+    });
+  }
+
+  function applyRangePreset(days) {
+    var end = RANGE_TODAY;
+    var start = isoAddDays(end, -(days - 1));
+    applyingPreset = true;
+    ranges.forEach(function (r) {
+      r.start.value = start;
+      r.end.value = end;
+      r.apply();
+    });
+    applyingPreset = false;
+  }
+
+  var customRange = document.getElementById('groupCustomRange');
+  var customStart = document.getElementById('groupStartDate');
+  var customEnd = document.getElementById('groupEndDate');
+
+  /* push an explicit [start, end] to every card */
+  function applyCustomRange(s, e) {
+    applyingPreset = true;
+    ranges.forEach(function (r) {
+      r.start.value = s;
+      r.end.value = e;
+      r.apply();
+    });
+    applyingPreset = false;
+  }
+
+  function onCustomChange() {
+    if (!customStart || !customEnd) return;
+    var s = customStart.value, e = customEnd.value;
+    var invalid = !s || !e || s > e;
+    customStart.setAttribute('aria-invalid', String(invalid));
+    customEnd.setAttribute('aria-invalid', String(invalid));
+    if (!invalid) applyCustomRange(s, e);
+  }
+
+  if (customStart && customEnd) {
+    customStart.addEventListener('change', onCustomChange);
+    customEnd.addEventListener('change', onCustomChange);
+  }
+
+  if (presetGroup) {
+    presetGroup.addEventListener('click', function (ev) {
+      var btn = ev.target.closest('.pill');
+      if (!btn) return;
+      var isCustom = btn.hasAttribute('data-custom');
+      if (!isCustom && !btn.dataset.days) return;
+      Array.prototype.forEach.call(presetGroup.querySelectorAll('.pill'), function (b) {
+        var on = b === btn;
+        b.classList.toggle('active', on);
+        b.setAttribute('aria-pressed', String(on));
+      });
+      if (isCustom) {
+        /* seed the picker from whatever the cards currently show */
+        var ref = ranges[0];
+        customStart.value = ref ? ref.start.value : RANGE_TODAY;
+        customEnd.value = ref ? ref.end.value : RANGE_TODAY;
+        onCustomChange();
+        customRange.hidden = false;
+        return;
+      }
+      customRange.hidden = true;
+      applyRangePreset(Number(btn.dataset.days));
+    });
+    /* start in sync with the preset marked active in the markup */
+    var activePreset = presetGroup.querySelector('.pill.active');
+    applyRangePreset(activePreset ? Number(activePreset.dataset.days) : 30);
+  }
+
+  /* ---------- mobile drawer ---------- */
+  var sidebar = document.getElementById('sidebar');
+  var menuBtn = document.getElementById('menuBtn');
+  var scrim = document.getElementById('scrim');
+
+  function closeDrawer() {
+    sidebar.classList.remove('open');
+    scrim.hidden = true;
+    menuBtn.setAttribute('aria-expanded', 'false');
+  }
+  menuBtn.addEventListener('click', function () {
+    var open = sidebar.classList.toggle('open');
+    scrim.hidden = !open;
+    menuBtn.setAttribute('aria-expanded', String(open));
+  });
+  scrim.addEventListener('click', closeDrawer);
+  document.addEventListener('keydown', function (ev) {
+    if (ev.key === 'Escape') closeDrawer();
+  });
+})();
+</script>
+</body>
+</html>

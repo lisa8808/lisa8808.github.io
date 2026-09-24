@@ -1,0 +1,235 @@
+.business-outline-config-open,
+.business-outline-config-open body {
+  overflow: hidden;
+}
+
+.business-outline-config-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(24, 32, 46, .42);
+  color: #202633;
+  font-family: PingFang SC, "Microsoft YaHei", Arial, sans-serif;
+}
+
+.business-outline-config-modal,
+.business-outline-config-modal * {
+  box-sizing: border-box;
+}
+
+.business-outline-config-dialog {
+  display: flex;
+  flex-direction: column;
+  width: min(720px, calc(100vw - 48px));
+  max-height: min(640px, calc(100vh - 48px));
+  overflow: hidden;
+  border: 1px solid #d9e0e9;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 20px 60px rgba(24, 32, 46, .22);
+}
+
+.business-outline-config-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 0 0 62px;
+  padding: 0 24px;
+  border-bottom: 1px solid #e8edf4;
+}
+
+.business-outline-config-header h2 {
+  margin: 0;
+  color: #18202e;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 26px;
+}
+
+.business-outline-config-close {
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #7c8795;
+  font-size: 24px;
+  font-weight: 300;
+  line-height: 28px;
+  cursor: pointer;
+}
+
+.business-outline-config-close:hover {
+  background: #f2f5f9;
+  color: #025dff;
+}
+
+.business-outline-config-content {
+  min-height: 0;
+  padding: 22px 24px 28px;
+  overflow-y: auto;
+}
+
+.business-outline-config-source {
+  display: grid;
+  grid-template-columns: 82px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  color: #536177;
+  font-size: 13px;
+  line-height: 22px;
+}
+
+.business-outline-config-source strong {
+  color: #344054;
+  font-weight: 600;
+}
+
+.business-outline-config-source span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.business-outline-config-field {
+  display: block;
+  margin-top: 24px;
+}
+
+.business-outline-config-field > span {
+  display: block;
+  margin-bottom: 8px;
+  color: #344054;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 22px;
+}
+
+.business-outline-config-field textarea {
+  display: block;
+  width: 100%;
+  min-height: 120px;
+  resize: vertical;
+  padding: 11px 12px;
+  border: 1px solid #ccd5e0;
+  border-radius: 7px;
+  outline: none;
+  background: #fff;
+  color: #202633;
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.business-outline-config-field textarea:focus {
+  border-color: #025dff;
+  box-shadow: 0 0 0 3px rgba(2, 93, 255, .12);
+}
+
+.business-outline-config-hint {
+  margin: 10px 0 0;
+  color: #7a8695;
+  font-size: 12px;
+  line-height: 20px;
+}
+
+.business-outline-config-footer {
+  display: flex;
+  justify-content: flex-end;
+  flex: 0 0 78px;
+  gap: 10px;
+  padding: 0 24px 20px;
+}
+
+.business-outline-config-footer button {
+  min-width: 92px;
+  height: 36px;
+  padding: 0 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 20px;
+  cursor: pointer;
+}
+
+.business-outline-config-cancel {
+  border: 1px solid #d6dde7;
+  background: #fff;
+  color: #536177;
+}
+
+.business-outline-config-confirm {
+  border: 1px solid #025dff;
+  background: #025dff;
+  color: #fff;
+}
+
+.business-outline-config-footer button:not(:disabled):hover {
+  filter: brightness(.97);
+}
+
+.business-outline-config-footer button:active {
+  transform: scale(.985);
+}
+
+@media (max-width: 760px) {
+  .business-outline-config-modal {
+    padding: 12px;
+  }
+
+  .business-outline-config-dialog {
+    width: 100%;
+    max-height: calc(100vh - 24px);
+  }
+
+  .business-outline-config-header {
+    flex-basis: 56px;
+    padding: 0 18px;
+  }
+
+  .business-outline-config-content {
+    padding: 18px;
+  }
+
+  .business-outline-config-source {
+    grid-template-columns: 1fr;
+    gap: 3px;
+  }
+
+  .business-outline-config-source span {
+    white-space: normal;
+  }
+
+  .business-outline-config-field {
+    margin-top: 18px;
+  }
+
+  .business-outline-config-field > span {
+    margin-bottom: 8px;
+  }
+
+  .business-outline-config-field textarea {
+    min-height: 120px;
+  }
+
+  .business-outline-config-hint {
+    margin-top: 10px;
+  }
+
+  .business-outline-config-footer {
+    flex-basis: 70px;
+    gap: 10px;
+    padding: 0 18px 16px;
+  }
+
+  .business-outline-config-footer button {
+    flex: 1;
+    width: auto;
+    height: 36px;
+  }
+}

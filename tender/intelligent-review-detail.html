@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f5f8fc" />
+  <link rel="icon" type="image/png" href="./assets/detail-empty-huakun-tender-logo-cczIqQ47.png" />
+  <title>智能审查 · 上传文件</title>
+  <link rel="stylesheet" href="./assets/review-base.css" />
+  <link rel="stylesheet" href="./assets/review-upload.css?v=20260911-full-doc-stream" />
+</head>
+<body>
+  <div class="app is-detail">
+    <header class="topbar">
+      <button class="brand" type="button" aria-label="返回项目列表">
+        <span class="brand-mark"><img src="./assets/detail-empty-huakun-tender-logo-cczIqQ47.png" alt="华鲲元启"></span>
+        <span class="brand-dot" aria-hidden="true">·</span>
+        <span class="brand-product">AI投标助手</span>
+        <span class="brand-separator" id="brandSeparator" hidden></span>
+        <span class="brand-project" id="brandProject"></span>
+      </button>
+      <button class="profile" type="button">
+        <img class="avatar-image" src="./assets/figma/avatar.png" alt="">
+        <span>易天行</span>
+        <img class="profile-chevron" src="./assets/figma/profile-chevron.svg" alt="">
+      </button>
+    </header>
+
+    <main class="workspace" aria-label="智能审查工作台">
+      <section class="panel upload-panel">
+        <h2 class="panel-title">审查资料</h2>
+        <div class="panel-scroll left-scroll">
+          <section class="upload-group">
+            <p class="field-label">上传招标文件</p>
+            <button class="dropzone" id="tenderDropzone" type="button">
+              <img class="upload-image" src="./assets/figma/upload.svg" alt="">
+              <span>点击/拖拽/粘贴上传招标文件，支持 PDF、DOCX、DOC</span>
+              <small class="upload-limit">单文件≤200M · 仅保留最新 1 份</small>
+            </button>
+            <input class="upload-input" id="tenderInput" type="file" accept=".pdf,.docx,.doc">
+            <div class="list-title">
+              <strong>招标文件源文件</strong>
+            </div>
+            <div class="file-empty" id="tenderEmpty">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v6h5"/></svg>
+              <p>仅保留 1 份招标文件；重新上传后将自动替换</p>
+            </div>
+            <div class="file-list" id="tenderFileList"></div>
+          </section>
+
+          <section class="upload-group reference-group">
+            <p class="field-label">上传投标文件</p>
+            <button class="dropzone" id="bidDropzone" type="button" disabled>
+              <img class="upload-image" src="./assets/figma/upload.svg" alt="">
+              <span id="bidDropzoneHint">请先上传招标文件，支持 PDF、DOCX、DOC</span>
+              <small class="upload-limit">单文件≤200M · 最多20份 · 仅支持单选</small>
+            </button>
+            <input class="upload-input" id="bidInput" type="file" accept=".pdf,.docx,.doc" multiple disabled>
+            <div class="list-title">
+              <strong>投标文件源文件</strong>
+            </div>
+            <div class="file-empty" id="bidEmpty">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v6h5"/></svg>
+              <p>支持保留多份投标文件；一次仅可选择 1 份进行审查</p>
+            </div>
+            <div class="file-list" id="bidFileList"></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="panel conversation-panel">
+        <div class="panel-title conversation-title"><h2>对话</h2></div>
+        <div class="conversation-body">
+          <div class="welcome">
+            <img class="assistant-art" src="./assets/detail-empty-assistant-message-DUUH8ceE.svg" alt="">
+            <h1>您好，欢迎使用华鲲AI标书审查</h1>
+            <p>华鲲AI标书审查是一款面向投标文件质量控制环节的智能审查工具，基于招标文件要求自动梳理审查项，对投标文件开展常识性、符合性与证件有效性检查，精准定位缺漏、错漏与风险表述，一键生成带批注的审查文件，帮助投标团队在递交前快速发现并修正问题，全面提升标书质量与中标率。</p>
+            <div class="suggestions">
+              <button type="button">解读资格审查要求，明确响应门槛</button>
+              <button type="button">梳理评分项与否决条款</button>
+              <button type="button">检索审查当前标书，定位风险与缺失</button>
+              <button type="button">生成检查清单，自动梳理审查项</button>
+              <button type="button">一键检索审查，自动生成审查文件</button>
+              <button type="button">列出缺失材料与风险修改建议</button>
+            </div>
+          </div>
+          <section class="project-context" id="projectContext" aria-label="当前项目说明" hidden></section>
+          <div class="chat-messages" id="chatMessages" hidden></div>
+        </div>
+        <form class="chat-input is-disabled" id="chatInput">
+          <div class="question-carousel" id="questionCarousel" aria-live="polite" hidden>
+            <button type="button" class="question-carousel-current" id="questionCarouselCurrent" aria-disabled="true">
+              <span class="question-carousel-label">&#31034;&#20363;&#22330;&#26223;</span>
+              <span class="question-carousel-index" id="questionCarouselIndex">01/12</span>
+              <span class="question-carousel-text" id="questionCarouselText">帮我生成检查清单</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="m14 7 5 5-5 5"></path></svg>
+            </button>
+            <button type="button" class="question-carousel-toggle" id="questionCarouselToggle" aria-expanded="false" aria-haspopup="listbox" aria-label="选择预设问题">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+            </button>
+            <div class="question-carousel-menu" id="questionCarouselMenu" role="listbox" aria-label="预设问题列表" hidden></div>
+          </div>
+          <div class="chat-input-row">
+            <input id="chatQuestionInput" type="text" placeholder="请输入审查相关问题，例如：本项目的资格审查要求有哪些？" disabled>
+            <span class="selected-source-count" aria-live="polite">已选中<strong id="sourceCount">0</strong>个来源文件</span>
+            <button type="submit" aria-label="发送" disabled><img src="./assets/figma/send.svg" alt=""></button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel result-panel">
+        <div class="result-header">
+          <h2>结果</h2>
+          <button class="result-panel-toggle" id="resultPanelToggle" type="button" aria-label="结果面板">
+            <img src="./assets/figma/panel-toggle.svg" alt="">
+          </button>
+        </div>
+        <nav class="result-rail" aria-label="常用功能">
+          <span class="result-rail-item" data-disabled-reason="请先上传并选择招标文件和投标文件">
+            <button type="button" data-task="extractAll" aria-label="生成检查清单" title="生成检查清单" disabled><img src="./assets/figma/tool-demand-new.svg" alt=""></button>
+          </span>
+          <span class="result-rail-item" data-disabled-reason="请先上传并选择招标文件和投标文件">
+            <button type="button" data-task="retrieve" aria-label="审查投标文件" title="审查投标文件" disabled><img src="./assets/figma/tool-write-new.svg" alt=""></button>
+          </span>
+          <span class="result-rail-item" data-disabled-reason="请先上传并选择招标文件和投标文件">
+            <button type="button" id="quickRailButton" aria-label="一键检索审查" title="一键检索审查" disabled><img src="./assets/figma/detail-magic.svg" alt=""></button>
+          </span>
+        </nav>
+        <div class="result-scroll">
+          <section class="result-mode" aria-label="精准模式">
+            <p class="result-mode-label">精准模式</p>
+            <div class="tool-grid">
+              <div class="tool-item" data-disabled-reason="请先上传并选择招标文件和投标文件">
+                <button type="button" aria-pressed="false" class="blue" data-task="extractAll" title="01 生成检查清单" disabled><img class="tool-image" src="./assets/figma/tool-demand-new.svg" alt=""><span><b>01</b> 生成检查清单</span></button>
+              </div>
+              <div class="tool-item has-more" data-disabled-reason="请先上传并选择招标文件和投标文件">
+                <button type="button" aria-pressed="false" class="green" data-task="retrieve"><img class="tool-image" src="./assets/figma/tool-write-new.svg" alt=""><span><b>02</b> 审查投标文件</span></button>
+                <button type="button" class="tool-more green" id="retrieveConfigButton" aria-label="选择审查项清单"><img src="./assets/figma/tool-arrow.svg" alt=""></button>
+              </div>
+            </div>
+          </section>
+          <section class="quick-mode" aria-label="快速模式">
+            <p class="result-mode-label">快速模式</p>
+          <span class="quick-action-wrap" data-disabled-reason="请先上传并选择招标文件和投标文件">
+            <button class="quick-action" id="quickReviewButton" type="button" aria-pressed="false" disabled><img class="quick-action-icon" src="./assets/figma/detail-magic.svg" alt=""><span>一键检索审查</span></button>
+          </span>
+          </section>
+          <h3 class="record-heading">生成结果</h3>
+          <div class="generated-result-list" id="generatedResultList"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="./assets/project-created-time.js?v=20260912-qa-earliest"></script>
+  <script src="./assets/review2-store.js?v=20260912-preset-status"></script>
+    <script src="./assets/real-project-documents-nsbd.js?v=20260911-structured"></script>
+    <script src="./assets/real-project-source.js?v=20260902-1"></script>
+  <script src="./assets/real-project-data.js?v=20260909-1"></script>
+  <script src="./assets/vendor/html2pdf.bundle.min.js"></script>
+  <script src="./assets/vendor/docx.umd.js"></script>
+  <script src="./assets/review2-docx.js?v=20260829-1"></script>
+  <script src="./assets/review-upload.js?v=20260912-qa-earliest"></script>
+  <script src="./assets/result-progress-ticker.js?v=20260912-progress-ticker-3"></script>
+</body>
+</html>

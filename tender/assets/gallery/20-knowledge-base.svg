@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+  <rect width="1200" height="800" fill="#f8fafc"/>
+  <text x="70" y="76" font-family="Arial" font-size="34" font-weight="700" fill="#0f172a">投标知识库检索架构</text>
+  <g fill="#fff" stroke="#cbd5e1" font-family="Arial" font-size="16">
+    <rect x="90" y="140" width="220" height="90" rx="16"/><text x="120" y="180">企业资质库</text><text x="120" y="208">证书 / 授权</text>
+    <rect x="90" y="270" width="220" height="90" rx="16"/><text x="120" y="310">历史标书库</text><text x="120" y="338">中标 / 未中标</text>
+    <rect x="90" y="400" width="220" height="90" rx="16"/><text x="120" y="440">产品资料库</text><text x="120" y="468">手册 / 参数</text>
+    <rect x="90" y="530" width="220" height="90" rx="16"/><text x="120" y="570">项目案例库</text><text x="120" y="598">合同 / 验收</text>
+  </g>
+  <g stroke="#025dff" stroke-width="5" fill="none"><path d="M310 185 L420 340"/><path d="M310 315 L420 345"/><path d="M310 445 L420 350"/><path d="M310 575 L420 355"/></g>
+  <rect x="420" y="280" width="220" height="150" rx="20" fill="#eff6ff" stroke="#bfdbfe"/><text x="460" y="330" font-family="Arial" font-size="18" fill="#1d4ed8">统一索引</text><text x="460" y="360" font-family="Arial" font-size="15">全文索引 + 向量索引</text><text x="460" y="390" font-family="Arial" font-size="15">标签体系 + 权限过滤</text>
+  <rect x="700" y="280" width="180" height="150" rx="20" fill="#f0fdf4" stroke="#bbf7d0"/><text x="740" y="330" font-family="Arial" font-size="18" fill="#166534">智能召回</text><text x="740" y="360" font-family="Arial" font-size="15">语义匹配</text><text x="740" y="390" font-family="Arial" font-size="15">重排序</text>
+  <rect x="930" y="280" width="180" height="150" rx="20" fill="#fff7ed" stroke="#fed7aa"/><text x="970" y="330" font-family="Arial" font-size="18" fill="#9a3412">引用溯源</text><text x="970" y="360" font-family="Arial" font-size="15">文档定位</text><text x="970" y="390" font-family="Arial" font-size="15">片段高亮</text>
+  <g stroke="#16a34a" stroke-width="5" fill="none"><path d="M640 355 L700 355"/><path d="M880 355 L930 355"/></g>
+  <text x="90" y="690" font-family="Arial" font-size="17" fill="#475569">支持按项目类型、行业、金额、评分办法和客户名称组合筛选，素材引用自动带来源。</text>
+</svg>

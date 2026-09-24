@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>应用中心 · 平台产品 · 大模型智算平台</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230F1418'/%3E%3Cpath d='M9 21V11l4 6 3-4 4 8' fill='none' stroke='%230B6E7F' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/app.css?v=20260924-4">
+<style>
+  /* 页面专属样式：平台产品「可扩展接入位」。
+     虚线框表达「尚未接入」这一结构状态，不使用语义色。 */
+  .addtile {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: var(--sp-2); min-height: 148px; padding: var(--sp-4); text-align: center;
+    border: 1px dashed var(--line-strong); border-radius: var(--r-2); background: var(--surface);
+    cursor: pointer; transition: border-color var(--t) var(--ease), background var(--t) var(--ease);
+  }
+  .addtile:hover { border-color: var(--ink-300); background: var(--surface-sunken); }
+  .addtile__art {
+    width: 34px; height: 34px; border-radius: var(--r-1);
+    display: grid; place-items: center; background: var(--surface-sunken); color: var(--ink-400);
+  }
+  .addtile__art svg { width: 18px; height: 18px; }
+</style>
+</head>
+<body data-module="apps" data-page="A-03" data-title="应用中心"
+      data-tabs="行业应用|智能体|平台产品" data-tab="2"
+      data-search="搜索平台产品、接入方式" data-sort="推荐|热度|更新时间" data-view="1"
+      data-register="1" data-register-value="discovery">
+<div class="shell" id="shell">
+  <nav class="rail" id="rail" aria-label="模块导航"></nav>
+
+  <div class="main">
+    <header class="band" id="band"></header>
+
+    <div class="mid">
+      <!-- 筛选列：平台产品的筛选维度是「接入方式 + 授权状态」，与行业应用/智能体完全不同 -->
+      <aside class="filter" aria-label="筛选">
+        <div class="filter__group">
+          <h3>产品类型</h3>
+          <label class="filter__opt"><input type="radio" name="ptype" checked> 全部<span class="cnt">3</span></label>
+          <label class="filter__opt"><input type="radio" name="ptype"> AI 开发工具<span class="cnt">1</span></label>
+          <label class="filter__opt"><input type="radio" name="ptype"> 工业设计<span class="cnt">1</span></label>
+          <label class="filter__opt"><input type="radio" name="ptype"> 办公提效<span class="cnt">1</span></label>
+        </div>
+        <div class="filter__group">
+          <h3>接入方式</h3>
+          <label class="filter__opt"><input type="checkbox"> 嵌入 iframe<span class="cnt">1</span></label>
+          <label class="filter__opt"><input type="checkbox"> 跳转新窗口<span class="cnt">1</span></label>
+          <label class="filter__opt"><input type="checkbox"> 微前端<span class="cnt">1</span></label>
+        </div>
+        <div class="filter__group">
+          <h3>授权状态</h3>
+          <label class="filter__opt"><input type="radio" name="grant" checked> 全部<span class="cnt">3</span></label>
+          <label class="filter__opt"><input type="radio" name="grant"> 已授权<span class="cnt">2</span></label>
+          <label class="filter__opt"><input type="radio" name="grant"> 未授权<span class="cnt">1</span></label>
+        </div>
+        <div class="filter__group">
+          <h3>我的应用</h3>
+          <a class="filter__nav" href="apps-industry.html">我收藏的<span class="cnt">3</span></a>
+          <a class="filter__nav" href="apps-industry.html">已授权的<span class="cnt">5</span></a>
+        </div>
+      </aside>
+
+      <!-- 主舞台：发现语域。首行先声明边界，再给接入入口 -->
+      <main class="stage" id="stage">
+        <div class="row row--between mb-4">
+          <span class="t-meta">平台产品均为独立产品：本平台只做接入与授权，不重构其内部功能。打开后会话、数据与可用性由产品自身负责，平台负责统一账号、额度透传与入口治理。</span>
+          <span class="t-micro nowrap">共 3 个产品 · 已接入 2 个</span>
+        </div>
+
+        <div class="objgrid objgrid--dense">
+
+          <article class="objcard">
+            <div class="objcard__top">
+              <div class="objcard__icon">码</div>
+              <div><div class="objcard__name">码多多</div><div class="objcard__sub">平台产品 · AI 开发工具</div></div>
+            </div>
+            <p class="objcard__desc">面向 C 端的 AI 开发工具：浏览器内完成提示词编排、模型切换与应用发布，自带代码沙箱与调试面板。</p>
+            <div class="objcard__tags">
+              <span class="tag">接入 · 嵌入 iframe</span>
+              <span class="chip chip--quota"><i class="chip__dot"></i>已授权</span>
+            </div>
+            <div class="t-micro">独立产品 · 平台不介入其内部功能；统一登录透传，额度按调用回传结算</div>
+            <div class="objcard__foot">
+              <span class="t-micro">授权至 2027-03-31</span><span class="spacer"></span>
+              <a class="btn btn--primary btn--sm" href="app-detail.html">进入</a>
+            </div>
+          </article>
+
+          <!-- 未授权：不置灰，改为「申请授权」并说明授权后可用的接入方式 -->
+          <article class="objcard">
+            <div class="objcard__top">
+              <div class="objcard__icon objcard__icon--soft">3</div>
+              <div><div class="objcard__name">3d-shrek</div><div class="objcard__sub">平台产品 · 工业设计</div></div>
+            </div>
+            <p class="objcard__desc">3D 机械设计工业智能体：参数化建模、装配干涉检查与工艺文件生成，面向机械设计工程师。</p>
+            <div class="objcard__tags">
+              <span class="tag">接入 · 跳转新窗口</span>
+              <span class="chip chip--neutral"><i class="chip__dot"></i>本租户未授权</span>
+            </div>
+            <div class="t-micro">独立产品 · 授权开通后由平台分发单点登录入口，不复制其模型与工程数据</div>
+            <div class="objcard__foot">
+              <span class="t-micro">授权后可用</span><span class="spacer"></span>
+              <button class="btn btn--sm" onclick="DSH.ui.toggleLedger(true)">申请授权</button>
+            </div>
+          </article>
+
+          <article class="objcard">
+            <div class="objcard__top">
+              <div class="objcard__icon objcard__icon--soft">A</div>
+              <div><div class="objcard__name">AIPPT</div><div class="objcard__sub">平台产品 · 办公提效</div></div>
+            </div>
+            <p class="objcard__desc">演示文稿生成：从大纲、长文或数据表一键产出成套版式，内置企业模板与图表规范。</p>
+            <div class="objcard__tags">
+              <span class="tag">接入 · 微前端</span>
+              <span class="chip chip--quota"><i class="chip__dot"></i>已授权</span>
+            </div>
+            <div class="t-micro">独立产品 · 以微前端方式挂载，共享平台主题与导航，内部功能仍由产品方独立发版</div>
+            <div class="objcard__foot">
+              <span class="t-micro">授权至 2026-12-31</span><span class="spacer"></span>
+              <a class="btn btn--sm" href="app-detail.html">打开</a>
+            </div>
+          </article>
+
+          <!-- 接入位：平台产品可扩展，第三类目本身是「通道」而不是「自研功能」 -->
+          <button class="addtile" type="button" onclick="DSH.ui.toggleLedger(true)" aria-label="申请接入新产品">
+            <span class="addtile__art" id="addtileIcon"></span>
+            <span class="t-section">申请接入新产品</span>
+            <span class="t-micro">提交产品信息、接入方式（iframe / 跳转 / 微前端）与授权范围，平台审核后开通统一入口</span>
+            <span class="btn btn--sm">提交接入申请</span>
+          </button>
+
+        </div>
+
+        <div class="row mt-4">
+          <span class="t-micro">接入方式差异：嵌入 iframe 保留平台外壳；跳转新窗口为完全独立体验；微前端共享主题与导航。三种方式均只做入口与授权，不改动产品内部实现。</span>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <aside class="ledger" id="ledger" aria-label="消耗上下文"></aside>
+</div>
+
+<template id="band-actions">
+  <button class="btn">接入规范</button>
+  <button class="btn btn--primary">申请接入新产品</button>
+</template>
+
+<script src="assets/charts.js"></script>
+<script src="assets/app.js?v=20260924-7"></script>
+<script>
+  Array.prototype.forEach.call(document.querySelectorAll('.search'), function (s) {
+    if (!s.querySelector('svg')) s.insertAdjacentHTML('afterbegin', DSH.icon('search'));
+  });
+  document.getElementById('addtileIcon').innerHTML = DSH.icon('plus');
+</script>
+</body>
+</html>

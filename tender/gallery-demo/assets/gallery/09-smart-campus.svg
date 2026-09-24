@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+  <defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e0f2fe"/><stop offset="1" stop-color="#f8fafc"/></linearGradient></defs>
+  <rect width="1200" height="800" fill="url(#sky)"/>
+  <text x="70" y="76" font-family="Arial" font-size="34" font-weight="700" fill="#0f172a">智慧园区三维场景</text>
+  <g fill="#cbd5e1"><path d="M100 700 L1100 700 L1160 750 L40 750 Z"/></g>
+  <g fill="#e2e8f0" stroke="#94a3b8"><path d="M180 500 L360 410 L540 500 L540 650 L180 650 Z"/><path d="M570 450 L780 350 L990 450 L990 640 L570 640 Z"/><path d="M360 520 L500 450 L640 520 L640 630 L360 630 Z"/></g>
+  <g fill="#025dff" opacity=".75"><rect x="230" y="530" width="34" height="28"/><rect x="290" y="530" width="34" height="28"/><rect x="350" y="530" width="34" height="28"/><rect x="640" y="500" width="36" height="30"/><rect x="710" y="500" width="36" height="30"/><rect x="780" y="500" width="36" height="30"/><rect x="850" y="500" width="36" height="30"/></g>
+  <g fill="#16a34a"><circle cx="180" cy="460" r="12"/><circle cx="570" cy="430" r="12"/><circle cx="990" cy="470" r="12"/></g>
+  <g stroke="#025dff" stroke-width="4" fill="none"><path d="M300 510 L430 470 L580 500 L740 440 L900 470"/></g>
+  <g font-family="Arial" font-size="16" fill="#334155">
+    <rect x="70" y="110" width="170" height="46" rx="23" fill="#fff" stroke="#cbd5e1"/><text x="95" y="140">安防监控</text>
+    <rect x="260" y="110" width="170" height="46" rx="23" fill="#fff" stroke="#cbd5e1"/><text x="285" y="140">能耗管理</text>
+    <rect x="450" y="110" width="170" height="46" rx="23" fill="#fff" stroke="#cbd5e1"/><text x="475" y="140">停车管理</text>
+    <rect x="640" y="110" width="170" height="46" rx="23" fill="#fff" stroke="#cbd5e1"/><text x="665" y="140">环境监测</text>
+    <rect x="830" y="110" width="170" height="46" rx="23" fill="#fff" stroke="#cbd5e1"/><text x="855" y="140">3D 可视化</text>
+  </g>
+  <text x="70" y="730" font-family="Arial" font-size="18" fill="#475569">楼宇 / 设备 / 事件统一建模，支持 GIS 与三维双视图切换</text>
+</svg>

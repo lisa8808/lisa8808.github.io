@@ -1,0 +1,550 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Qwen3-32B-Instruct · 模型详情 · 大模型智算平台</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230F1418'/%3E%3Cpath d='M9 21V11l4 6 3-4 4 8' fill='none' stroke='%230B6E7F' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/app.css?v=20260924-4">
+<style>
+  /* ============================================================
+     本页专属：M-02 模型详情
+     语域归属（3.5）：详情页同属双语域可切换 ——
+     发现语域讲「能力与价格」，处置语域补「部署实例健康」。
+     ============================================================ */
+  #operPanel { display: none; }
+  html[data-register="operation"] #operPanel { display: block; }
+
+  /* 模型标识卡 */
+  .mhead { display: flex; align-items: flex-start; gap: var(--sp-4); }
+  .mhead__badge {
+    width: 52px; height: 52px; flex: none; border-radius: var(--r-2);
+    display: grid; place-items: center; font-weight: 700;
+    font-size: var(--text-page); background: var(--ink-900); color: var(--surface);
+  }
+  .mhead__id { font-family: var(--font-num); font-size: var(--text-micro); color: var(--ink-400); }
+  .mhead__name { font-size: var(--text-page); font-weight: 600; color: var(--ink-900); line-height: 1.3; }
+  .mhead__meta { display: flex; align-items: center; gap: var(--sp-2); flex-wrap: wrap; margin-top: var(--sp-2); }
+  .mhead__actions { display: flex; align-items: center; gap: var(--sp-2); flex-wrap: wrap; }
+
+  .prose p { font-size: var(--text-body); color: var(--ink-600); line-height: 1.72; }
+  .prose p + p { margin-top: var(--sp-3); }
+
+  /* 参数表：值与单位分列，等宽数字 */
+  .dg td .unit { color: var(--ink-400); font-size: var(--text-micro); font-family: var(--font-ui); }
+
+  /* 账板里的消耗数字：是一扇门，不是一个死数字（10.8 约定 5） */
+  .lbtn {
+    background: none; border: 0; padding: 0; cursor: pointer;
+    color: inherit; font: inherit; text-align: left;
+  }
+  .lbtn:hover { color: var(--ink-900); text-decoration: underline; }
+
+  /* 调用示例代码块：仅用墨阶（结构用墨），无彩色装饰 */
+  .code {
+    margin: 0; padding: var(--sp-3) var(--sp-4);
+    background: var(--ink-900); color: var(--surface);
+    border-radius: var(--r-2); overflow-x: auto;
+    font-family: var(--font-num); font-size: var(--text-micro); line-height: 1.75;
+    white-space: pre; tab-size: 2;
+  }
+  .code .c { color: var(--ink-300); }
+  .code__cap {
+    display: flex; align-items: center; gap: var(--sp-2);
+    padding: var(--sp-2) var(--sp-3); border-bottom: 1px solid var(--line-soft);
+    font-size: var(--text-micro); color: var(--ink-500);
+  }
+  .code__cap .num { color: var(--ink-600); }
+
+  /* 限额占用条：数值列加宽（覆盖率优先） */
+  .capacity__val { width: 108px; }
+</style>
+</head>
+<body data-module="models" data-page="M-02" data-title="Qwen3-32B-Instruct"
+      data-register="1" data-register-value="discovery">
+<div class="shell" id="shell">
+  <nav class="rail" id="rail" aria-label="模块导航"></nav>
+
+  <div class="main">
+    <header class="band" id="band"></header>
+
+    <div class="mid">
+      <!-- 详情页的筛选列用作页内二级导航 + 关联资产 -->
+      <aside class="filter" aria-label="页内导航">
+        <div class="filter__group">
+          <h3>模型详情</h3>
+          <a class="filter__nav" href="#sec-intro" aria-current="page">概览与介绍</a>
+          <a class="filter__nav" href="#sec-spec">技术参数</a>
+          <a class="filter__nav" href="#sec-price">Token 单价</a>
+          <a class="filter__nav" href="#sec-limit">RPM 与并发上限</a>
+          <a class="filter__nav" href="#sec-code">调用示例</a>
+          <a class="filter__nav" href="#sec-version">历史版本</a>
+          <a class="filter__nav" href="#sec-error">错误码</a>
+        </div>
+        <div class="filter__group">
+          <h3>同源 / 关联模型</h3>
+          <a class="filter__nav" href="model-detail.html">Qwen3-8B<span class="cnt">轻量同源</span></a>
+          <a class="filter__nav" href="model-detail.html">BGE-M3<span class="cnt">检索底座</span></a>
+          <a class="filter__nav" href="model-detail.html">DeepSeek-V3<span class="cnt">低成本替代</span></a>
+        </div>
+        <div class="filter__group">
+          <h3>返回</h3>
+          <a class="filter__nav" href="models.html">← 模型广场</a>
+          <a class="filter__nav" href="console-quota.html">申请提升限额</a>
+        </div>
+      </aside>
+
+      <main class="stage" id="stage">
+        <div class="selected-bar">
+          <a class="t-meta" href="models.html">模型广场</a><span class="dot-sep">/</span>
+          <span>Qwen3-32B-Instruct</span><span class="dot-sep">·</span>
+          <span>v2.4 当前版本</span>
+          <span class="total">MOD-012 · 详情页</span>
+        </div>
+
+        <!-- ===== 1. 模型标识卡 ===== -->
+        <section class="card" id="sec-intro">
+          <div class="card__body">
+            <div class="mhead">
+              <div class="mhead__badge">Q</div>
+              <div style="flex:1;min-width:0">
+                <div class="mhead__id">qwen3-32b-instruct · model_rate_id: mr_qwen3_32b_v24</div>
+                <div class="mhead__name">Qwen3-32B-Instruct</div>
+                <div class="mhead__meta">
+                  <span class="t-meta">作者 通义千问</span><span class="dot-sep">·</span>
+                  <span class="t-meta">2026-09-12 上架</span><span class="dot-sep">·</span>
+                  <span class="chip chip--quota"><i class="chip__dot"></i>文本 → 文本</span>
+                  <span class="chip chip--compute"><i class="chip__dot"></i>运行中 3/3 实例</span>
+                  <span class="chip chip--quota"><i class="chip__dot"></i>扫描已通过</span>
+                </div>
+                <div class="mhead__meta">
+                  <span class="tag">多轮对话</span><span class="tag">函数调用</span>
+                  <span class="tag">长上下文</span><span class="tag">结构化输出</span><span class="tag">多语种</span>
+                </div>
+              </div>
+            </div>
+
+            <hr class="divider">
+
+            <div class="row row--wrap" style="gap:var(--sp-5)">
+              <div class="mhead__actions">
+                <button class="costbtn">
+                  <span class="costbtn__label">试用（跳转应用中心 · 平台产品）</span>
+                  <span class="costbtn__est">≈1.24k Token</span>
+                </button>
+                <button class="btn">添加至资产池</button>
+                <a class="btn" href="#sec-code">查看调用示例</a>
+              </div>
+              <span class="spacer"></span>
+              <span class="t-micro">试用跳转后自动选中本模型（MOD-011）</span>
+            </div>
+
+            <hr class="divider">
+
+            <div class="prose">
+              <p>Qwen3-32B-Instruct 是平台当前的主力通用指令模型。320 亿稠密参数、128k 上下文窗口，在中文长文理解、报告撰写、条款比对与多轮工具调用上表现稳定；对 JSON Schema 强约束输出的遵循度高，可直接作为智能体的规划与汇总节点。</p>
+              <p>平台以 OpenAI 兼容协议暴露服务，无需改动既有 SDK 即可接入；权重以 <span class="t-mono">safetensors</span> 格式托管，支持按项目授权而非下载分发，租户只能通过推理服务调用，不能获取权重文件（MOD-003）。</p>
+              <p>计费按输入 / 输出 Token 分离计量，单价来自 Token 银行费率接口；每次调用返回 <span class="t-mono">usage</span> 字段，与账板、回执同源，可逐笔核对。</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== 2. 预估卡 + 项目额度水位（账线：预估前置） ===== -->
+        <div class="grid grid--2 mt-5">
+          <div class="preview">
+            <div class="preview__head">本次试用预估（来源：Token 银行费率接口）</div>
+            <div class="preview__body">
+              <div class="row">
+                <span class="t-meta">预估消耗</span>
+                <span class="spacer"></span>
+                <span class="num-lg">≈1.24k</span><span class="t-micro">Token</span>
+              </div>
+              <div class="preview__sim">
+                <span>4 390 000</span>
+                <span class="preview__arrow">→</span>
+                <span class="preview__after">4 388 760</span>
+                <span class="t-micro">项目可用 Token 变化</span>
+              </div>
+              <div class="row" style="gap:var(--sp-3)">
+                <span class="t-meta" style="width:74px">预估构成</span>
+                <span class="num-sm">输入 21.4k × ¥0.004</span>
+                <span class="num-sm">+ 输出 6.8k × ¥0.012</span>
+              </div>
+              <div class="preview__warn">将触发「项目 Token 当日限额」提示：执行后已用 61.84%，距 80% 预警线尚有 2.18M Token</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card__head"><h2>当前项目额度水位</h2>
+              <span class="chip chip--quota"><i class="chip__dot"></i>视觉检索平台</span>
+            </div>
+            <div class="card__body">
+              <div class="row">
+                <span class="num-xl">4.39M</span>
+                <span class="t-micro">可用 / 共 12.00M Token</span>
+              </div>
+              <div class="levelbar mt-3"><div class="levelbar__track">
+                <div class="levelbar__seg levelbar__seg--used" style="width:61.83%"></div>
+                <div class="levelbar__seg levelbar__seg--frozen" style="width:1.55%"></div>
+                <div class="levelbar__seg levelbar__seg--avail" style="width:36.62%"></div>
+              </div>
+              <div class="levelbar__tick" style="left:80%"></div>
+              <div class="levelbar__tick levelbar__tick--limit" style="left:100%"></div>
+              <div class="levelbar__legend">
+                <span><i style="background:var(--ink-700)"></i>已用 7.42M</span>
+                <span><i style="background:var(--spend)"></i>冻结 186.0k</span>
+                <span><i style="background:var(--quota)"></i>可用 4.39M</span>
+              </div></div>
+              <p class="t-micro mt-3">冻结量与已用量分列呈现（10.8 约定 2）。本模型不消耗卡时，仅按 Token 计费。</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== 3. 技术参数 ===== -->
+        <section class="card mt-5" id="sec-spec">
+          <div class="card__head"><h2>技术参数</h2>
+            <span class="spacer"></span>
+            <span class="chip chip--compute"><i class="chip__dot"></i>昇腾 910B · 2 实例 / NVIDIA A800 · 1 实例</span>
+          </div>
+          <div class="dg-wrap" style="border:0;border-radius:0">
+            <table class="dg">
+              <thead><tr><th>参数项</th><th class="num">值</th><th>说明</th></tr></thead>
+              <tbody>
+                <tr><td class="dg-primary">参数量</td><td class="num">32.8B</td><td>稠密架构，非 MoE</td></tr>
+                <tr><td class="dg-primary">上下文窗口</td><td class="num">128k</td><td>单请求输入上限，含系统提示与历史轮次</td></tr>
+                <tr><td class="dg-primary">最大输出</td><td class="num">8 192</td><td>Token；超出需分段续写</td></tr>
+                <tr><td class="dg-primary">量化方式</td><td class="num">W8A8</td><td>权重与激活均为 8bit，精度损失 &lt; 0.4%</td></tr>
+                <tr><td class="dg-primary">推理框架</td><td class="num">vLLM 0.9.2</td><td>PagedAttention + 连续批处理</td></tr>
+                <tr><td class="dg-primary">权重格式</td><td class="num">safetensors</td><td>按项目授权，不提供权重下载（MOD-003）</td></tr>
+                <tr><td class="dg-primary">显存占用</td><td class="num">76 GB</td><td>单实例含 KV Cache 预留；对应 2 × 40G 或 1 × 80G</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ===== 4. 定价 ===== -->
+        <section class="card mt-5" id="sec-price">
+          <div class="card__head"><h2>Token 单价与阶梯</h2>
+            <span class="spacer"></span>
+            <span class="t-micro">费率 ID mr_qwen3_32b_v24 · 更新于 2026-09-12</span>
+          </div>
+          <div class="dg-wrap" style="border:0;border-radius:0">
+            <table class="dg">
+              <thead><tr><th>计费项</th><th class="num">单价（元 / 千 Token）</th><th>适用范围</th></tr></thead>
+              <tbody>
+                <tr><td class="dg-primary">输入 Token</td><td class="num num-md">¥0.004</td><td>系统提示、历史轮次、检索片段均计入</td></tr>
+                <tr><td class="dg-primary">输出 Token</td><td class="num num-md">¥0.012</td><td>含思考链与工具调用参数</td></tr>
+                <tr><td class="dg-primary">缓存命中输入</td><td class="num num-md">¥0.001</td><td>前缀缓存命中部分，按 25% 计价</td></tr>
+                <tr><td class="dg-primary">批量任务（离线）</td><td class="num num-md">¥0.0024 / ¥0.0072</td><td>非实时批处理，输入 / 输出均 6 折</td></tr>
+                <tr><td class="dg-primary">阶梯 · 月度累计 ≥ 5 亿 Token</td><td class="num num-md">×0.90</td><td>次月账单直接折算，无需申请</td></tr>
+                <tr><td class="dg-primary">阶梯 · 月度累计 ≥ 20 亿 Token</td><td class="num num-md">×0.80</td><td>与租户折扣不叠加，取更优一项</td></tr>
+                <tr><td class="dg-primary">租户折扣 · 华鲲元启</td><td class="num num-md">×0.85</td><td>年度框架协议折扣，2026-12-31 到期；本页预估已含该折扣</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card__foot">
+            <span class="t-micro">阶梯与折扣均由 Token 银行在结算时计算，前端不自行估算（10.8 约定 1）；示例价格与账板单价一致。</span>
+          </div>
+        </section>
+
+        <!-- ===== 5. RPM 与并发上限 ===== -->
+        <section class="card mt-5" id="sec-limit">
+          <div class="card__head"><h2>RPM 与并发上限</h2>
+            <span class="chip chip--compute"><i class="chip__dot"></i>实时值来自运维监控中心</span>
+            <span class="spacer"></span>
+            <span class="t-micro">采样 14:35 · 延迟 &lt; 1 分钟</span>
+          </div>
+          <div class="card__body">
+            <div class="grid grid--3">
+              <div class="kpi">
+                <div class="kpi__label">RPM 上限（本租户）</div>
+                <div class="kpi__value"><span class="num-xl">6 000</span><span class="kpi__unit">次 / 分钟</span></div>
+                <div class="kpi__foot">近 1 分钟实际 2 860 · 占用 47.7%</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi__label">并发上限</div>
+                <div class="kpi__value"><span class="num-xl">240</span><span class="kpi__unit">路</span></div>
+                <div class="kpi__foot">当前并发 96 · 占用 40.0%</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi__label">TPM 上限</div>
+                <div class="kpi__value"><span class="num-xl">2.00M</span><span class="kpi__unit">Token / 分钟</span></div>
+                <div class="kpi__foot">当前 0.62M · 占用 31.0%</div>
+              </div>
+            </div>
+
+            <hr class="divider">
+
+            <div class="col" style="gap:var(--sp-3)">
+              <div class="row" style="gap:var(--sp-3)">
+                <span class="t-meta" style="width:104px">RPM 占用</span>
+                <div class="capacity" style="flex:1">
+                  <div class="capacity__track"><div class="capacity__fill" style="width:47.7%"></div></div>
+                  <span class="capacity__val">2 860 / 6 000</span>
+                </div>
+              </div>
+              <div class="row" style="gap:var(--sp-3)">
+                <span class="t-meta" style="width:104px">并发占用</span>
+                <div class="capacity" style="flex:1">
+                  <div class="capacity__track"><div class="capacity__fill" style="width:40%"></div></div>
+                  <span class="capacity__val">96 / 240</span>
+                </div>
+              </div>
+              <div class="row" style="gap:var(--sp-3)">
+                <span class="t-meta" style="width:104px">TPM 占用</span>
+                <div class="capacity" style="flex:1">
+                  <div class="capacity__track"><div class="capacity__fill" style="width:31%"></div></div>
+                  <span class="capacity__val">0.62M / 2.00M</span>
+                </div>
+              </div>
+              <div class="row" style="gap:var(--sp-3)">
+                <span class="t-meta" style="width:104px">实例显存</span>
+                <div class="capacity" style="flex:1">
+                  <div class="capacity__track"><div class="capacity__fill" data-state="warn" style="width:86%"></div></div>
+                  <span class="capacity__val">65.4 / 76 GB</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-4"><div id="rpmSpark" style="height:64px"></div></div>
+            <p class="chart__caption">近 7 日 RPM 峰值（次 / 分钟）。容量类图表必带均值参考线与阈值刻线，完整版见控制中心用量概览。</p>
+          </div>
+        </section>
+
+        <!-- ===== 6. 调用示例（OpenAI 兼容） ===== -->
+        <section class="card mt-5" id="sec-code">
+          <div class="card__head"><h2>调用示例</h2>
+            <span class="chip chip--quota"><i class="chip__dot"></i>OpenAI 兼容协议</span>
+            <span class="spacer"></span>
+            <span class="t-mono">POST /v1/chat/completions</span>
+          </div>
+          <div class="card__body">
+            <div class="grid grid--2">
+              <div>
+                <div class="code__cap">curl · <span class="num">基础对话</span></div>
+                <pre class="code t-mono">curl https://api.zhisuan.local/v1/chat/completions \
+  -H "Authorization: Bearer $ZS_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "qwen3-32b-instruct",
+    "messages": [
+      {"role": "system", "content": "你是企业知识问答助手"},
+      {"role": "user", "content": "总结这份合同的风险条款"}
+    ],
+    "temperature": 0.3,
+    "max_tokens": 1024,
+    "stream": false
+  }'</pre>
+              </div>
+              <div>
+                <div class="code__cap">Python · <span class="num">OpenAI SDK 直连</span></div>
+                <pre class="code t-mono">from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://api.zhisuan.local/v1",
+    api_key=os.environ["ZS_API_KEY"],
+)
+
+resp = client.chat.completions.create(
+    model="qwen3-32b-instruct",
+    messages=[{"role": "user", "content": "总结这份合同的风险条款"}],
+    temperature=0.3,
+    max_tokens=1024,
+)
+
+print(resp.choices[0].message.content)
+print(resp.usage.total_tokens)   # 逐笔可核对</pre>
+              </div>
+            </div>
+
+            <div class="code__cap mt-4" style="border:1px solid var(--line-soft);border-radius:var(--r-2) var(--r-2) 0 0;border-bottom:0">响应示例 · <span>含 usage 字段，与账板同源</span></div>
+            <pre class="code t-mono" style="border-radius:0 0 var(--r-2) var(--r-2)">{
+  "id": "chatcmpl_8f3a91c4e7",
+  "object": "chat.completion",
+  "created": 1784970727,
+  "model": "qwen3-32b-instruct",
+  "choices": [{
+    "index": 0,
+    "message": {"role": "assistant", "content": "第 4.2 条付款条件存在…"},
+    "finish_reason": "stop"
+  }],
+  "usage": {
+    "prompt_tokens": 21400,
+    "completion_tokens": 6800,
+    "total_tokens": 28200,
+    "prompt_tokens_details": {"cached_tokens": 12800},
+    "cost_cny": 0.1672,
+    "rate_id": "mr_qwen3_32b_v24"
+  }
+}</pre>
+            <p class="t-micro mt-3">usage 为结算依据；响应中的 <span class="t-mono">cost_cny</span> 已含租户折扣，实际扣费以回执为准（⌥R 可随时唤起）。</p>
+          </div>
+        </section>
+
+        <!-- ===== 7. 历史版本列表 ===== -->
+        <section class="card mt-5" id="sec-version">
+          <div class="card__head"><h2>历史版本</h2>
+            <span class="spacer"></span>
+            <span class="t-micro">共 3 个版本 · 保留 12 个月（8.6）</span>
+          </div>
+          <div class="dg-wrap" style="border:0;border-radius:0">
+            <table class="dg">
+              <thead><tr><th>版本</th><th class="num">发布日期</th><th>变更说明</th><th>状态</th><th class="num">操作</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td class="dg-primary">v2.4</td>
+                  <td class="num">2026-09-12</td>
+                  <td>上下文扩至 128k；结构化 JSON 强约束；p95 时延下降 18%</td>
+                  <td><span class="chip chip--compute"><i class="chip__dot"></i>当前版本</span></td>
+                  <td><div class="dg-actions"><button class="btn btn--sm">查看变更</button></div></td>
+                </tr>
+                <tr>
+                  <td class="dg-primary">v2.3</td>
+                  <td class="num">2026-06-20</td>
+                  <td>支持函数调用并行化；修复超长文档截断问题</td>
+                  <td><span class="chip chip--quota"><i class="chip__dot"></i>可回退</span></td>
+                  <td><div class="dg-actions"><button class="btn btn--sm">切回此版本</button></div></td>
+                </tr>
+                <tr>
+                  <td class="dg-primary">v2.2</td>
+                  <td class="num">2026-03-08</td>
+                  <td>首次接入平台；基础指令跟随与中英双语气质</td>
+                  <td><span class="chip chip--neutral"><i class="chip__dot"></i>已归档</span></td>
+                  <td><div class="dg-actions"><button class="btn btn--sm">查看变更</button></div></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card__foot">
+            <span class="t-micro">灰度切流与回退窗口在「模型后台 · 灰度发布与切流」操作，回退全程审计留痕（MOD-006）。</span>
+          </div>
+        </section>
+
+        <!-- ===== 8. 错误码表 ===== -->
+        <section class="card mt-5" id="sec-error">
+          <div class="card__head"><h2>错误码</h2>
+            <span class="spacer"></span>
+            <span class="t-micro">错误响应体含 request_id，可凭此在调用日志定位</span>
+          </div>
+          <div class="dg-wrap" style="border:0;border-radius:0">
+            <table class="dg">
+              <thead><tr><th>错误码</th><th class="num">HTTP</th><th>含义</th><th>处理建议</th></tr></thead>
+              <tbody>
+                <tr data-state="risk">
+                  <td class="dg-primary">4001</td><td class="num">402</td>
+                  <td>额度不足：项目可用 Token 不足以覆盖本次冻结预估</td>
+                  <td>返回体给出缺口量；请申请追加额度或切换项目，入口：控制中心 · 预算与配额管理</td>
+                </tr>
+                <tr data-state="risk">
+                  <td class="dg-primary">4029</td><td class="num">429</td>
+                  <td>触发限流：超过 RPM / 并发 / TPM 上限</td>
+                  <td>按响应头 <span class="t-mono">Retry-After</span> 指数退避重试；持续触发可申请提升限额</td>
+                </tr>
+                <tr><td class="dg-primary">4002</td><td class="num">403</td><td>模型未授权给当前租户或项目</td><td>在模型广场「添加至资产池」后由租户管理员授权（MOD-003）</td></tr>
+                <tr><td class="dg-primary">4003</td><td class="num">400</td><td>上下文超长：输入超过 128k Token</td><td>开启会话摘要或分段调用；检索片段控制在 40k 以内</td></tr>
+                <tr><td class="dg-primary">4004</td><td class="num">400</td><td>参数非法：temperature / max_tokens 越界</td><td>temperature ∈ [0, 2]，max_tokens ≤ 8192</td></tr>
+                <tr><td class="dg-primary">5001</td><td class="num">503</td><td>推理实例不可用</td><td>平台自动重试至健康实例；连续失败请查看 M-08 实例健康监控</td></tr>
+                <tr><td class="dg-primary">5002</td><td class="num">409</td><td>模型版本已退役</td><td>迁移至替代版本 Qwen3-32B-Instruct v2.4；退役信息见 M-09</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ===== 9. 处置语域补充：部署实例健康 ===== -->
+        <section class="card mt-5" id="operPanel">
+          <div class="card__head"><h2>部署实例健康（处置语域）</h2>
+            <span class="chip chip--compute"><i class="chip__dot"></i>运行中 3/3</span>
+            <span class="spacer"></span>
+            <span class="t-micro">数据来自运维监控中心 · 采样 14:35</span>
+          </div>
+          <div class="dg-wrap" style="border:0;border-radius:0">
+            <table class="dg">
+              <thead><tr>
+                <th>实例</th><th>节点 / 算力</th><th>状态</th>
+                <th class="num">延迟 p95</th><th class="num">吞吐</th><th class="num">显存占用</th><th class="num">NPU 利用率</th>
+              </tr></thead>
+              <tbody>
+                <tr><td class="dg-primary">qwen3-32b-v24-a1</td><td class="t-mono">node-a12 · 昇腾 910B</td>
+                  <td><span class="chip chip--compute"><i class="chip__dot"></i>健康</span></td>
+                  <td class="num">842 ms</td><td class="num">1 240 tok/s</td><td class="num">65.4 / 76 GB</td><td class="num">63%</td></tr>
+                <tr><td class="dg-primary">qwen3-32b-v24-a2</td><td class="t-mono">node-a14 · 昇腾 910B</td>
+                  <td><span class="chip chip--compute"><i class="chip__dot"></i>健康</span></td>
+                  <td class="num">908 ms</td><td class="num">1 168 tok/s</td><td class="num">64.1 / 76 GB</td><td class="num">58%</td></tr>
+                <tr><td class="dg-primary">qwen3-32b-v24-n1</td><td class="t-mono">node-n03 · NVIDIA A800</td>
+                  <td><span class="chip chip--spend"><i class="chip__dot"></i>高负载</span></td>
+                  <td class="num">1 486 ms</td><td class="num">742 tok/s</td><td class="num">71.8 / 76 GB</td><td class="num">88%</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card__foot">
+            <span class="t-micro">高负载实例已停止接收新流量；分级告警与自定义探针见 M-08。</span>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <aside class="ledger" id="ledger" aria-label="消耗上下文"></aside>
+</div>
+
+<template id="band-actions">
+  <select class="select" aria-label="版本切换">
+    <option>v2.4（当前）</option><option>v2.3</option><option>v2.2</option>
+  </select>
+  <a class="btn" href="models.html">返回模型广场</a>
+</template>
+
+<template id="ledger-extra">
+  <h3>Qwen3-32B · 当前项目已用量</h3>
+  <dl class="kv">
+    <dt>近 7 天消耗</dt><dd><button class="lbtn num" data-receipt>412.6k Token</button></dd>
+    <dt>调用次数</dt><dd><button class="lbtn num" data-receipt>4 126</button></dd>
+    <dt>单次均值</dt><dd class="num">100 Token</dd>
+    <dt>预估 / 实际</dt><dd><button class="lbtn num" data-receipt>426.2k / 412.6k</button></dd>
+    <dt>偏差</dt><dd><span class="variance variance--under">-3.2%</span></dd>
+    <dt>7 天配额</dt><dd class="num">600.0k Token</dd>
+  </dl>
+  <div class="levelbar mt-4"><div class="levelbar__track">
+    <div class="levelbar__seg levelbar__seg--used" style="width:68.77%"></div>
+    <div class="levelbar__seg levelbar__seg--avail" style="width:31.23%"></div>
+  </div>
+  <div class="levelbar__tick" style="left:80%"></div>
+  <div class="levelbar__legend">
+    <span><i style="background:var(--ink-700)"></i>已用 68.8%</span>
+    <span><i style="background:var(--quota)"></i>剩余 187.4k</span>
+  </div></div>
+  <div class="t-micro mt-3">偏差 =（实际 − 预估）/ 预估；超 ±20% 转风险色并给出解释入口（10.8 约定 3）。</div>
+</template>
+
+<script src="assets/charts.js"></script>
+<script src="assets/app.js?v=20260924-7"></script>
+<script>
+  /* 本页也有语域切换：处置语域补出「部署实例健康」，发现语域只讲能力与价格。
+     与 app.js 的 [data-register-btn] 行为一致，额外处理「带 ?register= 进入」。 */
+  (function () {
+    function apply(reg) {
+      document.documentElement.dataset.register = reg;
+      Array.prototype.forEach.call(document.querySelectorAll('[data-register-btn]'), function (b) {
+        b.setAttribute('aria-pressed', String(b.dataset.registerBtn === reg));
+      });
+      var op = document.getElementById('operPanel');
+      if (op) op.setAttribute('aria-hidden', String(reg !== 'operation'));
+    }
+    function init() {
+      var p = new URL(location.href).searchParams.get('register');
+      apply(p === 'operation' ? 'operation' : 'discovery');
+      Array.prototype.forEach.call(document.querySelectorAll('[data-register-btn]'), function (b) {
+        b.addEventListener('click', function () { apply(b.dataset.registerBtn); });
+      });
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+    else init();
+  })();
+
+  /* 近 7 日 RPM 峰值（容量类图表：青绿 = 算力/运行时语义） */
+  DSH.chart.sparkline(document.getElementById('rpmSpark'),
+    [2100, 2480, 1960, 3120, 2860, 2240, 2680]);
+</script>
+</body>
+</html>

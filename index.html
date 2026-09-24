@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>设计交付物 · 华鲲元启</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230F1418'/%3E%3Cpath d='M9 21V11l4 6 3-4 4 8' fill='none' stroke='%230B6E7F' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+  :root{
+    --ink-900:#0F1418; --ink-700:#2E3841; --ink-600:#4A555F; --ink-500:#6B7681; --ink-400:#8B959E;
+    --canvas:#F4F6F7; --surface:#FFFFFF; --line:#DFE4E7; --line-soft:#EAEEF0;
+    --brand:#0B6E7F; --compute:#0E9E82; --spend:#CE7A15;
+    --font: system-ui,"PingFang SC","HarmonyOS Sans SC","Microsoft YaHei",sans-serif;
+    --mono: ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--canvas);color:var(--ink-600);font:400 14px/1.6 var(--font);
+       -webkit-font-smoothing:antialiased}
+  .wrap{max-width:940px;margin:0 auto;padding:48px 24px 64px}
+  header{display:flex;align-items:center;gap:16px;padding-bottom:24px;border-bottom:1px solid var(--line)}
+  .mark{width:44px;height:44px;border-radius:8px;background:var(--ink-900);display:grid;place-items:center;
+        color:#fff;font-weight:700;font-size:18px;flex:none}
+  h1{margin:0;font-size:24px;font-weight:600;color:var(--ink-900);letter-spacing:-.01em}
+  header p{margin:4px 0 0;font-size:13px;color:var(--ink-500)}
+  .note{margin:24px 0 32px;padding:14px 18px;background:#FCF0DD;border:1px solid #EFD2A2;border-radius:8px;
+        font-size:13px;color:#9C5A0B}
+  h2{font-size:12px;font-weight:600;color:var(--ink-400);letter-spacing:.06em;text-transform:uppercase;
+     margin:0 0 12px}
+  ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+  li a{display:flex;align-items:baseline;gap:10px;background:var(--surface);border:1px solid var(--line);
+       border-radius:8px;padding:14px 16px;text-decoration:none;color:inherit;
+       transition:border-color .18s cubic-bezier(.2,.8,.2,1),box-shadow .18s cubic-bezier(.2,.8,.2,1),transform .18s cubic-bezier(.2,.8,.2,1)}
+  li a:hover{border-color:var(--ink-400);box-shadow:0 4px 12px rgba(15,20,24,.08);transform:translateY(-1px)}
+  .name{font-size:15px;font-weight:600;color:var(--ink-900)}
+  .slug{font-family:var(--mono);font-size:11px;color:var(--ink-400);margin-left:auto}
+  footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-400)}
+  footer code{font-family:var(--mono)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="mark">智</div>
+    <div>
+      <h1>设计交付物</h1>
+      <p>华鲲元启 · 静态托管于 GitHub Pages</p>
+    </div>
+  </header>
+
+  <p class="note">本页由 <code>lisa8808.github.io</code> 提供，内容对公网公开。内网访问地址请用 <code>http://10.116.23.60/&lt;名称&gt;/</code>。</p>
+
+  <h2>交付物</h2>
+  <ul>
+    <li><a href="zhisuan-platform/"><span class="name">大模型智算平台</span><span class="slug">zhisuan-platform</span></a></li>
+    <li><a href="hk-info-portal/"><span class="name">官网</span><span class="slug">hk-info-portal</span></a></li>
+    <li><a href="contract/"><span class="name">合同管理</span><span class="slug">contract</span></a></li>
+    <li><a href="coo/"><span class="name">COO</span><span class="slug">coo</span></a></li>
+    <li><a href="tender/"><span class="name">标书撰写</span><span class="slug">tender</span></a></li>
+    <li><a href="writing/"><span class="name">写作</span><span class="slug">writing</span></a></li>
+    <li><a href="aurora-ppt/"><span class="name">Aurora PPT</span><span class="slug">aurora-ppt</span></a></li>
+    <li><a href="shrek/"><span class="name">Shrek 设计系统</span><span class="slug">shrek</span></a></li>
+    <li><a href="maduoduo/"><span class="name">码多多 2.0</span><span class="slug">maduoduo</span></a></li>
+    <li><a href="算力统计/"><span class="name">算力统计</span><span class="slug">算力统计</span></a></li>
+  </ul>
+
+  <footer>
+    由 <code>design-deploy</code> 流程发布 ·
+    源站 <code>10.116.23.60:/mnt/backup_thin/product/</code>
+  </footer>
+</div>
+</body>
+</html>

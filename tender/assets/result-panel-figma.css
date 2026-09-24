@@ -1,0 +1,445 @@
+/* Right result panel aligned to Figma node 906:14291. */
+#result-panel.result-panel {
+  border-radius: 10px;
+  background: #fff;
+}
+
+#result-panel .result-header {
+  height: 60px;
+  gap: 0;
+  padding: 0 20px;
+}
+
+#result-panel .result-header h2 {
+  color: #18202e;
+  flex: 0 0 40px;
+  width: 40px;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 28px;
+}
+
+#result-panel .result-tabs {
+  height: 60px;
+  gap: 18px;
+  margin-left: 34px;
+}
+
+#result-panel .result-tab {
+  height: 60px;
+  padding: 0;
+  color: #000;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 22px;
+}
+
+#result-panel .result-tab.active {
+  color: #025dff;
+  font-weight: 500;
+}
+
+#result-panel .result-tab:after {
+  right: auto;
+  left: 50%;
+  width: 33px;
+  height: 3px;
+  border-radius: 999px;
+  transform: translateX(-50%);
+}
+
+#result-panel .result-panel-toggle {
+  display: none;
+}
+
+#result-panel .result-scroll {
+  padding: 19px 20px 20px;
+}
+
+#result-panel .result-mode-label {
+  margin: 0 0 10px;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 22px;
+  letter-spacing: 1px;
+}
+
+#result-panel .tool-grid {
+  gap: 10px;
+}
+
+/* 两入口模式将 01/02 铺满整行，并与下方快捷按钮对齐。 */
+body.business-mode-page #result-panel .result-mode .tool-grid,
+body.interpretation-mode-page #result-panel .result-mode .tool-grid {
+  width: calc(100% - 5px);
+  margin-left: 5px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+body.business-mode-page #result-panel .result-mode .tool-grid > button,
+body.interpretation-mode-page #result-panel .result-mode .tool-grid > button {
+  width: 100%;
+  min-width: 0;
+}
+
+#result-panel .tool-grid button {
+  height: 64px;
+  gap: 4px;
+  padding: 8px 14px;
+  border-radius: 10px;
+}
+
+#result-panel .tool-grid button.blue {
+  color: #3c589b;
+  background: #eef4fe;
+}
+
+#result-panel .tool-grid button.gold {
+  color: #766839;
+  background: #f2f2e9;
+}
+
+#result-panel .tool-grid button.green {
+  color: #265128;
+  background: #e4f1e6;
+}
+
+#result-panel .tool-grid button span {
+  max-width: 100%;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 22px;
+  letter-spacing: 1px;
+}
+
+#result-panel .tool-grid button span b {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+#result-panel .tool-image {
+  width: 22px;
+  height: 22px;
+}
+
+body.technical-mode-page #result-panel .tool-grid button.technical-tool-card {
+  height: 68px;
+  justify-content: center;
+  gap: 4px;
+  padding: 7px 10px;
+}
+
+body.technical-mode-page #result-panel .technical-tool-card-top {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 7px;
+  line-height: 22px;
+}
+
+body.technical-mode-page #result-panel .technical-tool-card-top b {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+body.technical-mode-page #result-panel .technical-tool-card-label {
+  width: 100%;
+  overflow: visible;
+  font-size: 13px;
+  line-height: 20px;
+  letter-spacing: 0;
+  text-align: left;
+  white-space: nowrap;
+}
+
+#result-panel .quick-mode {
+  margin-top: 20px;
+}
+
+#result-panel .quick-action {
+  width: calc(100% - 5px);
+  height: 46px;
+  margin-left: 5px;
+  color: #025dff;
+  background: #ebf2ff;
+  border: 1px solid #357eff;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 22px;
+  letter-spacing: 1px;
+}
+
+#result-panel .quick-action:hover,
+#result-panel .quick-action.active {
+  color: #025dff;
+  background: #ebf2ff;
+  border-color: #357eff;
+  box-shadow: none;
+}
+
+#result-panel .quick-action:active {
+  background: #e0ebff;
+}
+
+#result-panel .quick-action-icon {
+  display: block;
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+#result-panel .record-heading {
+  margin: 29px 0 16px;
+  padding: 0;
+  color: #18202e;
+  border-top: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 28px;
+}
+
+#result-panel .processing-row {
+  height: 66px;
+  min-height: 66px;
+  grid-template-columns: 28px minmax(0, 1fr) 24px;
+  gap: 10px;
+  padding: 0 12px 0 10px;
+}
+
+#result-panel .processing-row > svg,
+#result-panel .processing-icon {
+  display: block;
+  width: 26px;
+  height: 26px;
+  animation: 1.3s linear infinite processing-spin;
+  transform-origin: center;
+}
+
+#result-panel .processing-copy {
+  min-width: 0;
+  gap: 4px;
+  overflow: visible;
+}
+
+#result-panel .processing-copy .progress-trigger {
+  position: relative;
+  display: inline-block;
+  width: fit-content;
+  margin-top: 1px;
+  cursor: help;
+  outline: none;
+}
+
+#result-panel .processing-copy .progress-trigger:focus-visible {
+  border-radius: 4px;
+  outline: 2px solid rgba(2, 93, 255, 0.32);
+  outline-offset: 2px;
+}
+
+#result-panel .processing-row strong {
+  color: #0d162a;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+#result-panel .processing-copy > strong {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#result-panel .processing-row small {
+  color: #025dff;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+}
+
+#result-panel .processing-copy .progress-popover {
+  top: 28px;
+  right: auto;
+  left: 0;
+  z-index: 20;
+  display: flex;
+  width: 248px;
+  flex-direction: column;
+  padding: 10px;
+  visibility: hidden;
+  color: #343943;
+  background: #fff;
+  border: 1px solid #e2e5eb;
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(34, 42, 60, 0.16);
+  opacity: 0;
+  transform: translateY(-3px);
+  transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
+}
+
+#result-panel .processing-copy .progress-trigger:hover .progress-popover,
+#result-panel .processing-copy .progress-trigger:focus-within .progress-popover {
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+#result-panel .progress-popover-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 28px;
+  padding: 3px 4px 9px;
+  margin: 0 0 4px;
+  color: #343943;
+  border-bottom: 1px solid #edf0f4;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+#result-panel .progress-popover-title b {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+#result-panel .progress-popover-title strong {
+  color: #3279df;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+#result-panel .progress-popover .progress-step {
+  display: flex;
+  align-items: center;
+  min-height: 26px;
+  gap: 9px;
+  padding: 3px 7px;
+  color: #858b96;
+  border-radius: 7px;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+#result-panel .progress-popover .progress-step i {
+  display: grid;
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  margin: 0;
+  color: #2877e8;
+  background: #eaf2ff;
+  border-radius: 50%;
+  place-items: center;
+  font-size: 10px;
+  font-style: normal;
+}
+
+#result-panel .progress-popover .progress-step.done {
+  color: #525a66;
+}
+
+#result-panel .progress-popover .progress-step.current,
+#result-panel .progress-popover .progress-step.active {
+  color: #1769d2;
+  background: #f1f6ff;
+  font-weight: 500;
+}
+
+#result-panel .progress-popover .progress-step.current i,
+#result-panel .progress-popover .progress-step.active i {
+  width: 14px;
+  height: 14px;
+  margin: 1px;
+  background: transparent;
+  border: 2px solid #cfe0fa;
+  border-top-color: #2877e8;
+  animation: processing-spin 0.9s linear infinite;
+}
+
+#result-panel .progress-popover .progress-step.pending i {
+  width: 6px;
+  height: 6px;
+  margin: 5px;
+  background: #d9dde4;
+}
+
+#result-panel .record-row {
+  height: 66px;
+  min-height: 66px;
+  margin: 0 0 10px;
+  padding-right: 12px;
+}
+
+#result-panel .record-main {
+  height: 66px;
+  grid-template-columns: 30px minmax(0, 1fr);
+  gap: 12px;
+  padding: 0 4px 0 10px;
+}
+
+#result-panel .record-copy {
+  gap: 4px;
+}
+
+#result-panel .record-copy strong {
+  color: #0d162a;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+#result-panel .record-copy small {
+  color: rgba(0, 0, 0, 0.4);
+  font-size: 14px;
+  line-height: 22px;
+}
+
+#result-panel .record-icon {
+  width: 30px;
+}
+
+#result-panel .record-icon img {
+  width: 28px;
+  height: 28px;
+}
+
+#result-panel .more-button {
+  width: 24px;
+  height: 24px;
+}
+
+#result-panel .processing-row .more-button {
+  align-self: start;
+  margin-top: 19px;
+}
+
+#result-panel .record-row .more-button {
+  align-self: start;
+  margin-top: 12px;
+}
+
+#result-panel .more-button img {
+  width: 24px;
+  height: 24px;
+}
+
+#result-panel .record-row.unread,
+#result-panel .record-row.unread:hover {
+  background: transparent;
+}
+
+#result-panel .unread-dot {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  display: block;
+  width: 6px;
+  height: 6px;
+  background: #4268f5;
+  border-radius: 50%;
+  transform: translateY(-50%);
+}

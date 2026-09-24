@@ -1,0 +1,11 @@
+.message-suggestions.active-built-in-prompts {
+  flex-wrap: wrap;
+}
+
+.message-suggestions.active-built-in-prompts button {
+  height: auto;
+  min-height: 42px;
+  white-space: normal;
+  text-align: left;
+  line-height: 22px;
+}

@@ -1,0 +1,400 @@
+.deviation-writing-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1080;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(18, 25, 38, 0.42);
+}
+
+.deviation-task-confirm-open,
+.deviation-task-confirm-open body {
+  overflow: hidden;
+}
+
+#result-panel .processing-row.deviation-analysis-processing,
+#result-panel .processing-row.deviation-writing-processing {
+  position: relative;
+}
+
+#result-panel .deviation-task-menu {
+  top: 52px;
+  right: 8px;
+  z-index: 60;
+}
+
+.deviation-task-confirm-backdrop {
+  z-index: 120;
+}
+
+.deviation-task-confirm-modal {
+  width: min(420px, calc(100vw - 32px));
+}
+
+.deviation-task-confirm-modal p {
+  word-break: break-word;
+}
+
+.deviation-writing-modal {
+  width: min(640px, calc(100vw - 40px));
+  max-height: calc(100vh - 40px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: #18202e;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 18px 58px rgba(20, 31, 54, 0.2);
+}
+
+.deviation-writing-header,
+.deviation-writing-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+}
+
+.deviation-writing-header {
+  height: 68px;
+  border-bottom: 1px solid #edf0f4;
+}
+
+.deviation-writing-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.deviation-writing-title img {
+  width: 26px;
+  height: 26px;
+}
+
+.deviation-writing-title h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.deviation-writing-close {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  color: #5f6672;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-size: 28px;
+  font-weight: 300;
+  line-height: 24px;
+}
+
+.deviation-writing-body {
+  display: grid;
+  gap: 20px;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.deviation-writing-field {
+  display: grid;
+  gap: 10px;
+}
+
+.deviation-writing-field > label {
+  color: #3e4653;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 22px;
+}
+
+.deviation-writing-field > label b {
+  margin-right: 4px;
+  color: #f04438;
+}
+
+.deviation-writing-field > label small {
+  margin-left: 8px;
+  color: #8b95a5;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.deviation-writing-file,
+.deviation-writing-field select {
+  width: 100%;
+  height: 42px;
+  padding: 0 14px;
+  color: #343943;
+  background: #f7f8f8;
+  border: 1px solid #ededed;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.deviation-writing-file {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.deviation-writing-file img {
+  width: 24px;
+  height: 24px;
+}
+
+.deviation-writing-file span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.deviation-writing-field select {
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.deviation-writing-source-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 4px;
+  background: #f3f5f8;
+  border-radius: 8px;
+}
+
+.deviation-writing-source-tabs button {
+  height: 36px;
+  padding: 0 14px;
+  color: #667085;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.deviation-writing-source-tabs button.active {
+  color: #1769e0;
+  background: #fff;
+  box-shadow: 0 1px 5px rgba(31, 46, 70, 0.12);
+  font-weight: 600;
+}
+
+.deviation-writing-source-panel[hidden] {
+  display: none;
+}
+
+.deviation-writing-upload-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 2px 10px;
+  min-height: 92px;
+  padding: 16px;
+  color: #667085;
+  background: #fbfcff;
+  border: 1px dashed #b8c7df;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.deviation-writing-upload-card-single {
+  width: 100%;
+}
+
+.deviation-writing-upload-card:hover {
+  background: #f4f8ff;
+  border-color: #6f9cf6;
+}
+
+.deviation-writing-upload-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+}
+
+.deviation-writing-upload-icon {
+  grid-row: 1 / span 3;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  color: #1769e0;
+  background: #eaf2ff;
+  border-radius: 8px;
+  font-size: 20px;
+}
+
+.deviation-writing-upload-card strong {
+  color: #344054;
+  font-size: 14px;
+}
+
+.deviation-writing-upload-card > span:not(.deviation-writing-upload-icon) {
+  color: #1769e0;
+  font-size: 13px;
+}
+
+.deviation-writing-upload-card small {
+  overflow: hidden;
+  color: #98a2b3;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.deviation-writing-upload-card[hidden],
+.deviation-writing-upload-file[hidden] {
+  display: none;
+}
+
+.deviation-writing-upload-file {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 72px;
+  padding: 14px 16px;
+  background: #f7faff;
+  border: 1px solid #d8e5f8;
+  border-radius: 8px;
+}
+
+.deviation-writing-upload-file > img {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
+}
+
+.deviation-writing-upload-file-copy {
+  min-width: 0;
+  display: grid;
+  flex: 1;
+  gap: 4px;
+}
+
+.deviation-writing-upload-file-copy strong {
+  overflow: hidden;
+  color: #344054;
+  font-size: 13px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.deviation-writing-upload-file-copy small {
+  color: #98a2b3;
+  font-size: 11px;
+}
+
+.deviation-writing-reupload {
+  height: 32px;
+  padding: 0 12px;
+  flex: 0 0 auto;
+  color: #1769e0;
+  background: #fff;
+  border: 1px solid #b8d0f4;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.deviation-writing-reupload:hover {
+  background: #eef5ff;
+  border-color: #78a8ef;
+}
+
+.deviation-writing-source-panel[data-deviation-source-panel="generated"]:not([hidden]) {
+  display: grid;
+  gap: 12px;
+}
+
+.deviation-writing-generated-group {
+  padding: 12px;
+  background: #fbfcfe;
+  border: 1px solid #e7ebf1;
+  border-radius: 8px;
+}
+
+.deviation-writing-group-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.deviation-writing-group-head strong {
+  color: #344054;
+  font-size: 13px;
+}
+
+.deviation-writing-group-head small {
+  color: #98a2b3;
+  font-size: 11px;
+}
+
+.deviation-writing-generated-group select {
+  background-color: #fff;
+  border-color: #dfe5ee;
+}
+
+.deviation-writing-empty {
+  margin: 0;
+  padding: 10px 12px;
+  color: #8b95a5;
+  background: #f7f8f8;
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.deviation-writing-footer {
+  justify-content: flex-end;
+  gap: 12px;
+  min-height: 72px;
+  border-top: 1px solid #edf0f4;
+}
+
+.deviation-writing-cancel,
+.deviation-writing-submit {
+  height: 36px;
+  padding: 0 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.deviation-writing-cancel {
+  color: #4c5563;
+  background: #fff;
+  border: 1px solid #d8dee8;
+}
+
+.deviation-writing-submit {
+  color: #fff;
+  background: linear-gradient(100deg, #1677ff 0%, #7b61ff 100%);
+  border: 0;
+}
+
+.deviation-writing-cancel:hover {
+  background: #f7f9fc;
+  border-color: #b8c2d2;
+}
+
+.deviation-writing-submit:hover {
+  box-shadow: 0 6px 16px rgba(22, 119, 255, 0.2);
+}
+
+@media (max-width: 640px) {
+  .deviation-writing-backdrop {
+    padding: 12px;
+  }
+
+  .deviation-writing-modal {
+    width: min(100%, 640px);
+  }
+
+}

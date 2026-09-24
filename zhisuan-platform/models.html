@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>模型广场 · 大模型智算平台</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230F1418'/%3E%3Cpath d='M9 21V11l4 6 3-4 4 8' fill='none' stroke='%230B6E7F' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/app.css?v=20260924-4">
+<style>
+  /* ============================================================
+     本页专属：M-01 模型广场的「双语域」切换
+     发现语域 #discView（能力卡）  ⇄  处置语域 #operView（资产行）
+     默认发现语域；app.js 已把语域写入 ?register= 与
+     document.documentElement.dataset.register，本页只用 CSS 响应它。
+     ============================================================ */
+  #operView { display: none; }
+  html[data-register="operation"] #discView { display: none; }
+  html[data-register="operation"] #operView { display: block; }
+
+  /* 处置语域专属筛选组：PRD 5.2.2「增加扫描状态 / 授权范围 / 部署状态」 */
+  .filter__group--oper { display: none; }
+  html[data-register="operation"] .filter__group--oper { display: block; }
+
+  /* 语域提示条：随语域改变文案，让用户知道自己在看什么 */
+  .reg-note {
+    display: flex; align-items: center; gap: var(--sp-2);
+    padding: var(--sp-3) var(--sp-4); margin-bottom: var(--sp-4);
+    border: 1px solid var(--line); border-left: 3px solid var(--ink-400);
+    border-radius: var(--r-2); background: var(--surface);
+    font-size: var(--text-meta); color: var(--ink-500);
+  }
+  html[data-register="operation"] .reg-note { border-left-color: var(--brand); }
+
+  /* 发现语域卡片：规格两列，成本量级独占一行，避免与按钮抢位 */
+  .mdl-spec { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-2) var(--sp-3); }
+  .mdl-spec__item { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+  .mdl-spec__k { font-size: var(--text-micro); color: var(--ink-400); }
+  .mdl-spec__v { font-family: var(--font-num); font-size: var(--text-meta); font-weight: 600; color: var(--ink-800); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* 卡片脚注换行：单价独占一行（琥珀 = 消耗语义），按钮行在其下 */
+  #discView .objcard__foot { flex-wrap: wrap; }
+  #discView .objcard__foot .objcard__cost { flex: 1 1 100%; }
+  /* 发现语域 = 低密度（10.5.2）：两列能力卡，使「单价 / 试用 + 添加至资产池」各行不拥挤 */
+  #discView .objgrid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+
+  /* 资产行的名称两行结构 */
+  .asset-name { display: flex; flex-direction: column; gap: 1px; }
+  .asset-name b { color: var(--ink-900); font-weight: 500; }
+
+  /* 处置语域下的行内实例占用（青绿 = 算力/健康） */
+  .inst-cell { display: flex; align-items: center; gap: var(--sp-2); justify-content: flex-end; }
+</style>
+</head>
+<body data-module="models" data-page="M-01" data-title="模型广场"
+      data-search="搜索模型、作者、能力标签" data-sort="推荐|热度|价格" data-view="1"
+      data-register="1" data-register-value="discovery">
+<div class="shell" id="shell">
+  <nav class="rail" id="rail" aria-label="模块导航"></nav>
+
+  <div class="main">
+    <header class="band" id="band"></header>
+
+    <div class="mid">
+      <!-- 筛选列：PRD MOD-009 要求的多维度筛选 -->
+      <aside class="filter" aria-label="筛选">
+        <div class="filter__group">
+          <h3>任务分类</h3>
+          <label class="filter__opt"><input type="radio" name="task" checked> 全部<span class="cnt">6</span></label>
+          <label class="filter__opt"><input type="radio" name="task"> 文本生成<span class="cnt">4</span></label>
+          <label class="filter__opt"><input type="radio" name="task"> 视觉理解<span class="cnt">1</span></label>
+          <label class="filter__opt"><input type="radio" name="task"> 向量嵌入<span class="cnt">1</span></label>
+          <label class="filter__opt"><input type="radio" name="task"> 代码生成<span class="cnt">2</span></label>
+        </div>
+
+        <div class="filter__group">
+          <h3>输入 / 输出模态</h3>
+          <label class="filter__opt"><input type="radio" name="mod" checked> 全部</label>
+          <label class="filter__opt"><input type="radio" name="mod"> 文本 → 文本<span class="cnt">4</span></label>
+          <label class="filter__opt"><input type="radio" name="mod"> 图文 → 文本<span class="cnt">1</span></label>
+          <label class="filter__opt"><input type="radio" name="mod"> 文本 → 向量<span class="cnt">1</span></label>
+          <label class="filter__opt"><input type="radio" name="mod"> 文本 + 图像 → 文本<span class="cnt">1</span></label>
+        </div>
+
+        <div class="filter__group">
+          <h3>上下文窗口</h3>
+          <label class="filter__opt"><input type="radio" name="ctx" checked> 不限</label>
+          <label class="filter__opt"><input type="radio" name="ctx"> ≥ 128k<span class="cnt">2</span></label>
+          <label class="filter__opt"><input type="radio" name="ctx"> 32k ~ 128k<span class="cnt">1</span></label>
+          <label class="filter__opt"><input type="radio" name="ctx"> ≤ 32k<span class="cnt">3</span></label>
+        </div>
+
+        <div class="filter__group">
+          <h3>价格区间（元 / 千 Token）</h3>
+          <label class="filter__opt"><input type="radio" name="price" checked> 不限</label>
+          <label class="filter__opt"><input type="radio" name="price"> 免费试用<span class="cnt">3</span></label>
+          <label class="filter__opt"><input type="radio" name="price"> ≤ 0.002<span class="cnt">2</span></label>
+          <label class="filter__opt"><input type="radio" name="price"> 0.002 ~ 0.008<span class="cnt">3</span></label>
+          <label class="filter__opt"><input type="radio" name="price"> &gt; 0.008<span class="cnt">1</span></label>
+        </div>
+
+        <div class="filter__group">
+          <h3>模型作者</h3>
+          <label class="filter__opt"><input type="checkbox" checked> 通义千问<span class="cnt">2</span></label>
+          <label class="filter__opt"><input type="checkbox"> 深度求索<span class="cnt">1</span></label>
+          <label class="filter__opt"><input type="checkbox"> 上海人工智能实验室<span class="cnt">1</span></label>
+          <label class="filter__opt"><input type="checkbox"> 智源研究院<span class="cnt">1</span></label>
+          <label class="filter__opt"><input type="checkbox"> Meta<span class="cnt">1</span></label>
+        </div>
+
+        <div class="filter__group">
+          <h3>能力标签</h3>
+          <label class="filter__opt"><input type="checkbox"> 多轮对话<span class="cnt">4</span></label>
+          <label class="filter__opt"><input type="checkbox"> 长上下文<span class="cnt">2</span></label>
+          <label class="filter__opt"><input type="checkbox"> 函数调用<span class="cnt">3</span></label>
+          <label class="filter__opt"><input type="checkbox"> 代码生成<span class="cnt">2</span></label>
+          <label class="filter__opt"><input type="checkbox"> 视觉问答<span class="cnt">1</span></label>
+          <label class="filter__opt"><input type="checkbox"> 向量检索<span class="cnt">1</span></label>
+          <label class="filter__opt"><input type="checkbox"> 多语种<span class="cnt">3</span></label>
+        </div>
+
+        <!-- 处置语域追加的筛选组（PRD 5.2.2） -->
+        <div class="filter__group filter__group--oper">
+          <h3>扫描状态</h3>
+          <label class="filter__opt"><input type="radio" name="scan" checked> 全部<span class="cnt">6</span></label>
+          <label class="filter__opt"><input type="radio" name="scan"> 已通过<span class="cnt">4</span></label>
+          <label class="filter__opt"><input type="radio" name="scan"> 扫描中<span class="cnt">1</span></label>
+          <label class="filter__opt"><input type="radio" name="scan"> 未通过<span class="cnt">1</span></label>
+        </div>
+        <div class="filter__group filter__group--oper">
+          <h3>授权范围</h3>
+          <label class="filter__opt"><input type="radio" name="grant" checked> 全部</label>
+          <label class="filter__opt"><input type="radio" name="grant"> 本租户<span class="cnt">4</span></label>
+          <label class="filter__opt"><input type="radio" name="grant"> 全平台公开<span class="cnt">2</span></label>
+          <label class="filter__opt"><input type="radio" name="grant"> 已收回<span class="cnt">1</span></label>
+        </div>
+        <div class="filter__group filter__group--oper">
+          <h3>部署状态</h3>
+          <label class="filter__opt"><input type="radio" name="dep" checked> 全部</label>
+          <label class="filter__opt"><input type="radio" name="dep"> 运行中<span class="cnt">3</span></label>
+          <label class="filter__opt"><input type="radio" name="dep"> 不健康<span class="cnt">1</span></label>
+          <label class="filter__opt"><input type="radio" name="dep"> 灰度中<span class="cnt">1</span></label>
+          <label class="filter__opt"><input type="radio" name="dep"> 已退役<span class="cnt">1</span></label>
+        </div>
+
+        <div class="filter__group">
+          <button class="btn btn--sm w-full">清空筛选</button>
+          <p class="t-micro mt-3">筛选条件写入 URL 查询参数，刷新保持、链接可分享（3.3）。</p>
+        </div>
+      </aside>
+
+      <main class="stage" id="stage">
+        <div class="selected-bar">
+          <span>任务分类：全部</span><span class="dot-sep">·</span>
+          <span>模态：全部</span><span class="dot-sep">·</span>
+          <span>上下文：不限</span><span class="dot-sep">·</span>
+          <span>价格：不限</span>
+          <button class="btn btn--sm btn--ghost">清空筛选</button>
+          <span class="total">共 6 个模型</span>
+        </div>
+
+        <div class="reg-note">
+          <span id="regNoteText">当前为<b class="t-strong">发现语域</b>：回答「它能做什么、多少钱、能不能试」。</span>
+          <span class="spacer"></span>
+          <span class="t-micro">切到处置语域可看版本、扫描、授权与部署状态</span>
+        </div>
+
+        <!-- PRD MOD-011：应用中心与模型广场唯一的强耦合跳转点 -->
+        <p class="t-meta mb-4">试用会跳转到 <b class="t-strong">应用中心 · 平台产品</b>并选中当前模型（MOD-011，两模块唯一强耦合跳转点）。</p>
+
+        <!-- ============================================================
+             发现语域：能力卡（低密度、能力叙述优先）
+             ============================================================ -->
+        <div id="discView">
+          <div class="objgrid">
+
+            <article class="objcard">
+              <div class="objcard__top">
+                <div class="objcard__icon">Q</div>
+                <div>
+                  <div class="objcard__name">Qwen3-32B-Instruct</div>
+                  <div class="objcard__sub">通义千问 · 2026-09-12 上架 · 文本生成</div>
+                </div>
+              </div>
+              <p class="objcard__desc">通用指令模型，中英双语长文理解与写作稳定，支持函数调用与结构化 JSON 输出，适合知识问答、报告撰写与智能体规划推理。</p>
+              <div class="mdl-spec">
+                <div class="mdl-spec__item"><span class="mdl-spec__k">上下文</span><span class="mdl-spec__v">128k</span></div>
+                <div class="mdl-spec__item"><span class="mdl-spec__k">最大输出</span><span class="mdl-spec__v">8k</span></div>
+                <div class="mdl-spec__item"><span class="mdl-spec__k">模态</span><span class="mdl-spec__v">文本 → 文本</span></div>
+                <div class="mdl-spec__item"><span class="mdl-spec__k">并发上限</span><span class="mdl-spec__v">240</span></div>
+              </div>
+              <div class="objcard__tags">
+                <span class="tag">多轮对话</span><span class="tag">函数调用</span>
+                <span class="tag">长上下文</span><span class="tag">多语种</span>
+              </div>
+              <div class="objcard__foot">
+                <span class="objcard__cost">输入 ¥0.004 / 输出 ¥0.012 · 千Token</span><span class="spacer"></span>
+                <a class="costbtn costbtn--sm" href="app-console.html?model=qwen3-32b-instruct"><span class="costbtn__label">试用</span><span class="costbtn__est">≈1.2k Token 起</span></a>
+                <button class="btn btn--sm">添加至资产池</button>
+              </div>
+            </article>
+
+            <article class="objcard">
+              <div class="objcard__top">
+                <div class="objcard__icon objcard__icon--soft">D</div>
+                <div>
+                  <div class="objcard__name">DeepSeek-V3</div>
+                  <div class="objcard__sub">深度求索 · 2026-08-28 上架 · 文本生成</div>
+                </div>
+              </div>
+              <p class="objcard__desc">671B MoE 架构，推理与代码能力突出，单次调用成本低；适合大批量代码审查、条款比对与批量文本改写。</p>
+              <div class="mdl-spec">
+                <div class="mdl-spec__item"><span class="mdl-spec__k">上下文</span><span class="mdl-spec__v">64k</span></div>
+                <div class="mdl-spec__item"><span class="mdl-spec__k">最大输出</span><span class="mdl-spec__v">8k</span></div>
+                <div class="mdl-spec__item"><span class="mdl-spec__k">模态</span><span class="mdl-spec__v">文本 → 文本</span></div>
+                <div class="mdl-spec__item"><span class="mdl-spec__k">并发上限</span><span class="mdl-spec__v">160</span></div>
+              </div>
+              <div class="objcard__tags">
+                <span class="chip chip--quota"><i class="chip__dot"></i>免费试用 50 万 Token</span>
+                <span class="tag">代码生成</span><span class="tag">多语种</span>
+              </div>
+              <div class="objcard__foot">
+                <span class="objcard__cost">输入 ¥0.002 / 输出 ¥0.008 · 千Token</span><span class="spacer"></span>
+                <a class="costbtn costbtn--sm" href="app-console.html?model=deepseek-v3"><span class="costbtn__label">试用</span><span class="costbtn__est">≈1.2k Token 起</span></a>
+                <button class="btn btn--sm">添加至资产池</button>
+              </div>
+            </article>
+
+            <article class="objcard">
+              <div class="objcard__top">
+                <div class="objcard__icon objcard__icon--soft">I</div>
+                <div>
+                  <div class="objcard__name">InternVL2-26B</div>
+                  <div class="objcard__sub">上海人工智能实验室 · 2026-07-30 上架 · 视觉理解</div>
+                </div>
+              </div>
+              <p class="objcard__desc">图文多模态理解，支持文档版面解析、图表读数与视频抽帧质检，可直接承接合同扫描件与产线巡检图片。</p>
+              <div class="mdl-spec">
+                <div class="mdl-spec__item"><span class="mdl-spec__k">上下文</span><span class="mdl-spec__v">32k</span></div>
+                <div class="mdl-spec__item"><span class="mdl-spec__k">最大输出</span><span class="mdl-spec__v">4k</span></div>
+                <div class="mdl-spec__item"><span class="mdl-spec__k">模态</span><span class="mdl-spec__v">图文 → 文本</span></div>
+                <div class="mdl-spec__item"><span class="mdl-spec__k">并发上限</span><span class="mdl-spec__v">96</span></div>
+              </div>
+              <div class="objcard__tags">
+                <span class="chip chip--risk"><i class="chip__dot"></i>部分实例不健康 · 延迟升高</span>
+                <span class="tag">视觉问答</span>
+              </div>
+              <div class="objcard__foot">
+                <span class="objcard__cost">输入 ¥0.006 / 输出 ¥0.018 · 千Token</span><span class="spacer"></span>
+                <a class="costbtn costbtn--sm" href="app-console.html?model=internvl2-26b"><span class="costbtn__label">试用</span><span class="costbtn__est">≈1.2k Token 起</span></a>
+                <button class="btn btn--sm">添加至资产池</button>
+              </div>
+            </article>
+
+            <article class="objcard">
+              <div class="objcard__top">
+                <div class="objcard__icon objcard__icon--soft">B</div>
+                <div>
+                  <div class="objcard__name">BGE-M3</div>
+                  <div class="objcard__sub">智源研究院 · 2026-06-18 上架 · 向量嵌入</div>
+                </div>
+              </div>
+              <p class="objcard__desc">多语种稠密 + 稀疏混合检索嵌入，一次编码同时产出向量与词权重，是平台知识库与混合检索的默认底座。</p>
+              <div class="mdl-spec">
+                <div class="mdl-spec__item"><span class="mdl-spec__k">上下文</span><span class="mdl-spec__v">8k</span></div>
+                <div class="mdl-spec__item"><span class="mdl-spec__k">向量维度</span><span class="mdl-spec__v">1024</span></div>
+                <div class="mdl-spec__item"><span class="mdl-spec__k">模态</span><span class="mdl-spec__v">文本 → 向量</span></div>
+                <div class="mdl-spec__item"><span class="mdl-spec__k">并发上限</span><span class="mdl-spec__v">400</span></div>
+              </div>
+              <div class="objcard__tags">
+                <span class="chip chip--quota"><i class="chip__dot"></i>免费试用 200 万 Token</span>
+                <span class="tag">向量检索</span><span class="tag">多语种</span>
+              </div>
+              <div class="objcard__foot">
+                <span class="objcard__cost">输入 ¥0.0005 · 千Token（仅计量输入）</span><span class="spacer"></span>
+                <a class="costbtn costbtn--sm" href="app-console.html?model=bge-m3"><span class="costbtn__label">试用</span><span class="costbtn__est">≈1.2k Token 起</span></a>
+                <button class="btn btn--sm">添加至资产池</button>
+              </div>
+            </article>
+
+            <article class="objcard">
+              <div class="objcard__top">
+                <div class="objcard__icon objcard__icon--soft">Q</div>
+                <div>
+                  <div class="objcard__name">Qwen3-8B</div>
+                  <div class="objcard__sub">通义千问 · 2026-09-20 灰度中 · 文本生成</div>
+                </div>
+              </div>
+              <p class="objcard__desc">轻量同源版本，推理时延低，适合分类、抽取、客服改写等高并发小任务，可与 32B 版本混布降本。</p>
+              <div class="mdl-spec">
+                <div class="mdl-spec__item"><span class="mdl-spec__k">上下文</span><span class="mdl-spec__v">32k</span></div>
+                <div class="mdl-spec__item"><span class="mdl-spec__k">最大输出</span><span class="mdl-spec__v">4k</span></div>
+                <div class="mdl-spec__item"><span class="mdl-spec__k">模态</span><span class="mdl-spec__v">文本 → 文本</span></div>
+                <div class="mdl-spec__item"><span class="mdl-spec__k">并发上限</span><span class="mdl-spec__v">320</span></div>
+              </div>
+              <div class="objcard__tags">
+                <span class="chip chip--insight"><i class="chip__dot"></i>灰度中 40%</span>
+                <span class="chip chip--quota"><i class="chip__dot"></i>免费试用 100 万 Token</span>
+                <span class="tag">函数调用</span>
+              </div>
+              <div class="objcard__foot">
+                <span class="objcard__cost">输入 ¥0.001 / 输出 ¥0.003 · 千Token</span><span class="spacer"></span>
+                <a class="costbtn costbtn--sm" href="app-console.html?model=qwen3-8b"><span class="costbtn__label">试用</span><span class="costbtn__est">≈1.2k Token 起</span></a>
+                <button class="btn btn--sm">添加至资产池</button>
+              </div>
+            </article>
+
+            <!-- 已退役：不置灰，给出替代版本建议（10.8 约定 6） -->
+            <article class="objcard">
+              <div class="objcard__top">
+                <div class="objcard__icon objcard__icon--soft">L</div>
+                <div>
+                  <div class="objcard__name">Llama-3.1-70B</div>
+                  <div class="objcard__sub">Meta · 2026-08-30 退役 · 文本生成</div>
+                </div>
+              </div>
+              <p class="objcard__desc">上一代开源通用模型，已停止新实例部署。存量调用可继续至 2026-10-31，建议迁移至 Qwen3-32B-Instruct。</p>
+              <div class="mdl-spec">
+                <div class="mdl-spec__item"><span class="mdl-spec__k">上下文</span><span class="mdl-spec__v">128k</span></div>
+                <div class="mdl-spec__item"><span class="mdl-spec__k">最大输出</span><span class="mdl-spec__v">4k</span></div>
+                <div class="mdl-spec__item"><span class="mdl-spec__k">模态</span><span class="mdl-spec__v">文本 → 文本</span></div>
+                <div class="mdl-spec__item"><span class="mdl-spec__k">并发上限</span><span class="mdl-spec__v">—</span></div>
+              </div>
+              <div class="objcard__tags">
+                <span class="chip chip--neutral"><i class="chip__dot"></i>已退役 · 2026-08-30</span>
+                <span class="tag">多语种</span><span class="tag">长上下文</span>
+              </div>
+              <div class="objcard__foot">
+                <span class="objcard__cost">输入 ¥0.008 / 输出 ¥0.024 · 千Token</span>
+                <span class="spacer"></span>
+                <a class="btn btn--sm" href="model-detail.html">查看替代版本建议</a>
+              </div>
+            </article>
+
+          </div>
+        </div>
+
+        <!-- ============================================================
+             处置语域：资产行（高密度、状态优先）
+             同一批 6 个模型对象，换成「资产记录」呈现
+             ============================================================ -->
+        <div id="operView">
+          <div class="dg-wrap">
+            <table class="dg">
+              <thead>
+                <tr>
+                  <th>模型资产</th>
+                  <th>版本</th>
+                  <th>扫描状态</th>
+                  <th>授权范围</th>
+                  <th class="num">部署实例数</th>
+                  <th>健康度</th>
+                  <th>更新时间</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="dg-primary"><span class="asset-name"><b>Qwen3-32B-Instruct</b><span class="t-micro">通义千问 · qwen3-32b-instruct</span></span></td>
+                  <td class="num">v2.4</td>
+                  <td><span class="chip chip--quota"><i class="chip__dot"></i>已通过</span></td>
+                  <td>本租户 + 3 个项目</td>
+                  <td class="num">3</td>
+                  <td><span class="chip chip--compute"><i class="chip__dot"></i>运行中 3/3</span></td>
+                  <td class="num">2026-09-24 13:40</td>
+                  <td><div class="dg-actions"><button class="btn btn--sm">部署</button><button class="btn btn--sm">灰度</button></div></td>
+                </tr>
+                <tr>
+                  <td class="dg-primary"><span class="asset-name"><b>DeepSeek-V3</b><span class="t-micro">深度求索 · deepseek-v3</span></span></td>
+                  <td class="num">v1.8</td>
+                  <td><span class="chip chip--quota"><i class="chip__dot"></i>已通过</span></td>
+                  <td>全平台公开</td>
+                  <td class="num">2</td>
+                  <td><span class="chip chip--compute"><i class="chip__dot"></i>运行中 2/2</span></td>
+                  <td class="num">2026-09-23 21:05</td>
+                  <td><div class="dg-actions"><button class="btn btn--sm">部署</button><button class="btn btn--sm">授权</button></div></td>
+                </tr>
+                <!-- 不健康：整行标记 risk，左侧朱红指示条（10.8 约定 6 的处置面） -->
+                <tr data-state="risk">
+                  <td class="dg-primary"><span class="asset-name"><b>InternVL2-26B</b><span class="t-micro">上海人工智能实验室 · internvl2-26b</span></span></td>
+                  <td class="num">v1.2</td>
+                  <td><span class="chip chip--quota"><i class="chip__dot"></i>已通过</span></td>
+                  <td>本租户</td>
+                  <td class="num">4</td>
+                  <td><span class="chip chip--risk"><i class="chip__dot"></i>不健康 2/4</span></td>
+                  <td class="num">2026-09-24 14:02</td>
+                  <td><div class="dg-actions"><button class="btn btn--sm">摘除实例</button><button class="btn btn--sm">回退</button></div></td>
+                </tr>
+                <tr>
+                  <td class="dg-primary"><span class="asset-name"><b>BGE-M3</b><span class="t-micro">智源研究院 · bge-m3</span></span></td>
+                  <td class="num">v1.0</td>
+                  <td><span class="chip chip--quota"><i class="chip__dot"></i>已通过</span></td>
+                  <td>全平台公开</td>
+                  <td class="num">2</td>
+                  <td><span class="chip chip--compute"><i class="chip__dot"></i>运行中 2/2</span></td>
+                  <td class="num">2026-09-22 09:18</td>
+                  <td><div class="dg-actions"><button class="btn btn--sm">部署</button><button class="btn btn--sm">授权</button></div></td>
+                </tr>
+                <tr>
+                  <td class="dg-primary"><span class="asset-name"><b>Qwen3-8B</b><span class="t-micro">通义千问 · qwen3-8b</span></span></td>
+                  <td class="num">v2.4</td>
+                  <td><span class="chip chip--insight"><i class="chip__dot"></i>扫描中</span></td>
+                  <td>本租户</td>
+                  <td class="num">1</td>
+                  <td><span class="chip chip--insight"><i class="chip__dot"></i>灰度中 40%</span></td>
+                  <td class="num">2026-09-24 11:26</td>
+                  <td><div class="dg-actions"><button class="btn btn--sm">放量</button><button class="btn btn--sm">回退</button></div></td>
+                </tr>
+                <tr>
+                  <td class="dg-primary"><span class="asset-name"><b>Llama-3.1-70B</b><span class="t-micro">Meta · llama-3.1-70b</span></span></td>
+                  <td class="num">v3.1</td>
+                  <td><span class="chip chip--neutral">已归档</span></td>
+                  <td>已收回</td>
+                  <td class="num">0</td>
+                  <td><span class="chip chip--neutral"><i class="chip__dot"></i>已退役</span></td>
+                  <td class="num">2026-08-30 17:44</td>
+                  <td><div class="dg-actions"><button class="btn btn--sm">查看审计</button></div></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="t-micro mt-3">处置语域回答「它现在什么状态、授权给谁、跑在哪些节点」；行内展开实例详情见 M-08 实例健康监控。更新时间与健康度来自运维监控中心（5.2.5）。</p>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <aside class="ledger" id="ledger" aria-label="消耗上下文"></aside>
+</div>
+
+<template id="band-actions">
+  <a class="btn" href="model-detail.html">模型接入文档</a>
+  <button class="btn">添加至资产池</button>
+</template>
+
+<template id="ledger-extra">
+  <h3>本页模型费率 · 当前项目近 7 天</h3>
+  <div class="col" style="gap:var(--sp-2)">
+    <div class="row" style="gap:var(--sp-2)">
+      <span class="t-meta" style="flex:1">Qwen3-32B</span>
+      <button class="num-sm" data-receipt style="background:none;border:0;cursor:pointer;color:inherit">412.6k</button>
+      <span class="variance variance--under">-3.2%</span>
+    </div>
+    <div class="row" style="gap:var(--sp-2)">
+      <span class="t-meta" style="flex:1">DeepSeek-V3</span>
+      <button class="num-sm" data-receipt style="background:none;border:0;cursor:pointer;color:inherit">268.1k</button>
+      <span class="variance variance--under">-1.8%</span>
+    </div>
+    <div class="row" style="gap:var(--sp-2)">
+      <span class="t-meta" style="flex:1">InternVL2-26B</span>
+      <button class="num-sm" data-receipt style="background:none;border:0;cursor:pointer;color:inherit">96.4k</button>
+      <span class="variance variance--over">+21.4%</span>
+    </div>
+    <div class="row" style="gap:var(--sp-2)">
+      <span class="t-meta" style="flex:1">BGE-M3</span>
+      <button class="num-sm" data-receipt style="background:none;border:0;cursor:pointer;color:inherit">38.2k</button>
+      <span class="variance variance--under">-6.1%</span>
+    </div>
+  </div>
+  <div class="t-micro mt-3">费率来源 Token 银行费率接口（model_rate_id），前端不自行估算。</div>
+</template>
+
+<script src="assets/charts.js"></script>
+<script src="assets/app.js?v=20260924-7"></script>
+<script>
+  /* 双语域切换：CSS 负责呈现，本脚本负责把语域写进 URL 并在刷新后复原。
+     与 app.js 的 [data-register-btn] 行为一致，只是额外处理「首次带参进入」。 */
+  (function () {
+    function apply(reg) {
+      document.documentElement.dataset.register = reg;
+      Array.prototype.forEach.call(document.querySelectorAll('[data-register-btn]'), function (b) {
+        b.setAttribute('aria-pressed', String(b.dataset.registerBtn === reg));
+      });
+      var disc = document.getElementById('discView');
+      var oper = document.getElementById('operView');
+      if (disc) disc.setAttribute('aria-hidden', String(reg === 'operation'));
+      if (oper) oper.setAttribute('aria-hidden', String(reg !== 'operation'));
+      var note = document.getElementById('regNoteText');
+      if (note) {
+        note.innerHTML = reg === 'operation'
+          ? '当前为<b class="t-strong">处置语域</b>：回答「它现在什么状态、授权给谁、跑在哪些节点」。'
+          : '当前为<b class="t-strong">发现语域</b>：回答「它能做什么、多少钱、能不能试」。';
+      }
+    }
+    function init() {
+      var p = new URL(location.href).searchParams.get('register');
+      apply(p === 'operation' ? 'operation' : 'discovery');
+      Array.prototype.forEach.call(document.querySelectorAll('[data-register-btn]'), function (b) {
+        b.addEventListener('click', function () { apply(b.dataset.registerBtn); });
+      });
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+    else init();
+  })();
+</script>
+</body>
+</html>

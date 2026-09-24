@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>API 密钥 · 控制中心 · 大模型智算平台</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230F1418'/%3E%3Cpath d='M9 21V11l4 6 3-4 4 8' fill='none' stroke='%230B6E7F' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/app.css?v=20260924-4">
+<style>
+  /* ============================================================
+     C-05 页面专属样式（只使用 var(--token)，不改动 assets）
+     ============================================================ */
+
+  /* 图标占位：由页面脚本用 DSH.icon() 填充 */
+  [data-icon] { display: inline-flex; align-items: center; flex: none; }
+
+  /* ---------- 一次性明文展示框：密钥安全体验的核心 ---------- */
+  .keyonce {
+    border: 1px solid var(--risk-line);
+    border-radius: var(--r-2);
+    background: var(--risk-soft);
+    overflow: hidden;
+  }
+  .keyonce__head {
+    display: flex; align-items: flex-start; gap: var(--sp-3);
+    padding: var(--sp-4); border-bottom: 1px solid var(--risk-line);
+  }
+  .keyonce__mark {
+    width: 34px; height: 34px; border-radius: var(--r-1); flex: none;
+    background: var(--risk); color: #fff; display: grid; place-items: center;
+  }
+  .keyonce__mark svg { width: 18px; height: 18px; }
+  .keyonce__title { font-size: var(--text-section); font-weight: 600; color: var(--risk-strong); }
+  .keyonce__body {
+    background: var(--surface); padding: var(--sp-4);
+    display: flex; flex-direction: column; gap: var(--sp-3);
+  }
+  .keyonce__field { display: flex; align-items: center; gap: var(--sp-3); }
+  .keyonce__secret {
+    flex: 1 1 auto; min-width: 0;
+    font-family: var(--font-num); font-size: var(--text-meta); font-weight: 600;
+    font-variant-numeric: tabular-nums; color: var(--ink-900); letter-spacing: .02em;
+    background: var(--surface-sunken); border: 1px dashed var(--risk-line);
+    border-radius: var(--r-1); padding: 8px var(--sp-3);
+    overflow-wrap: anywhere;
+  }
+  .keyonce__facts {
+    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--sp-2) var(--sp-4); font-size: var(--text-micro); color: var(--ink-500);
+  }
+  .keyonce__facts b { display: block; color: var(--ink-400); font-weight: 500; margin-bottom: 2px; }
+  .keyonce__facts span { color: var(--ink-800); }
+  .keyonce[data-cleared="true"] { display: none; }
+  .keyonce-done { display: none; align-items: center; gap: var(--sp-3); }
+  .keyonce-done[data-show="true"] { display: flex; }
+
+  /* ---------- 可勾选权限列表 ---------- */
+  .perm-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 var(--sp-3); }
+  .perm-note { font-size: var(--text-micro); color: var(--ink-500); margin-bottom: var(--sp-2); }
+
+  /* ---------- 密集数据网格：标识类文本用 12px 等宽，操作按钮收紧 ---------- */
+  .cell-id {
+    font-family: var(--font-num); font-size: 12px;
+    font-variant-numeric: tabular-nums; letter-spacing: -.01em;
+  }
+  .dg-actions .btn { padding: 0 8px; }
+  #keysTable th, #keysTable td { padding: 0 8px; }
+</style>
+</head>
+<body data-module="console" data-page="C-05" data-title="API 密钥"
+      data-search="搜索密钥名称、绑定应用">
+<div class="shell" id="shell">
+  <nav class="rail" id="rail" aria-label="模块导航"></nav>
+
+  <div class="main">
+    <header class="band" id="band"></header>
+
+    <div class="mid">
+      <!-- 控制中心：二级导航占用筛选列（写法与 console-usage.html 一致） -->
+      <aside class="filter" aria-label="控制中心导航">
+        <div class="filter__group">
+          <h3>控制中心</h3>
+          <a class="filter__nav" href="console-usage.html">用量概览</a>
+          <a class="filter__nav" href="console-quota.html">预算与配额管理</a>
+          <a class="filter__nav" href="console-consumption.html">消耗明细查询</a>
+          <a class="filter__nav" href="console-usage.html">账单与费用</a>
+          <a class="filter__nav" href="console-keys.html" aria-current="page">API 密钥</a>
+          <a class="filter__nav" href="console-logs.html">调用日志</a>
+          <a class="filter__nav" href="console-quota.html">告警中心</a>
+        </div>
+        <div class="filter__group">
+          <h3>密钥状态</h3>
+          <label class="filter__opt"><input type="radio" name="kstate" checked> 全部<span class="cnt">8</span></label>
+          <label class="filter__opt"><input type="radio" name="kstate"> 启用<span class="cnt">5</span></label>
+          <label class="filter__opt"><input type="radio" name="kstate"> 禁用<span class="cnt">2</span></label>
+          <label class="filter__opt"><input type="radio" name="kstate"> 已泄漏风险<span class="cnt">1</span></label>
+        </div>
+        <div class="filter__group">
+          <h3>绑定应用</h3>
+          <label class="filter__opt"><input type="checkbox"> 知识问答<span class="cnt">1</span></label>
+          <label class="filter__opt"><input type="checkbox"> 视频检查<span class="cnt">3</span></label>
+          <label class="filter__opt"><input type="checkbox"> 法务合同审查<span class="cnt">1</span></label>
+          <label class="filter__opt"><input type="checkbox"> 写作助手<span class="cnt">1</span></label>
+          <label class="filter__opt"><input type="checkbox"> 标书撰写<span class="cnt">1</span></label>
+        </div>
+      </aside>
+
+      <main class="stage" id="stage">
+        <div class="row row--between mb-4">
+          <span class="t-meta">密钥仅存哈希 · 明文仅在创建时展示一次 · 来源：Token 工厂密钥服务</span>
+          <span class="t-micro">租户：华鲲元启 · 项目：视觉检索平台</span>
+        </div>
+
+        <!-- 概览：密钥规模与风险面 -->
+        <div class="grid grid--4">
+          <div class="card kpi kpi--accent-compute">
+            <div class="kpi__label">密钥总数</div>
+            <div class="kpi__value"><span class="num-xl">8</span><span class="kpi__unit">个</span></div>
+            <div class="kpi__foot">启用 5 · 禁用 2 · 已泄漏风险 1</div>
+          </div>
+          <div class="card kpi kpi--accent-quota">
+            <div class="kpi__label">近 7 天调用量</div>
+            <div class="kpi__value"><span class="num-xl">24,208</span><span class="kpi__unit">次</span></div>
+            <div class="kpi__foot">另有服务账号 12 次 · 失败 176 次（0.7%）</div>
+          </div>
+          <div class="card kpi kpi--accent-spend">
+            <div class="kpi__label">近 7 天消耗（密钥维度）</div>
+            <div class="kpi__value">
+              <button class="num-xl" data-receipt style="background:none;border:0;padding:0;cursor:pointer;color:inherit">3.88M</button>
+              <span class="kpi__unit">Token</span>
+            </div>
+            <div class="kpi__foot">密钥 3,879.8k · 服务账号 18.2k · 合计 3.90M</div>
+          </div>
+          <div class="card kpi kpi--accent-risk">
+            <div class="kpi__label">风险密钥</div>
+            <div class="kpi__value"><span class="num-xl">1</span><span class="kpi__unit">个</span></div>
+            <div class="kpi__foot">
+              <a class="chip chip--risk" href="#key-ips"><i class="chip__dot"></i>疑似泄漏 · 去处理</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================================================
+             一次性明文展示框（关键安全设计）
+             仅在创建后出现一次；已确认保存后明文从页面清除
+             ============================================================ -->
+        <section class="keyonce mt-5" id="keyOnce" aria-labelledby="keyOnceTitle">
+          <div class="keyonce__head">
+            <div class="keyonce__mark"><span data-icon="shield"></span></div>
+            <div style="flex:1 1 auto;min-width:0">
+              <h2 class="keyonce__title" id="keyOnceTitle">新密钥已创建：视频检查 · 生产调用（key-vision-prod-2）</h2>
+              <p class="t-meta mt-2">密钥仅在创建时展示一次，请立即保存到企业密钥库。关闭本卡片后平台不再提供明文，只能通过「重置」生成新密钥。</p>
+            </div>
+            <span class="chip chip--risk"><i class="chip__dot"></i>敏感信息 · 请勿截图外传</span>
+          </div>
+          <div class="keyonce__body">
+            <div class="keyonce__field">
+              <code class="keyonce__secret" id="newKeySecret">sk-hk-9f3a7c21b84e0d5f6a2c9b7e4d13f8a0c6b2d54e</code>
+              <button class="btn" type="button" id="copyKeyBtn">复制密钥</button>
+              <button class="btn btn--primary" type="button" id="savedKeyBtn"><span data-icon="check"></span>我已保存</button>
+            </div>
+            <span class="t-micro" id="copyState" role="status" aria-live="polite"></span>
+            <div class="keyonce__facts">
+              <div><b>创建时间</b><span class="num">2026-09-24 14:32:07</span></div>
+              <div><b>绑定应用</b><span>视频检查</span></div>
+              <div><b>模型调用权限</b><span>chat.completions · vision.chat</span></div>
+              <div><b>生效与到期</b><span>长期有效 · 90 天未使用自动禁用</span></div>
+            </div>
+          </div>
+        </section>
+        <div class="keyonce-done mt-5" id="keyOnceDone" role="status">
+          <span class="chip chip--compute"><i class="chip__dot"></i>已确认保存，明文已从页面清除</span>
+          <span class="t-meta">key-vision-prod-2 已置顶显示在下方密钥列表。如需再次获取明文，请在列表中对它执行「重置」（旧密钥立即失效）。</span>
+        </div>
+
+        <!-- ============================================================
+             密钥列表：名称 / 绑定应用 / 调用权限范围 / 状态 /
+                       最后使用时间 / 近 7 天调用量 / 操作
+             ============================================================ -->
+        <div class="card mt-5">
+          <div class="card__head">
+            <h2>密钥列表</h2>
+            <span class="chip chip--neutral">8 个</span>
+            <span class="chip chip--compute"><i class="chip__dot"></i>新建 1 个</span>
+            <span class="chip chip--risk"><i class="chip__dot"></i>1 个需重置</span>
+            <span class="spacer"></span>
+            <span class="t-micro">按创建时间倒序 · 新建密钥置顶</span>
+          </div>
+          <div class="dg-wrap" style="border:0;border-radius:0">
+            <table class="dg" id="keysTable">
+              <thead><tr>
+                <th>名称</th><th>绑定应用</th><th>调用权限范围</th><th>状态</th>
+                <th>最后使用时间</th><th class="num">近 7 天调用量</th><th class="num">操作</th>
+              </tr></thead>
+              <tbody>
+                <tr>
+                  <td class="dg-primary cell-id">key-vision-prod-2</td>
+                  <td>视频检查</td>
+                  <td><span class="cell-id" title="chat.completions · vision.chat">chat · vision</span></td>
+                  <td><span class="chip chip--compute"><i class="chip__dot"></i>启用</span></td>
+                  <td class="num">从未使用</td>
+                  <td class="num">0</td>
+                  <td><div class="dg-actions">
+                    <button class="btn btn--sm" type="button">重置</button>
+                    <button class="btn btn--sm" type="button">禁用</button>
+                    <a class="btn btn--sm" href="#key-ips" title="查看密钥详情与最近调用 IP">查看详情</a>
+                  </div></td>
+                </tr>
+                <tr>
+                  <td class="dg-primary cell-id">key-kb-qa-svc</td>
+                  <td>知识问答</td>
+                  <td><span class="cell-id" title="chat.completions · embeddings · tools.invoke">chat · embed · tools</span></td>
+                  <td><span class="chip chip--compute"><i class="chip__dot"></i>启用</span></td>
+                  <td class="num">今天 14:34</td>
+                  <td class="num">18,420</td>
+                  <td><div class="dg-actions">
+                    <button class="btn btn--sm" type="button">重置</button>
+                    <button class="btn btn--sm" type="button">禁用</button>
+                    <a class="btn btn--sm" href="#key-ips" title="查看密钥详情与最近调用 IP">查看详情</a>
+                  </div></td>
+                </tr>
+                <tr>
+                  <td class="dg-primary cell-id">key-vision-prod</td>
+                  <td>视频检查</td>
+                  <td><span class="cell-id" title="chat.completions · vision.chat">chat · vision</span></td>
+                  <td><span class="chip chip--compute"><i class="chip__dot"></i>启用</span></td>
+                  <td class="num">今天 14:35</td>
+                  <td class="num">420</td>
+                  <td><div class="dg-actions">
+                    <button class="btn btn--sm" type="button">重置</button>
+                    <button class="btn btn--sm" type="button">禁用</button>
+                    <a class="btn btn--sm" href="#key-ips" title="查看密钥详情与最近调用 IP">查看详情</a>
+                  </div></td>
+                </tr>
+                <tr>
+                  <td class="dg-primary cell-id">key-legal-review</td>
+                  <td>法务合同审查</td>
+                  <td><span class="cell-id" title="chat.completions · files.read">chat · files</span></td>
+                  <td><span class="chip chip--compute"><i class="chip__dot"></i>启用</span></td>
+                  <td class="num">今天 14:34</td>
+                  <td class="num">1,240</td>
+                  <td><div class="dg-actions">
+                    <button class="btn btn--sm" type="button">重置</button>
+                    <button class="btn btn--sm" type="button">禁用</button>
+                    <a class="btn btn--sm" href="#key-ips" title="查看密钥详情与最近调用 IP">查看详情</a>
+                  </div></td>
+                </tr>
+                <tr>
+                  <td class="dg-primary cell-id">key-writing-assist</td>
+                  <td>写作助手</td>
+                  <td><span class="cell-id" title="chat.completions">chat</span></td>
+                  <td><span class="chip chip--compute"><i class="chip__dot"></i>启用</span></td>
+                  <td class="num">今天 14:32</td>
+                  <td class="num">4,086</td>
+                  <td><div class="dg-actions">
+                    <button class="btn btn--sm" type="button">重置</button>
+                    <button class="btn btn--sm" type="button">禁用</button>
+                    <a class="btn btn--sm" href="#key-ips" title="查看密钥详情与最近调用 IP">查看详情</a>
+                  </div></td>
+                </tr>
+                <tr data-state="risk">
+                  <td class="dg-primary cell-id">key-legacy-ocr</td>
+                  <td>视频检查旧版</td>
+                  <td><span class="cell-id" title="chat.completions · vision.chat">chat · vision</span></td>
+                  <td><span class="chip chip--risk"><i class="chip__dot"></i>已泄漏风险</span></td>
+                  <td class="num">今天 03:12</td>
+                  <td class="num">42</td>
+                  <td><div class="dg-actions">
+                    <button class="btn btn--sm" type="button">重置</button>
+                    <button class="btn btn--sm" type="button">禁用</button>
+                    <a class="btn btn--sm" href="#key-ips" title="查看密钥详情与最近调用 IP">查看详情</a>
+                  </div></td>
+                </tr>
+                <tr>
+                  <td class="dg-primary cell-id">key-bid-draft</td>
+                  <td>标书撰写</td>
+                  <td><span class="cell-id" title="chat.completions · embeddings">chat · embed</span></td>
+                  <td><span class="chip chip--neutral">禁用</span></td>
+                  <td class="num">09-12 16:40</td>
+                  <td class="num">0</td>
+                  <td><div class="dg-actions">
+                    <button class="btn btn--sm" type="button">重置</button>
+                    <button class="btn btn--sm" type="button">启用</button>
+                    <a class="btn btn--sm" href="#key-ips" title="查看密钥详情与最近调用 IP">查看详情</a>
+                  </div></td>
+                </tr>
+                <tr>
+                  <td class="dg-primary cell-id">key-batch-integration</td>
+                  <td>模型微调服务</td>
+                  <td><span class="cell-id" title="batch.jobs · chat.completions">batch · chat</span></td>
+                  <td><span class="chip chip--neutral">禁用</span></td>
+                  <td class="num">09-02 09:14</td>
+                  <td class="num">0</td>
+                  <td><div class="dg-actions">
+                    <button class="btn btn--sm" type="button">重置</button>
+                    <button class="btn btn--sm" type="button">启用</button>
+                    <a class="btn btn--sm" href="#key-ips" title="查看密钥详情与最近调用 IP">查看详情</a>
+                  </div></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card__foot row">
+            <span class="t-micro">权限缩写：chat = chat.completions · embed = embeddings · vision = vision.chat · tools = tools.invoke · files = files.read · batch = batch.jobs</span><span class="t-micro">失败调用 176 次 · 4001 额度不足 34 · 429 限流 118 · 上游 5xx 24</span>
+            <span class="spacer"></span>
+            <a class="btn btn--sm" href="console-logs.html">查看调用日志</a>
+          </div>
+        </div>
+
+        <!-- ============================================================
+             权限绑定：绑定应用 / 模型调用权限
+             ============================================================ -->
+        <div class="grid grid--2 mt-5">
+          <div class="card">
+            <div class="card__head">
+              <h2>绑定应用</h2>
+              <span class="chip chip--quota"><i class="chip__dot"></i>已授权 4 / 6</span>
+            </div>
+            <div class="card__body">
+              <p class="perm-note">密钥代表应用发起调用。未勾选的应用即使持有密钥，网关也会以 4003 拒绝并计入异常调用。</p>
+              <div class="perm-grid">
+                <label class="filter__opt"><input type="checkbox" checked> 知识问答<span class="cnt">智能体</span></label>
+                <label class="filter__opt"><input type="checkbox" checked> 视频检查<span class="cnt">智能体</span></label>
+                <label class="filter__opt"><input type="checkbox" checked> 法务合同审查<span class="cnt">行业应用</span></label>
+                <label class="filter__opt"><input type="checkbox" checked> 写作助手<span class="cnt">行业应用</span></label>
+                <label class="filter__opt"><input type="checkbox"> 标书撰写<span class="cnt">行业应用</span></label>
+                <label class="filter__opt"><input type="checkbox"> 模型微调服务<span class="cnt">平台产品</span></label>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card__head">
+              <h2>模型调用权限</h2>
+              <span class="chip chip--insight"><i class="chip__dot"></i>当前范围 3 项</span>
+            </div>
+            <div class="card__body">
+              <p class="perm-note">权限按「模型 + 能力」授权，随密钥冻结。勾选工具调用后，该密钥可用智能体内部工具链（见调用日志的链路级联）。</p>
+              <div class="perm-grid">
+                <label class="filter__opt"><input type="checkbox" checked> Qwen3-32B-Instruct<span class="cnt">chat</span></label>
+                <label class="filter__opt"><input type="checkbox" checked> BGE-M3<span class="cnt">embed</span></label>
+                <label class="filter__opt"><input type="checkbox" checked> InternVL2-26B<span class="cnt">vision</span></label>
+                <label class="filter__opt"><input type="checkbox"> DeepSeek-V3<span class="cnt">chat</span></label>
+                <label class="filter__opt"><input type="checkbox"> 工具调用链<span class="cnt">tools</span></label>
+                <label class="filter__opt"><input type="checkbox"> 批处理作业<span class="cnt">batch</span></label>
+              </div>
+              <!-- 不可用也是信息：授权不足不置灰，给出原因与出路（10.8 约定 6） -->
+              <div class="row mt-3" style="height:28px;padding:0 var(--sp-2)">
+                <span class="t-meta">Qwen3-VL-72B</span>
+                <span class="spacer"></span>
+                <span class="chip chip--risk"><i class="chip__dot"></i>本租户未授权</span>
+                <a class="btn btn--sm" href="console-quota.html">申请授权</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================================================
+             最近调用 IP（对应规划「密钥泄漏风险」异常态）
+             ============================================================ -->
+        <div class="card mt-5" id="key-ips">
+          <div class="card__head">
+            <h2>最近调用 IP 与白名单</h2>
+            <span class="chip chip--risk"><i class="chip__dot"></i>2 个来源未命中白名单</span>
+            <span class="spacer"></span>
+            <select class="select" aria-label="选择密钥">
+              <option>key-legacy-ocr（已泄漏风险）</option>
+              <option>key-kb-qa-svc</option>
+              <option>key-vision-prod</option>
+            </select>
+          </div>
+          <div class="dg-wrap" style="border:0;border-radius:0">
+            <table class="dg">
+              <thead><tr>
+                <th>最近调用 IP</th><th>地理位置</th><th class="num">近 7 天调用次数</th>
+                <th>IP 白名单</th><th>最近调用时间</th><th class="num">操作</th>
+              </tr></thead>
+              <tbody>
+                <tr data-state="risk">
+                  <td class="dg-primary num">203.0.113.77</td>
+                  <td>新加坡 · 公网（未备案出口）</td>
+                  <td class="num">942</td>
+                  <td><span class="chip chip--risk"><i class="chip__dot"></i>未命中白名单</span></td>
+                  <td class="num">今天 03:12:41</td>
+                  <td><div class="dg-actions"><button class="btn btn--sm" type="button">重置密钥</button></div></td>
+                </tr>
+                <tr data-state="risk">
+                  <td class="dg-primary num">198.51.100.24</td>
+                  <td>中国香港 · 公网</td>
+                  <td class="num">102</td>
+                  <td><span class="chip chip--risk"><i class="chip__dot"></i>未命中白名单</span></td>
+                  <td class="num">09-22 21:08:03</td>
+                  <td><div class="dg-actions"><button class="btn btn--sm" type="button">重置密钥</button></div></td>
+                </tr>
+                <tr>
+                  <td class="dg-primary num">10.24.8.31</td>
+                  <td>上海 · 内网（VPC）</td>
+                  <td class="num">42</td>
+                  <td><span class="chip chip--compute"><i class="chip__dot"></i>命中白名单</span></td>
+                  <td class="num">09-19 10:07:16</td>
+                  <td><div class="dg-actions"><button class="btn btn--sm" type="button">加入白名单</button></div></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card__foot row">
+            <span class="t-micro">合计 1,086 次，与该密钥「近 7 天调用量」一致；白名单外的 1,044 次来自 2 个公网来源，其中 942 次集中在今天 02:00–03:12。</span>
+            <span class="spacer"></span>
+            <a class="btn btn--sm" href="console-logs.html">按该密钥查看日志</a>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <aside class="ledger" id="ledger" aria-label="消耗上下文"></aside>
+</div>
+
+<template id="band-actions">
+  <button class="btn btn--primary" type="button"><span data-icon="plus"></span>创建密钥</button>
+</template>
+
+<template id="band-ribbon">
+  <div class="ribbon ribbon--risk">密钥 key-legacy-ocr 出现白名单外调用来源 203.0.113.77（新加坡，近 7 天 942 次），建议立即重置并收紧 IP 白名单
+    <span class="ribbon__more">还有 1 条</span></div>
+</template>
+
+<template id="ledger-extra">
+  <h3>密钥维度消耗 Top 3</h3>
+  <div class="col" style="gap:var(--sp-3)">
+    <div class="row" style="gap:var(--sp-2)">
+      <span class="t-mono" style="width:104px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">key-kb-qa-svc</span>
+      <div class="capacity" style="flex:1"><div class="capacity__track"><div class="capacity__fill" style="width:100%"></div></div></div>
+      <button class="num-sm" data-receipt style="background:none;border:0;cursor:pointer;color:inherit;width:56px;text-align:right">1,842.6k</button>
+    </div>
+    <div class="row" style="gap:var(--sp-2)">
+      <span class="t-mono" style="width:104px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">key-legal-review</span>
+      <div class="capacity" style="flex:1"><div class="capacity__track"><div class="capacity__fill" style="width:52.6%"></div></div></div>
+      <button class="num-sm" data-receipt style="background:none;border:0;cursor:pointer;color:inherit;width:56px;text-align:right">968.4k</button>
+    </div>
+    <div class="row" style="gap:var(--sp-2)">
+      <span class="t-mono" style="width:104px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">key-vision-prod</span>
+      <div class="capacity" style="flex:1"><div class="capacity__track"><div class="capacity__fill" data-state="warn" style="width:38%"></div></div></div>
+      <button class="num-sm" data-receipt style="background:none;border:0;cursor:pointer;color:inherit;width:56px;text-align:right">700.0k</button>
+    </div>
+  </div>
+  <div class="t-micro mt-3">合计 3,511.0k · 占密钥维度消耗 90.5%</div>
+</template>
+
+<script src="assets/charts.js"></script>
+<script src="assets/app.js?v=20260924-7"></script>
+<script>
+  /* C-05 页面交互：图标填充 / 一次性明文复制与确认清除 */
+  document.addEventListener('DOMContentLoaded', function () {
+    Array.prototype.forEach.call(document.querySelectorAll('[data-icon]'), function (n) {
+      n.innerHTML = DSH.icon(n.getAttribute('data-icon'));
+    });
+
+    var secret = document.getElementById('newKeySecret');
+    var copyBtn = document.getElementById('copyKeyBtn');
+    var copyState = document.getElementById('copyState');
+    var savedBtn = document.getElementById('savedKeyBtn');
+    var once = document.getElementById('keyOnce');
+    var done = document.getElementById('keyOnceDone');
+
+    if (copyBtn && secret) {
+      copyBtn.addEventListener('click', function () {
+        var text = secret.textContent;
+        try {
+          if (window.getSelection) {
+            var range = document.createRange();
+            range.selectNodeContents(secret);
+            var sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+          }
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text)['catch'](function () {});
+          }
+          copyState.textContent = '已复制到剪贴板；若浏览器拦截，文本已自动选中，按 ⌘C 即可。';
+        } catch (err) {
+          copyState.textContent = '当前环境无法自动复制，请手动选中上方密钥后按 ⌘C。';
+        }
+      });
+    }
+
+    if (savedBtn && once && done && secret) {
+      savedBtn.addEventListener('click', function () {
+        secret.textContent = 'sk-hk-••••••••••••••••••••••••••••••••••••••••••••';
+        once.setAttribute('data-cleared', 'true');
+        done.setAttribute('data-show', 'true');
+        if (copyBtn) { copyBtn.disabled = true; copyBtn.textContent = '明文已清除'; }
+        if (copyState) copyState.textContent = '';
+      });
+    }
+  });
+</script>
+</body>
+</html>

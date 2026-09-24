@@ -1,0 +1,20 @@
+/* 标书撰写列表页独立工具栏样式 */
+.list-actions .circle-action svg {
+  width: 16px !important;
+  height: 16px !important;
+}
+
+.list-actions .view-button {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.list-actions .view-button.active {
+  border: 1px solid #d1e2ff !important;
+  border-radius: 6px !important;
+  background: #eaf2ff !important;
+  color: #025dff !important;
+}

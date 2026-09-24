@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+  <rect width="1200" height="800" fill="#fff"/>
+  <text x="70" y="76" font-family="Arial" font-size="34" font-weight="700" fill="#0f172a">数据治理与资产目录体系</text>
+  <g font-family="Arial" font-size="16">
+    <rect x="80" y="130" width="220" height="90" rx="16" fill="#f1f5f9"/><text x="110" y="170">结构化数据</text><text x="110" y="198">Oracle / MySQL</text>
+    <rect x="80" y="250" width="220" height="90" rx="16" fill="#f1f5f9"/><text x="110" y="290">非结构化数据</text><text x="110" y="318">文档 / 图片 / 音频</text>
+    <rect x="80" y="370" width="220" height="90" rx="16" fill="#f1f5f9"/><text x="110" y="410">接口数据</text><text x="110" y="438">API / 消息队列</text>
+  </g>
+  <g stroke="#025dff" stroke-width="5" fill="none"><path d="M300 175 L400 275"/><path d="M300 295 L400 295"/><path d="M300 415 L400 315"/></g>
+  <rect x="400" y="220" width="240" height="150" rx="20" fill="#eff6ff" stroke="#bfdbfe"/><text x="440" y="270" font-family="Arial" font-size="18" fill="#1d4ed8">数据接入层</text><text x="440" y="300" font-family="Arial" font-size="15">批量 / 实时 / 增量</text><text x="440" y="330" font-family="Arial" font-size="15">断点续传</text>
+  <rect x="680" y="220" width="240" height="150" rx="20" fill="#f0fdf4" stroke="#bbf7d0"/><text x="720" y="270" font-family="Arial" font-size="18" fill="#166534">治理层</text><text x="720" y="300" font-family="Arial" font-size="15">标准化 / 去重 / 质量检核</text><text x="720" y="330" font-family="Arial" font-size="15">血缘追踪 / 敏感识别</text>
+  <rect x="960" y="220" width="160" height="150" rx="20" fill="#fff7ed" stroke="#fed7aa"/><text x="1000" y="270" font-family="Arial" font-size="18" fill="#9a3412">资产目录</text><text x="1000" y="300" font-family="Arial" font-size="15">分类 / 分级</text><text x="1000" y="330" font-family="Arial" font-size="15">检索 / 授权</text>
+  <g stroke="#16a34a" stroke-width="5" fill="none"><path d="M640 295 L680 295"/><path d="M920 295 L960 295"/></g>
+  <g font-family="Arial" font-size="16" fill="#334155"><text x="80" y="540">治理指标：数据完整率 99.8% · 唯一率 99.5% · 一致率 99.2% · 及时率 98.9%</text><text x="80" y="580">安全策略：字段级脱敏 · 行级权限 · 全链路审计 · 敏感数据自动识别</text></g>
+</svg>

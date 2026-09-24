@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>设计系统 · 大模型智算平台</title>
+<meta name="description" content="大模型智算平台设计系统：结构用墨，语义用色">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230F1418'/%3E%3Cpath d='M9 21V11l4 6 3-4 4 8' fill='none' stroke='%230B6E7F' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/app.css?v=20260924-4">
+</head>
+<body data-module="apps" data-page="D4" data-title="设计系统">
+<div class="shell no-ledger" id="shell">
+  <nav class="rail" id="rail" aria-label="模块导航"></nav>
+  <div class="main">
+    <header class="band" id="band"></header>
+    <div class="mid">
+      <main class="stage" id="stage">
+
+        <!-- ============ 设计原则 ============ -->
+        <section class="ds-sec">
+          <header>
+            <h2>设计原则</h2>
+            <p>本平台的视觉与交互体系为全新原创，不继承任何既有原型或组件库的令牌与范式。核心主张是
+              <b class="t-strong">结构用墨，语义用色</b>——颜色只表达语义，不做装饰。</p>
+          </header>
+          <div class="grid grid--3">
+            <div class="card"><div class="card__body">
+              <div class="t-section mb-2">结构用墨</div>
+              <p class="t-meta">骨架全用石墨墨阶，主操作是墨黑实心按钮。去掉全部彩色后，结构与层级仍完全可读。</p>
+            </div></div>
+            <div class="card"><div class="card__body">
+              <div class="t-section mb-2">语义用色</div>
+              <p class="t-meta">模块不拥有颜色，语义才拥有颜色。消耗在任何模块里都是同一个琥珀色。</p>
+            </div></div>
+            <div class="card"><div class="card__body">
+              <div class="t-section mb-2">成本前置</div>
+              <p class="t-meta">任何有消耗的动作，在执行之前就让用户看到代价。不存在“提交后才知道花了多少”。</p>
+            </div></div>
+          </div>
+        </section>
+
+        <!-- ============ 结构墨阶 ============ -->
+        <section class="ds-sec">
+          <header><h2>结构墨阶 Ink</h2>
+            <p>界面的一切结构——文本、边框、主操作——只使用这一条墨阶，不引入彩色。</p></header>
+          <div class="swatches" id="sw-ink"></div>
+        </section>
+
+        <!-- ============ 承载面 ============ -->
+        <section class="ds-sec">
+          <header><h2>承载面 Surface</h2><p>页面、卡片、凹陷区与描边。承载面本身不带语义。</p></header>
+          <div class="swatches" id="sw-surface"></div>
+        </section>
+
+        <!-- ============ 语义色组 ============ -->
+        <section class="ds-sec">
+          <header><h2>语义色组 Semantic</h2>
+            <p>每组四档：<code>soft</code> 底 / <code>base</code> 主 / <code>strong</code> 强调 / <code>line</code> 描边。
+              同一语义在所有页面、所有图表中恒定同色。</p></header>
+          <div id="sw-semantic"></div>
+        </section>
+
+        <!-- ============ 品牌标识色 ============ -->
+        <section class="ds-sec">
+          <header><h2>品牌标识色</h2>
+            <p>仅用于品牌标识、当前模块指示条与焦点环。<b class="t-strong">不用于按钮、不用于装饰</b>——
+              若主按钮也是彩色，彩色就失去了“这里有事发生”的信号价值。</p></header>
+          <div class="swatches" id="sw-brand"></div>
+          <div class="row mt-5" style="gap:var(--sp-6)">
+            <div class="row" style="gap:var(--sp-3)">
+              <span class="t-meta">焦点环</span>
+              <input class="input" value="Tab 聚焦查看" style="width:180px">
+            </div>
+            <div class="row" style="gap:var(--sp-3)">
+              <span class="t-meta">模块指示条</span>
+              <div style="width:56px;height:44px;background:var(--ink-900);border-radius:var(--r-2);display:grid;place-items:center;position:relative">
+                <span style="color:#fff;font-size:10px">应用</span>
+                <i style="position:absolute;left:-8px;top:50%;transform:translateY(-50%);width:3px;height:20px;background:var(--brand);border-radius:0 2px 2px 0"></i>
+              </div>
+            </div>
+            <div class="row" style="gap:var(--sp-3)">
+              <span class="t-meta">品牌标识</span>
+              <span style="width:36px;height:36px;border-radius:8px;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:700">智</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ 排版 ============ -->
+        <section class="ds-sec">
+          <header><h2>排版与数字层级</h2>
+            <p>数字是界面主角，独立成阶；全部数字强制 <code>tabular-nums</code>，保证跨行小数点对齐。</p></header>
+          <div class="grid grid--2">
+            <div class="card"><div class="card__head"><h3>数字层级</h3></div><div class="card__body">
+              <div class="col" style="gap:var(--sp-4)">
+                <div><div class="t-micro mb-2">--num-xl · 34/600 · 看板主指标</div><div class="num-xl">4.39M</div></div>
+                <div><div class="t-micro mb-2">--num-lg · 22/600 · 卡片指标</div><div class="num-lg">2 098.0 <span class="t-micro">卡时</span></div></div>
+                <div><div class="t-micro mb-2">--num-md · 15/550 · 表格与成本按钮</div><div class="num-md">7,420,000</div></div>
+                <div><div class="t-micro mb-2">--num-sm · 13/500 · 辅助与轴标签</div><div class="num-sm">1 180 Token</div></div>
+                <div><div class="t-micro mb-2">等宽对齐效果</div>
+                  <div class="num-sm">1,180<br>94,600<br>7,420,000</div></div>
+              </div>
+            </div></div>
+            <div class="card"><div class="card__head"><h3>文本层级与字体</h3></div><div class="card__body">
+              <div class="col" style="gap:var(--sp-4)">
+                <div><div class="t-micro mb-2">--text-page · 20/600</div><div class="t-page">用量概览</div></div>
+                <div><div class="t-micro mb-2">--text-section · 15/600</div><div class="t-section">Token 额度水位</div></div>
+                <div><div class="t-micro mb-2">--text-body · 14/400</div><div class="t-body">会话结束后按真实消耗扣费，并返还多余冻结额度。</div></div>
+                <div><div class="t-micro mb-2">--text-meta · 13/400</div><div class="t-meta">数据截至 14:35 · 来源 Token 银行</div></div>
+                <div><div class="t-micro mb-2">--text-micro · 12/500</div><div class="t-micro">冻结中</div></div>
+                <div class="divider"></div>
+                <dl class="spec">
+                  <dt>--font-ui</dt><dd>system-ui / PingFang SC / HarmonyOS Sans SC</dd>
+                  <dt>--font-num</dt><dd>ui-monospace / SF Mono / JetBrains Mono</dd>
+                </dl>
+              </div>
+            </div></div>
+          </div>
+        </section>
+
+        <!-- ============ 形状与动效 ============ -->
+        <section class="ds-sec">
+          <header><h2>形状、阴影与动效</h2>
+            <p>圆角整体偏小，塑造精密、技术化的观感，区别于通用后台的大圆角。</p></header>
+          <div class="grid grid--3">
+            <div class="card"><div class="card__head"><h3>圆角</h3></div><div class="card__body">
+              <div class="row" style="gap:var(--sp-4);align-items:flex-end">
+                <div class="center"><div style="width:52px;height:52px;background:var(--surface-sunken);border:1px solid var(--line);border-radius:4px"></div><div class="t-micro mt-2">--r-1 4px</div></div>
+                <div class="center"><div style="width:52px;height:52px;background:var(--surface-sunken);border:1px solid var(--line);border-radius:8px"></div><div class="t-micro mt-2">--r-2 8px</div></div>
+                <div class="center"><div style="width:52px;height:52px;background:var(--surface-sunken);border:1px solid var(--line);border-radius:12px"></div><div class="t-micro mt-2">--r-3 12px</div></div>
+                <div class="center"><div style="width:52px;height:52px;background:var(--surface-sunken);border:1px solid var(--line);border-radius:999px"></div><div class="t-micro mt-2">full</div></div>
+              </div>
+            </div></div>
+            <div class="card"><div class="card__head"><h3>阴影层级</h3></div><div class="card__body">
+              <div class="row" style="gap:var(--sp-4)">
+                <div class="center"><div style="width:56px;height:44px;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:var(--e-1)"></div><div class="t-micro mt-2">--e-1</div></div>
+                <div class="center"><div style="width:56px;height:44px;background:#fff;border-radius:8px;box-shadow:var(--e-2)"></div><div class="t-micro mt-2">--e-2</div></div>
+                <div class="center"><div style="width:56px;height:44px;background:#fff;border-radius:8px;box-shadow:var(--e-3)"></div><div class="t-micro mt-2">--e-3</div></div>
+              </div>
+            </div></div>
+            <div class="card"><div class="card__head"><h3>动效</h3></div><div class="card__body">
+              <dl class="spec">
+                <dt>--t-fast</dt><dd>120ms · 悬停、聚焦</dd>
+                <dt>--t</dt><dd>180ms · 常规过渡</dd>
+                <dt>--t-slow</dt><dd>320ms · 水位、结算</dd>
+                <dt>--ease</dt><dd>cubic-bezier(.2,.8,.2,1)</dd>
+              </dl>
+              <p class="t-micro mt-3">仅动 transform / opacity / filter；尊重 prefers-reduced-motion。</p>
+            </div></div>
+          </div>
+        </section>
+
+        <!-- ============ 外壳 ============ -->
+        <section class="ds-sec">
+          <header><h2>外壳度量</h2>
+            <p>窄轨 64px + 页面带 52px + 筛选列 208px + 主舞台 ≥880px + 账板 320px。
+              主设计基准 1366–1599px。当前页面即外壳本身，可直接观察。</p></header>
+          <div class="card"><div class="card__body">
+            <dl class="spec">
+              <dt>--rail-w</dt><dd>64px · 窄轨：模块切换 + 常驻额度水位环</dd>
+              <dt>--band-h</dt><dd>52px · 页面带：标题、语域切换、检索排序、视图切换、主操作</dd>
+              <dt>--filter-w</dt><dd>208px · 筛选列（仅集市类页面，可折叠）</dd>
+              <dt>--stage-min</dt><dd>880px · 主舞台，唯一可滚动区</dd>
+              <dt>--ledger-w</dt><dd>320px · 账板：把“钱”从控制中心解放到全站</dd>
+              <dt>--h-row</dt><dd>40px 常规 / 32px 紧凑 · 密度优先</dd>
+            </dl>
+          </div></div>
+        </section>
+
+        <!-- ============ 账本族 ============ -->
+        <section class="ds-sec">
+          <header><h2>账本族组件</h2>
+            <p>本设计的核心原创组件族。平台里每一次有成本的点击都走「预估 → 冻结 → 结算 → 回执」。</p></header>
+
+          <div class="ds-sub">CostButton · 成本按钮</div>
+          <div class="card"><div class="card__body">
+            <div class="row row--wrap" style="gap:var(--sp-5)">
+              <button class="costbtn"><span class="costbtn__label">开始试用</span><span class="costbtn__est">≈1.2k Token</span></button>
+              <button class="costbtn"><span class="costbtn__label">提交申请</span><span class="costbtn__est">≈4.5 卡时</span></button>
+              <button class="costbtn" data-state="short"><span class="costbtn__label">提交申请</span><span class="costbtn__est">缺 2.5 卡时</span></button>
+            </div>
+            <p class="t-meta mt-4">额度不足时<b class="t-strong">不置灰</b>，而是转风险色并显示缺口与出路（10.8 约定 6）。
+              “不可用”本身是重要信息，灰按钮是信息黑洞。</p>
+          </div></div>
+
+          <div class="ds-sub">TriPhaseTicket · 三段票据</div>
+          <div class="card"><div class="card__body">
+            <div class="ticket">
+              <div class="ticket__phases">
+                <div class="ticket__phase" data-state="done"><h4>预估</h4><div class="amt">1.24k</div></div>
+                <div class="ticket__phase" data-state="frozen"><h4>冻结中</h4><div class="amt">1.24k</div></div>
+                <div class="ticket__phase"><h4>已结算</h4><div class="amt">—</div></div>
+              </div>
+              <div class="ticket__foot"><span class="chip chip--spend"><i class="chip__dot"></i>冻结中</span>
+                <span>冻结与已消耗分列呈现，不合并为一个“已用”（约定 2）</span></div>
+            </div>
+            <div class="ticket mt-4">
+              <div class="ticket__phases">
+                <div class="ticket__phase" data-state="done"><h4>预估</h4><div class="amt">1.24k</div></div>
+                <div class="ticket__phase" data-state="done"><h4>冻结</h4><div class="amt">1.24k</div></div>
+                <div class="ticket__phase" data-state="settled"><h4>结算</h4><div class="amt">1.18k</div></div>
+              </div>
+              <div class="ticket__foot"><span>偏差</span>
+                <span class="variance variance--under">低于预估 4.8%</span>
+                <span class="spacer"></span><span>已解冻返还 60 Token</span></div>
+            </div>
+          </div></div>
+
+          <div class="ds-sub">LevelBar / DualGauge · 水位与双轨</div>
+          <div class="grid grid--2">
+            <div class="card"><div class="card__head"><h3>LevelBar 三段水位</h3></div><div class="card__body" id="ds-level"></div></div>
+            <div class="card"><div class="card__head"><h3>DualGauge 双轨刻度</h3></div><div class="card__body" id="ds-dual"></div></div>
+          </div>
+
+          <div class="ds-sub">CostPreviewCard + VarianceChip · 预估与偏差</div>
+          <div class="grid grid--2">
+            <div class="preview"><div class="preview__head">本次预估（来源：Token 银行费率接口）</div>
+              <div class="preview__body">
+                <div class="row row--between"><span class="t-meta">预估消耗</span><span class="num-md">4.5 卡时</span></div>
+                <div class="preview__sim"><span>2 098.0</span><span class="preview__arrow">→</span><span class="preview__after">2 093.5</span><span class="t-micro">卡时余额变化</span></div>
+                <div class="preview__warn">将触发「项目卡时当日限额」预警（当日 80%）</div>
+              </div>
+            </div>
+            <div class="card"><div class="card__body">
+              <div class="col" style="gap:var(--sp-3)">
+                <div class="row row--between"><span class="t-meta">正常偏差</span><span class="variance variance--under">实际 0.96k · 低于预估 4%</span></div>
+                <div class="row row--between"><span class="t-meta">超阈值偏差（±20%）</span><span class="variance variance--over">实际 2.1k · 高于预估 69%</span></div>
+                <p class="t-micro">超阈值自动转风险色并附解释入口，避免“账不对但查不到原因”。</p>
+              </div>
+            </div></div>
+          </div>
+        </section>
+
+        <!-- ============ 状态族 ============ -->
+        <section class="ds-sec">
+          <header><h2>状态族组件</h2><p>长流程必须回答“现在在哪、还要多久、能否回退”。</p></header>
+          <div class="card"><div class="card__body">
+            <div class="strip">
+              <div class="strip__step" data-state="done"><span class="strip__dot">✓</span><span class="strip__label">提交申请</span></div>
+              <span class="strip__line" data-done="true"></span>
+              <div class="strip__step" data-state="done"><span class="strip__dot">✓</span><span class="strip__label">配额校验</span></div>
+              <span class="strip__line" data-done="true"></span>
+              <div class="strip__step" data-state="active"><span class="strip__dot">3</span><span class="strip__label">审批中</span></div>
+              <span class="strip__line"></span>
+              <div class="strip__step"><span class="strip__dot">4</span><span class="strip__label">编排交付</span></div>
+              <span class="strip__line"></span>
+              <div class="strip__step"><span class="strip__dot">5</span><span class="strip__label">运行计费</span></div>
+              <span class="strip__meta">当前阶段已 2h 14m · 下一阶段预计 4h 内</span>
+            </div>
+          </div></div>
+
+          <div class="ds-sub">StateChip · 状态签（颜色 + 圆点 + 文字 三重编码）</div>
+          <div class="card"><div class="card__body">
+            <div class="row row--wrap" style="gap:var(--sp-2)">
+              <span class="chip chip--compute"><i class="chip__dot"></i>运行中</span>
+              <span class="chip chip--spend"><i class="chip__dot"></i>冻结中</span>
+              <span class="chip chip--quota"><i class="chip__dot"></i>可用</span>
+              <span class="chip chip--risk"><i class="chip__dot"></i>已耗尽</span>
+              <span class="chip chip--insight"><i class="chip__dot"></i>灰度中 / 40%</span>
+              <span class="chip chip--neutral"><i class="chip__dot"></i>已退役</span>
+              <span class="tag">RAG</span><span class="tag">多模态</span>
+            </div>
+            <p class="t-meta mt-4">状态不单靠颜色：颜色 + 标记符 + 文字三重编码，保证色觉障碍用户可辨。</p>
+          </div></div>
+
+          <div class="ds-sub">AlertRibbon · 告警带（同屏最多 1 条）</div>
+          <div class="card" style="overflow:hidden">
+            <div class="ribbon ribbon--spend">项目「视觉检索平台」Token 已用 61.8%，将于 80% 触发预警
+              <span class="ribbon__more">还有 2 条</span></div>
+            <div class="ribbon ribbon--risk" style="border-bottom:0">卡时配额不足，3 个训练任务已暂停排队
+              <span class="ribbon__more">还有 1 条</span></div>
+          </div>
+        </section>
+
+        <!-- ============ 资源族 ============ -->
+        <section class="ds-sec">
+          <header><h2>资源族组件</h2><p>用热格与级联替代传统表格与缩进树——状态问题应该一眼可扫。</p></header>
+
+          <div class="ds-sub">NodeGrid · 节点热格（每格一卡）</div>
+          <div class="card"><div class="card__head"><h3>加速卡占用与健康</h3>
+            <span class="chip chip--compute"><i class="chip__dot"></i>健康 47</span>
+            <span class="chip chip--spend"><i class="chip__dot"></i>高负载 4</span>
+            <span class="chip chip--risk"><i class="chip__dot"></i>故障 1</span>
+            <button class="btn btn--sm">查看节点台账</button></div>
+            <div class="card__body">
+              <div class="nodegrid" id="ds-nodes"></div>
+              <div class="nodegrid__legend mt-4">
+                <span><i style="background:var(--surface);border:1px solid var(--line)"></i>空闲</span>
+                <span><i style="background:var(--compute)"></i>占用中</span>
+                <span><i style="background:var(--spend)"></i>高负载</span>
+                <span><i style="background:var(--risk)"></i>故障</span>
+                <span><i style="background:repeating-linear-gradient(45deg,var(--surface-sunken) 0 4px,var(--line) 4px 8px)"></i>已隔离</span>
+              </div>
+            </div></div>
+
+          <div class="ds-sub">TraceCascade · 链路级联（时间瀑布 + 并发泳道）</div>
+          <div class="card"><div class="card__head"><h3>智能体工具调用链路</h3>
+            <span class="chip chip--risk"><i class="chip__dot"></i>1 个节点失败</span></div>
+            <div class="card__body" id="ds-trace"></div>
+          </div>
+
+          <div class="ds-sub">DiffMatrix · 配额差异矩阵</div>
+          <div class="dg-wrap"><table class="matrix">
+            <thead><tr><th>项目 / 模型 / 应用</th><th>Token 配额</th><th>QPS</th><th>并发</th><th>卡时配额</th></tr></thead>
+            <tbody>
+              <tr><td>视觉检索平台</td><td>6,000,000</td><td>80</td><td>40</td><td data-changed="true">2,400</td></tr>
+              <tr><td>合同审查</td><td>3,000,000</td><td>40</td><td>20</td><td>1,200</td></tr>
+              <tr data-over="true"><td>标书撰写 <span class="chip chip--risk">超限</span></td><td>3,600,000</td><td>40</td><td>20</td><td data-changed="true">1,600</td></tr>
+              <tr><td>客服质检智能体</td><td>1,200,000</td><td>20</td><td>10</td><td>600</td></tr>
+            </tbody>
+          </table></div>
+          <p class="t-micro mt-3">琥珀底 = 本次改动；朱红 = 超出父级上限。支持行内编辑与键盘操作（10.8 约定 7）。</p>
+        </section>
+
+        <!-- ============ 骨架族 ============ -->
+        <section class="ds-sec">
+          <header><h2>骨架族组件</h2><p>表单、表格、空态与命令面板。</p></header>
+
+          <div class="ds-sub">表单与按钮</div>
+          <div class="card"><div class="card__body">
+            <div class="row row--wrap" style="gap:var(--sp-3)">
+              <button class="btn btn--primary">主操作</button>
+              <button class="btn">次操作</button>
+              <button class="btn btn--ghost">幽灵按钮</button>
+              <button class="btn" disabled>禁用</button>
+              <input class="input" placeholder="单行输入" style="width:170px">
+              <select class="select"><option>下拉选择</option></select>
+              <label class="search"><span></span><input class="input" placeholder="搜索…" style="width:170px"></label>
+            </div>
+          </div></div>
+
+          <div class="ds-sub">DataGrid · 数据表</div>
+          <div class="dg-wrap"><div class="dg-scroll"><table class="dg">
+            <thead><tr><th>模型</th><th>状态</th><th class="num">Token 消耗</th><th class="num">偏差</th><th>时间</th></tr></thead>
+            <tbody>
+              <tr><td class="dg-primary">Qwen3-32B-Instruct</td><td><span class="chip chip--compute"><i class="chip__dot"></i>运行中</span></td>
+                <td class="num">412.6k</td><td class="num"><span class="variance variance--under">-4.2%</span></td><td class="num">14:32</td></tr>
+              <tr><td class="dg-primary">DeepSeek-V3</td><td><span class="chip chip--compute"><i class="chip__dot"></i>运行中</span></td>
+                <td class="num">268.1k</td><td class="num"><span class="variance variance--under">-1.8%</span></td><td class="num">14:20</td></tr>
+              <tr data-state="risk"><td class="dg-primary">InternVL2-26B</td><td><span class="chip chip--risk"><i class="chip__dot"></i>不健康</span></td>
+                <td class="num">96.4k</td><td class="num"><span class="variance variance--over">+38.5%</span></td><td class="num">13:58</td></tr>
+              <tr><td class="dg-primary">BGE-M3</td><td><span class="chip chip--neutral"><i class="chip__dot"></i>已退役</span></td>
+                <td class="num">12.0k</td><td class="num">—</td><td class="num">09:12</td></tr>
+            </tbody>
+          </table></div></div>
+
+          <div class="ds-sub">ObjectCard · 集市对象卡（发现语域）</div>
+          <div class="objgrid">
+            <article class="objcard">
+              <div class="objcard__top"><div class="objcard__icon">写</div>
+                <div><div class="objcard__name">写作助手</div><div class="objcard__sub">行业应用 · 内容办公</div></div></div>
+              <p class="objcard__desc">公文、周报、方案初稿生成，支持企业模板与语气约束。</p>
+              <div class="objcard__tags"><span class="tag">文本</span><span class="tag">模板</span></div>
+              <div class="objcard__foot"><button class="costbtn costbtn--sm"><span class="costbtn__label">试用</span><span class="costbtn__est">≈0.8k Token</span></button></div>
+            </article>
+            <article class="objcard">
+              <div class="objcard__top"><div class="objcard__icon objcard__icon--soft">检</div>
+                <div><div class="objcard__name">视频检查</div><div class="objcard__sub">智能体 · 视觉质检</div></div></div>
+              <p class="objcard__desc">抽帧检测与结构化报告，可挂接知识库与工单系统。</p>
+              <div class="objcard__tags"><span class="chip chip--insight">灰度中</span><span class="tag">多模态</span></div>
+              <div class="objcard__foot"><button class="costbtn costbtn--sm"><span class="costbtn__label">试用</span><span class="costbtn__est">≈42.6k Token</span></button></div>
+            </article>
+            <article class="objcard">
+              <div class="objcard__top"><div class="objcard__icon objcard__icon--soft">训</div>
+                <div><div class="objcard__name">模型微调服务</div><div class="objcard__sub">平台产品</div></div></div>
+              <p class="objcard__desc">需要算力配额，当前项目卡时不足。</p>
+              <div class="objcard__tags"><span class="tag">训练</span></div>
+              <div class="objcard__foot"><span class="objcard__cost">≈4.5 卡时 / 次</span><span class="spacer"></span>
+                <button class="btn btn--sm" style="border-color:var(--risk);color:var(--risk-strong)">缺 2.5 卡时</button></div>
+            </article>
+          </div>
+
+          <div class="ds-sub">EmptyScaffold · 空态即引导</div>
+          <div class="card"><div class="empty">
+            <div class="empty__art" id="ds-empty-icon"></div>
+            <h3>还没有可用实例</h3>
+            <p>提交一次资源申请，平台会自动编排交付并输出独立访问入口。</p>
+            <div class="row" style="gap:var(--sp-2)">
+              <button class="costbtn"><span class="costbtn__label">申请算力</span><span class="costbtn__est">≈4.5 卡时</span></button>
+              <button class="btn">载入示例</button>
+            </div>
+          </div></div>
+
+          <div class="ds-sub">CommandPalette · 命令面板（⌘K 触发）</div>
+          <button class="btn" onclick="DSH.ui.togglePalette(true)">⌘K 打开命令面板</button>
+        </section>
+
+        <!-- ============ 交互模型 ============ -->
+        <section class="ds-sec">
+          <header><h2>交互模型：七条强制约定</h2>
+            <p>核心命题是让「代价」与「状态」在动作发生之前就被看见。以下七条为强制约定，可直接逐条转为测试用例。</p></header>
+          <ul class="rulelist">
+            <li><div><b>预估前置</b><p>所有计费型动作在执行前必须显示预估（CostButton + CostPreviewCard）。预估来源为 Token 银行费率接口，禁止前端估算。</p></div></li>
+            <li><div><b>冻结可见</b><p>执行中冻结量与已消耗量分列呈现，不得合并为一个“已用”数字。</p></div></li>
+            <li><div><b>结算回执</b><p>动作结束后生成回执，含预估 / 实际 / 偏差三段；偏差超 ±20% 自动转风险色并给解释入口。</p></div></li>
+            <li><div><b>撤销窗口</b><p>提交后、进入执行阶段前的短暂窗口内可撤销并全额解冻；窗口期在 StateStrip 上可见倒计时。</p></div></li>
+            <li><div><b>数字是一扇门</b><p>任何消耗数字可点击直达回执或明细；全站无死数字。</p></div></li>
+            <li><div><b>不可用也是信息</b><p>因额度 / 配额不足而不可操作时，不得单纯置灰；必须显示缺口量、原因与出路。</p></div></li>
+            <li><div><b>键盘优先</b><p>⌘K 命令面板、⌥L 账板、⌥R 回执、Esc 关闭。关键动作不得只能鼠标完成。</p></div></li>
+          </ul>
+        </section>
+
+        <!-- ============ 可视化规范 ============ -->
+        <section class="ds-sec">
+          <header><h2>数据可视化规范</h2>
+            <p>可视化目标是<b class="t-strong">回答状态问题</b>，不是展示数据量。</p></header>
+          <div class="grid grid--2">
+            <div class="card"><div class="card__head"><h3>堆叠柱 + 均值参考线</h3></div>
+              <div class="card__body"><div id="ds-bars" style="height:180px"></div>
+                <p class="chart__caption">柱顶标数值；虚线为均值参考线，使“是否异常”无需心算。</p></div></div>
+            <div class="card"><div class="card__head"><h3>双轨图：Token 柱 + 卡时线</h3></div>
+              <div class="card__body"><div id="ds-dualscale" style="height:180px"></div>
+                <p class="chart__caption">Token 与卡时禁止换算到同一轴，必须双轴并列；朱红虚线为预警阈值。</p></div></div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+</div>
+
+<script src="assets/charts.js"></script>
+<script src="assets/app.js?v=20260924-7"></script>
+<script>
+(function () {
+  /* --- 色板渲染，直接从 CSS 变量取值，保证文档与实现永不脱节 --- */
+  function css(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+  function swatch(name, varName, note) {
+    return '<div class="swatch"><div class="swatch__chip" style="background:var(' + varName + ')"></div>' +
+      '<div class="swatch__meta"><div class="swatch__name">' + name + '</div>' +
+      '<div class="swatch__val">' + css(varName) + (note ? ' · ' + note : '') + '</div></div></div>';
+  }
+  document.getElementById('sw-ink').innerHTML =
+    ['900', '800', '700', '600', '500', '400', '300'].map(function (k) {
+      return swatch('--ink-' + k, '--ink-' + k, '');
+    }).join('');
+  document.getElementById('sw-surface').innerHTML =
+    swatch('--canvas', '--canvas', '页面底') + swatch('--surface', '--surface', '卡片') +
+    swatch('--surface-sunken', '--surface-sunken', '表头') + swatch('--line', '--line', '描边') +
+    swatch('--line-soft', '--line-soft', '弱分隔') + swatch('--line-strong', '--line-strong', '强分隔');
+
+  var SEM = [
+    ['compute', '算力 / 运行时 / 健康 / 节点'],
+    ['spend', '消耗 / 计费 / 冻结 / 预估'],
+    ['quota', '额度 / 可用 / 授权 / 成功'],
+    ['risk', '超支 / 告警 / 故障 / 驳回'],
+    ['insight', '分析 / 次要图表 / 洞察']
+  ];
+  document.getElementById('sw-semantic').innerHTML = SEM.map(function (s) {
+    var k = s[0];
+    return '<div class="ds-sub" style="margin-top:var(--sp-4)">--' + k + '　<span class="t-muted">' + s[1] + '</span></div>' +
+      '<div class="swatches">' + swatch(k + '-soft', '--' + k + '-soft', '底') +
+      swatch(k, '--' + k, '主') + swatch(k + '-strong', '--' + k + '-strong', '强调') +
+      swatch(k + '-line', '--' + k + '-line', '描边') + '</div>';
+  }).join('');
+  document.getElementById('sw-brand').innerHTML =
+    swatch('--brand', '--brand', '仅标识与焦点') + swatch('--ring', '--brand', '焦点环取样');
+
+  /* --- 账本族：水位与双轨 --- */
+  document.getElementById('ds-level').innerHTML =
+    '<div class="levelbar"><div class="levelbar__track">' +
+    '<div class="levelbar__seg levelbar__seg--used" style="width:61.83%"></div>' +
+    '<div class="levelbar__seg levelbar__seg--frozen" style="width:1.55%"></div>' +
+    '<div class="levelbar__seg levelbar__seg--avail" style="width:36.62%"></div></div>' +
+    '<div class="levelbar__tick" style="left:80%"></div>' +
+    '<div class="levelbar__tick levelbar__tick--limit" style="left:100%"></div>' +
+    '<div class="levelbar__legend">' +
+    '<span><i style="background:var(--ink-700)"></i>已用 7.42M</span>' +
+    '<span><i style="background:var(--spend)"></i>冻结 186.0k</span>' +
+    '<span><i style="background:var(--quota)"></i>可用 4.39M</span></div></div>' +
+    '<p class="t-micro mt-4">刻线：80% 预警 / 100% 上限。已用与冻结分列，不合并。</p>';
+
+  document.getElementById('ds-dual').innerHTML =
+    '<div class="dualgauge">' +
+    ['Token 已用|7420000|12000000|spend', '卡时 已用|2860|5000|compute'].map(function (r) {
+      var p = r.split('|'), v = +p[1], q = +p[2];
+      return '<div class="dualgauge__row"><span class="dualgauge__name">' + p[0] + '</span>' +
+        '<div class="capacity"><div class="capacity__track"><div class="capacity__fill" style="width:' +
+        (v / q * 100).toFixed(1) + '%;background:var(--' + p[3] + ')"></div></div></div>' +
+        '<span class="dualgauge__val">' + DSH.fmt.kJ(v) + ' / ' + DSH.fmt.kJ(q) + '</span></div>';
+    }).join('') + '</div>' +
+    '<p class="t-micro mt-4">两轨单位不可换算（10.1），因此永远并列呈现，不折算为单一数字。</p>';
+
+  /* --- 资源族 --- */
+  function cards(n, mix) {
+    var out = [];
+    for (var i = 0; i < n; i++) {
+      var r = Math.random();
+      out.push(r < mix.free ? 'free' : r < mix.free + mix.busy ? 'busy'
+        : r < mix.free + mix.busy + mix.warn ? 'warn' : 'fault');
+    }
+    return out;
+  }
+  DSH.chart.nodeGrid(document.getElementById('ds-nodes'), [
+    { name: 'ascend-910b-01', cards: cards(32, { free: .3, busy: .58, warn: .09, fault: .03 }) },
+    { name: 'ascend-910b-02', cards: cards(32, { free: .12, busy: .78, warn: .06, fault: .04 }) },
+    { name: 'nvidia-h800-01', cards: cards(16, { free: .5, busy: .44, warn: .06, fault: 0 }) }
+  ]);
+  var iso = document.querySelector('#ds-nodes .nodecell');
+  if (iso) iso.dataset.state = 'isolated';
+
+  DSH.chart.trace(document.getElementById('ds-trace'), {
+    total: 4200,
+    lanes: [
+      { name: '规划推理 · Qwen3-32B', start: 0, dur: 820 },
+      { name: '知识库检索 · RAG', start: 840, dur: 1180 },
+      { name: '工具 · 视觉检测 API', start: 1000, dur: 2400, state: 'slow' },
+      { name: '工具 · 结构化抽取', start: 2100, dur: 760, state: 'fail' },
+      { name: '汇总推理 · Qwen3-32B', start: 3450, dur: 700 }
+    ]
+  });
+
+  var ic = document.getElementById('ds-empty-icon');
+  if (ic) ic.innerHTML = DSH.icon('compute', 24);
+
+  /* --- 图表规范 --- */
+  DSH.chart.bars(document.getElementById('ds-bars'), {
+    labels: ['写作', '合同', '质检', '检索'],
+    series: [
+      { name: '输入', values: [420, 680, 310, 240], color: css('--compute') },
+      { name: '输出', values: [180, 260, 190, 120], color: css('--insight') }
+    ]
+  });
+  DSH.chart.dualScale(document.getElementById('ds-dualscale'), {
+    labels: ['09-18', '09-19', '09-20', '09-21', '09-22', '09-23', '09-24'],
+    token: [620, 780, 540, 910, 1020, 880, 760],
+    cardhour: [180, 240, 160, 320, 420, 300, 260],
+    tokenLimit: 1000
+  });
+
+  /* 搜索图标注入（.search 占位） */
+  Array.prototype.forEach.call(document.querySelectorAll('.search'), function (s) {
+    if (!s.querySelector('svg')) s.insertAdjacentHTML('afterbegin', DSH.icon('search'));
+  });
+})();
+</script>
+</body>
+</html>

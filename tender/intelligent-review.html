@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f6fafe" />
+    <title>智能审查 - AI投标助手</title>
+    <link rel="stylesheet" href="./assets/intelligent-review.css?v=20260911-1" />
+    <link rel="stylesheet" href="./assets/shared-brand-header.css" />
+    <script defer src="./assets/project-created-time.js?v=20260912-qa-earliest"></script>
+    <script defer src="./assets/review2-store.js?v=20260903-4"></script>
+    <script defer src="./assets/intelligent-review.mjs?v=20260912-project-created-time"></script>
+    <script defer src="./assets/shared-brand-header.js?v=20260911-unnamed-project"></script>
+    <script defer src="./assets/list-unified-loader.js?v=20260911-owner3"></script>
+  </head>
+  <body data-page="intelligent-review">
+    <div class="app is-list">
+      <header class="topbar">
+        <button class="brand" type="button" data-module="标书撰写" aria-label="返回标书撰写列表">
+          <span class="brand-content"><span class="brand-logo-crop"><img src="./assets/list-huakun-tender-logo-cczIqQ47.png" alt="华鲲元启" /></span><span class="brand-dot">·</span><span class="brand-product">AI投标助手</span></span>
+        </button>
+        <button class="profile" type="button" data-toast="个人菜单"><img class="avatar-image" src="./assets/figma/avatar.svg" alt="" /><span>易天行</span><svg class="profile-chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M12.5 6.25 8.25 10.27 4 6.25" /></svg></button>
+      </header>
+      <main class="list-page" aria-label="智能审查列表">
+        <div class="list-inner">
+          <div class="list-toolbar">
+            <nav class="primary-tabs" aria-label="投标业务模块">
+              <button class="primary-tab" type="button" data-module="标书撰写">标书撰写</button>
+              <button class="primary-tab active" type="button" aria-current="page">智能审查</button>
+              <button class="primary-tab" type="button" data-module="企业信息">企业信息</button>
+              <button class="primary-tab" type="button" data-module="图库管理">图库管理</button>
+            </nav>
+            <div class="list-actions">
+              <div class="search-control" id="searchControl"><input id="reviewSearch" type="search" placeholder="搜索审查任务" aria-label="搜索审查任务" /><button class="circle-action" id="searchButton" type="button" aria-label="搜索审查任务" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" /><path d="m16 16 4 4" /></svg></button></div>
+              <div class="view-switch" aria-label="视图切换"><button class="view-button active" type="button" data-view="grid" aria-label="网格视图" aria-pressed="true"><span class="grid-glyph" aria-hidden="true"><i></i><i></i><i></i><i></i></span></button><button class="view-button" type="button" data-view="list" aria-label="列表视图" aria-pressed="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11" /><path d="M4 6h.01M4 12h.01M4 18h.01" /></svg></button></div>
+              <button class="create-button" id="createReviewButton" type="button" data-create-review><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg><span>新建</span></button>
+            </div>
+          </div>
+          <section class="review-section" aria-label="审查项目">
+            <div class="review-grid" id="reviewGrid">
+              <button class="new-review-card" type="button" data-create-review>
+                <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z" /><path d="m13 2 4 4" /></svg></span>
+                <strong>新建标书审查</strong>
+              </button>
+              <article class="review-card" tabindex="0" role="link" data-review-project data-real-project data-href="./intelligent-review-gpu.html?preset=real" data-title="某高校高性能计算GPU集群建设项目" data-default-reviews="2" data-default-issues="24" data-default-updated="2025-07-30T18:20:47+08:00">
+                <span class="document-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h12v17H6z" /><path d="M9 8h6M9 12h6M9 16h4" /></svg><span class="completion-badge" aria-label="已完成"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 8 2.5 2.5L12 5" /></svg></span></span>
+                <h2 title="某高校高性能计算GPU集群建设项目">某高校高性能计算GPU集群建设项目</h2>
+                <p class="review-description">已完成2次标书审查，最新发现24项问题</p>
+                <div class="review-card-bottom"><div class="review-project-meta"><span class="review-owner"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>易天行</span><time>2025-07-30 18:20:47</time></div><div class="review-card-actions"><button class="card-action" type="button" data-edit-review aria-label="编辑项目" title="编辑"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z" /><path d="m13 2 4 4M3 21h18" /></svg></button><button class="card-action danger" type="button" data-delete-review aria-label="删除项目" title="删除"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3m3 0-1 14H7L6 7" /></svg></button></div></div>
+              </article>
+              <article class="review-card" tabindex="0" role="link" data-review-project data-real-project data-href="./intelligent-review-detail.html?preset=real" data-title="某单位大语言模型AI算力基础设施建设项目" data-default-reviews="2" data-default-issues="19">
+                <span class="document-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h12v17H6z" /><path d="M9 8h6M9 12h6M9 16h4" /></svg><span class="completion-badge" aria-label="已完成"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 8 2.5 2.5L12 5" /></svg></span></span>
+                <h2 title="某单位大语言模型AI算力基础设施建设项目">某单位大语言模型AI算力基础设施建设项目</h2>
+                <p class="review-description">已完成2次标书审查，最新发现19项问题</p>
+                <div class="review-card-bottom"><div class="review-project-meta"><span class="review-owner"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>易天行</span><time>正在读取项目时间…</time></div><div class="review-card-actions"><button class="card-action" type="button" data-edit-review aria-label="编辑项目" title="编辑"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z" /><path d="m13 2 4 4M3 21h18" /></svg></button><button class="card-action danger" type="button" data-delete-review aria-label="删除项目" title="删除"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3m3 0-1 14H7L6 7" /></svg></button></div></div>
+              </article>
+              <template id="storedReviewTemplate">
+                <article class="review-card" tabindex="0" role="link" data-review-project data-title="">
+                  <span class="document-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h12v17H6z" /><path d="M9 8h6M9 12h6M9 16h4" /></svg><span class="completion-badge" aria-label="已创建"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 8 2.5 2.5L12 5" /></svg></span></span>
+                  <h2></h2><p class="review-description"></p>
+                  <div class="review-card-bottom"><div class="review-project-meta"><span class="review-owner"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>易天行</span><time></time></div><div class="review-card-actions"><button class="card-action" type="button" data-edit-review aria-label="编辑项目" title="编辑"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z" /><path d="m13 2 4 4M3 21h18" /></svg></button><button class="card-action danger" type="button" data-delete-review aria-label="删除项目" title="删除"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3m3 0-1 14H7L6 7" /></svg></button></div></div>
+                </article>
+              </template>
+            </div>
+            <div class="empty-state" id="reviewEmpty" hidden><span class="empty-icon"><svg viewBox="0 0 32 32"><path d="M6 5.5h20v21H6z" /><path d="M10 11h12M10 16h9M10 21h6" /></svg></span><strong>没有找到匹配的审查项目</strong><span>试试其他关键词，或新建一个审查项目</span></div>
+          </section>
+        </div>
+      </main>
+    </div>
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+  </body>
+</html>

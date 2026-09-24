@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>华鲲元启 - 公文写作</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./assets/iconify-local.js"></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand-link" href="./index.html" aria-label="返回华鲲元启项目首页">
+          <img class="brand-logo" src="./assets/huakun-writing-logo.png" alt="华鲲元启 | 智能写作" />
+        </a>
+        <div class="profile-wrap">
+          <button class="mobile-nav-button icon-button" type="button" aria-label="打开分区导航" aria-expanded="false">
+            <iconify-icon icon="tabler:layout-columns" width="21" height="21"></iconify-icon>
+          </button>
+          <button class="profile" type="button" aria-label="打开用户菜单">
+            <img src="./assets/avatar.png" alt="" />
+            <span>易天行</span>
+            <iconify-icon icon="tabler:chevron-down" width="15" height="15"></iconify-icon>
+          </button>
+        </div>
+      </header>
+
+      <nav class="mobile-sections" aria-label="页面分区" hidden>
+        <button type="button" data-target="source-panel">写作来源</button>
+        <button type="button" data-target="chat-panel">对话</button>
+        <button type="button" data-target="result-panel">结果</button>
+      </nav>
+
+      <main class="workspace">
+        <aside class="panel source-panel" id="source-panel">
+          <header class="panel-header"><h1>写作来源</h1></header>
+          <div class="panel-scroll source-scroll">
+            <button class="upload-box" type="button">
+              <img class="source-action-icon" src="./assets/upload.svg" alt="" />
+              <span>点击/拖拽/粘贴文件到此处，支持文件类pdf、docx</span>
+            </button>
+
+            <section class="source-group">
+              <label class="source-title">
+                <span>写作源文件</span>
+                <input type="checkbox" data-select-all="source" />
+              </label>
+              <button class="soft-button" type="button">
+                <iconify-icon icon="tabler:database-plus" width="16" height="16"></iconify-icon>
+                纳入知识库
+              </button>
+              <div class="file-list" data-file-group="source"></div>
+            </section>
+
+            <section class="source-group knowledge-group">
+              <h2>引用知识库</h2>
+              <button class="upload-box knowledge-upload" type="button">
+                <img class="source-action-icon" src="./assets/knowledge-base.svg" alt="" />
+                <span>添加知识库</span>
+              </button>
+              <div class="file-list" data-file-group="knowledge"></div>
+            </section>
+          </div>
+        </aside>
+
+        <section class="panel chat-panel" id="chat-panel">
+          <header class="panel-header"><h1>对话</h1></header>
+          <div class="chat-scroll">
+            <article class="chat-intro">
+              <h2 data-conversation-title></h2>
+              <div class="source-count"><b data-source-count>4</b> 份文件&nbsp;&nbsp; <b data-knowledge-count>1</b> 个知识库</div>
+              <p data-conversation-summary></p>
+              <div class="answer-actions">
+                <button class="outline-button save-note" type="button"><iconify-icon icon="tabler:pin" width="17" height="17"></iconify-icon>保存为笔记</button>
+                <button class="icon-button copy-answer" type="button" aria-label="复制回答"><iconify-icon icon="tabler:copy" width="18" height="18"></iconify-icon></button>
+              </div>
+            </article>
+
+            <div class="suggestions">
+              <button type="button"><span data-conversation-suggestion="0"></span><iconify-icon icon="tabler:arrow-right" width="18" height="18"></iconify-icon></button>
+              <button type="button"><span data-conversation-suggestion="1"></span><iconify-icon icon="tabler:arrow-right" width="18" height="18"></iconify-icon></button>
+              <button type="button"><span data-conversation-suggestion="2"></span><iconify-icon icon="tabler:arrow-right" width="18" height="18"></iconify-icon></button>
+            </div>
+
+            <div class="message user-message" data-conversation-prompt></div>
+            <article class="assistant-answer">
+              <p data-conversation-response></p>
+              <div class="answer-actions">
+                <button class="outline-button save-note" type="button"><iconify-icon icon="tabler:pin" width="17" height="17"></iconify-icon>保存为笔记</button>
+                <button class="icon-button copy-answer" type="button" aria-label="复制回答"><iconify-icon icon="tabler:copy" width="18" height="18"></iconify-icon></button>
+              </div>
+              <div class="suggestions compact-suggestions">
+                <button type="button"><span data-conversation-followup="0"></span><iconify-icon icon="tabler:arrow-right" width="18" height="18"></iconify-icon></button>
+                <button type="button"><span data-conversation-followup="1"></span><iconify-icon icon="tabler:arrow-right" width="18" height="18"></iconify-icon></button>
+                <button type="button"><span data-conversation-followup="2"></span><iconify-icon icon="tabler:arrow-right" width="18" height="18"></iconify-icon></button>
+              </div>
+            </article>
+          </div>
+          <form class="composer">
+            <textarea aria-label="输入文案" placeholder="请输入文案..."></textarea>
+            <span class="selected-count" data-selected-count>已选 4 个来源文件、1 个知识库</span>
+            <button class="send-button" type="submit" aria-label="发送"><iconify-icon icon="tabler:send" width="18" height="18"></iconify-icon></button>
+          </form>
+        </section>
+
+        <aside class="panel result-panel" id="result-panel">
+          <header class="panel-header">
+            <h1>结果</h1>
+            <button class="icon-button" data-result-toggle type="button" aria-label="收起结果栏" aria-expanded="true">
+              <svg class="result-toggle-icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M15 4v16M11 9l-3 3 3 3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </header>
+          <div class="panel-scroll result-scroll">
+            <div class="tool-grid" aria-label="写作工具">
+              <button class="tool-mode active" data-mode="general" type="button" aria-pressed="true"><img class="tool-icon writing-mode-icon" src="./assets/general-writing.svg" alt="" /><span>通用写作</span><img class="tool-arrow" src="./assets/tool-chevron-right.svg" alt="" /></button>
+              <button class="tool-mode official" data-mode="official" type="button" aria-pressed="false"><img class="tool-icon writing-mode-icon" src="./assets/official-writing.svg" alt="" /><span>公文写作</span><img class="tool-arrow" src="./assets/tool-chevron-right.svg" alt="" /></button>
+              <button disabled aria-disabled="true" type="button"><img class="tool-icon" src="./assets/tool-hierarchy.svg" alt="" /><span>思维导图</span><img class="tool-arrow" src="./assets/tool-chevron-right.svg" alt="" /></button>
+              <button disabled aria-disabled="true" type="button"><img class="tool-icon" src="./assets/tool-language.svg" alt="" /><span>翻译写作</span><img class="tool-arrow" src="./assets/tool-chevron-right.svg" alt="" /></button>
+            </div>
+
+            <section class="records">
+              <h2>生成记录</h2>
+              <div class="record-list" data-record-list></div>
+            </section>
+          </div>
+        </aside>
+      </main>
+    </div>
+
+    <div class="document-modal" role="dialog" aria-modal="true" aria-labelledby="document-title" hidden>
+      <div class="modal-shell">
+        <header class="modal-header">
+          <button class="editable-title" type="button"><strong id="document-title"></strong><iconify-icon icon="tabler:pencil" width="17" height="17"></iconify-icon></button>
+          <div class="modal-actions">
+            <button class="outline-button download-document" type="button"><iconify-icon icon="tabler:download" width="17" height="17"></iconify-icon>下载</button>
+            <button class="outline-button" data-history-toggle type="button" aria-expanded="false"><iconify-icon icon="tabler:history" width="17" height="17"></iconify-icon>历史版本</button>
+            <button class="close-modal icon-button" type="button" aria-label="关闭文档"><iconify-icon icon="tabler:x" width="21" height="21"></iconify-icon></button>
+          </div>
+        </header>
+
+        <div class="modal-body">
+          <aside class="outline-panel">
+            <header><iconify-icon icon="tabler:chevron-down" width="17" height="17"></iconify-icon><h2>目录</h2></header>
+            <nav class="outline-list" aria-label="文档目录" data-document-outline></nav>
+          </aside>
+
+          <section class="editor-panel">
+            <div class="editor-toolbar" role="toolbar" aria-label="文档编辑工具">
+              <button type="button"><iconify-icon icon="tabler:link" width="17" height="17"></iconify-icon>链接导入</button>
+              <button type="button"><iconify-icon icon="tabler:brush" width="17" height="17"></iconify-icon>清空文本</button>
+              <button class="copy-all" type="button"><iconify-icon icon="tabler:copy" width="17" height="17"></iconify-icon>复制全文</button>
+              <span class="toolbar-divider"></span>
+              <button type="button">正文<iconify-icon icon="tabler:chevron-down" width="14" height="14"></iconify-icon></button>
+              <button type="button">默认字体<iconify-icon icon="tabler:chevron-down" width="14" height="14"></iconify-icon></button>
+              <button type="button">14<iconify-icon icon="tabler:chevron-down" width="14" height="14"></iconify-icon></button>
+              <button class="format-button" type="button" aria-label="加粗"><b>B</b></button>
+              <button class="format-button" type="button" aria-label="斜体"><i>I</i></button>
+              <button class="format-button" type="button" aria-label="下划线"><u>U</u></button>
+              <button class="format-button" type="button" aria-label="删除线"><s>S</s></button>
+              <button class="format-button" type="button" aria-label="高亮"><iconify-icon icon="tabler:highlight" width="18" height="18"></iconify-icon></button>
+              <button class="format-button" type="button" aria-label="文字颜色">A</button>
+              <button class="format-button" type="button" aria-label="段落对齐"><iconify-icon icon="tabler:align-left" width="18" height="18"></iconify-icon></button>
+              <button class="format-button" type="button" aria-label="项目符号"><iconify-icon icon="tabler:list" width="18" height="18"></iconify-icon></button>
+            </div>
+            <article class="document-content" contenteditable="true" spellcheck="false" data-document-content></article>
+            <form class="rewrite-composer">
+              <textarea aria-label="输入修改要求" placeholder="请输入您想要修改的内容"></textarea>
+              <div class="rewrite-actions">
+                <button type="button"><iconify-icon icon="tabler:align-left" width="19" height="19"></iconify-icon>全文扩写</button>
+                <button type="button"><iconify-icon icon="tabler:minus" width="19" height="19"></iconify-icon>全文缩写</button>
+                <button type="button"><iconify-icon icon="tabler:wand" width="19" height="19"></iconify-icon>全文改写</button>
+                <button type="button"><iconify-icon icon="tabler:pencil" width="19" height="19"></iconify-icon>全文续写</button>
+                <button class="send-button" type="submit" aria-label="发送修改要求"><iconify-icon icon="tabler:send" width="18" height="18"></iconify-icon></button>
+              </div>
+            </form>
+          </section>
+
+          <aside class="history-panel">
+            <button class="back-to-write" type="button"><iconify-icon icon="tabler:chevron-left" width="20" height="20"></iconify-icon>返回写作</button>
+            <div class="history-scroll">
+              <h2>历史版本</h2>
+              <div class="history-list" data-history-list></div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+
+    <div class="floating-menu" hidden>
+      <button type="button"><iconify-icon icon="tabler:download" width="17" height="17"></iconify-icon>下载</button>
+      <button type="button"><iconify-icon icon="tabler:database-plus" width="17" height="17"></iconify-icon>纳入知识库</button>
+      <button type="button"><iconify-icon icon="tabler:book" width="17" height="17"></iconify-icon>查看引用文件</button>
+      <button type="button"><iconify-icon icon="tabler:info-circle" width="17" height="17"></iconify-icon>提示和来源</button>
+      <button class="menu-history" type="button"><iconify-icon icon="tabler:history" width="17" height="17"></iconify-icon>历史版本</button>
+      <button class="menu-restore" type="button" hidden><iconify-icon icon="tabler:restore" width="17" height="17"></iconify-icon>还原</button>
+      <button class="menu-delete" type="button" hidden><iconify-icon icon="tabler:trash" width="17" height="17"></iconify-icon>删除</button>
+    </div>
+    <div class="toast" role="status" aria-live="polite" hidden></div>
+    <script src="./demo-content.js"></script>
+    <script src="./script.js"></script>
+  </body>
+</html>

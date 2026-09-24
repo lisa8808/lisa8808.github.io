@@ -1,0 +1,252 @@
+:root {
+  --list-content-max: 1500px;
+  --list-page-gap: 20px;
+  --list-card-height: 190px;
+  --list-row-height: 94px;
+}
+
+html, body, #app { min-width: 320px; }
+body { font-family: "PingFang SC", "Microsoft YaHei", Arial, sans-serif; }
+
+.app.is-list .topbar {
+  height: 62px;
+  padding: 0 43px 0 16px;
+}
+.app.is-list .brand-mark,
+.app.is-list .brand-mark img {
+  width: 250px;
+  height: 48px;
+}
+.app.is-list .brand-mark img { width: 400px; height: 64px; }
+.app.is-list .brand-mark { flex-basis: 250px; }
+
+.list-page {
+  min-height: calc(100vh - 96px);
+  margin: var(--list-page-gap);
+  padding: 14px 0 40px;
+  border-radius: 16px;
+}
+.list-surface { padding-bottom: 28px; }
+.list-inner {
+  width: min(var(--list-content-max), calc(100% - 56px));
+  margin: 0 auto;
+}
+.list-toolbar {
+  height: 44px;
+  gap: 24px;
+}
+.primary-tabs { gap: 14px; }
+.primary-tab {
+  min-width: 80px;
+  height: 44px;
+  padding: 0 22px;
+  font-size: 15px;
+  line-height: 21px;
+}
+.primary-tab.active {
+  width: auto;
+  min-width: 82px;
+  padding: 0 18px;
+}
+.list-actions { gap: 16px; }
+.search-control { width: 36px !important; height: 36px !important; }
+.search-control.open { width: 188px !important; }
+.search-control input {
+  display: none;
+  height: 34px;
+  padding: 0;
+  font-size: 14px;
+}
+.search-control.open input { display: block; }
+.circle-action {
+  width: 36px !important;
+  height: 36px !important;
+  flex-basis: 36px !important;
+  padding: 0 !important;
+  border: 1px solid #cecece !important;
+  border-radius: 50% !important;
+  outline: 0 !important;
+}
+.circle-action svg { width: 20px !important; height: 20px !important; }
+.search-control.open .circle-action { width: 34px !important; height: 34px !important; border-color: transparent !important; }
+.view-switch {
+  width: 106px !important;
+  height: 36px !important;
+  border: 1px solid #cecece !important;
+  border-radius: 7px !important;
+}
+.view-button {
+  height: 34px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  outline: 0 !important;
+}
+.view-button.active {
+  border: 1px solid #d1e2ff !important;
+  border-radius: 6px !important;
+  background: #eaf2ff !important;
+  color: #025dff !important;
+  outline: 0 !important;
+}
+.view-button svg { width: 20px !important; height: 20px !important; }
+.create-button {
+  width: 92px !important;
+  height: 36px !important;
+  padding: 0 12px !important;
+  border-radius: 6px !important;
+  gap: 6px !important;
+  font-size: 14px !important;
+}
+.create-button svg { width: 20px !important; height: 20px !important; }
+
+.project-grid,
+.company-grid,
+.gallery-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+.project-section,
+.company-section,
+.gallery-section { margin-top: 48px; }
+.new-project-card,
+.tender-card,
+.new-company-card,
+.company-card,
+.new-gallery-card,
+.gallery-card {
+  height: var(--list-card-height);
+  border-radius: 16px;
+}
+.gallery-grid:not([hidden]) { display: grid !important; }
+.gallery-card,
+.gallery-card > .folder-mark,
+.gallery-card > .gallery-title,
+.gallery-card > .gallery-count,
+.gallery-card > .gallery-date,
+.gallery-card > .card-actions {
+  display: block;
+  visibility: visible;
+  opacity: 1;
+}
+.gallery-card {
+  z-index: 0;
+  color: #33323a !important;
+  background: linear-gradient(145deg, #eff6ff 0%, #f8fbff 49%, #fff 100%) !important;
+}
+.gallery-card > .folder-mark { display: grid; }
+.gallery-card > .gallery-title { color: #33323a !important; }
+.gallery-card > .gallery-count { color: #999 !important; }
+.gallery-card > .gallery-date { color: #666 !important; }
+.gallery-card > .card-actions { display: flex; }
+.new-project-card,
+.new-company-card,
+.new-gallery-card {
+  border-style: dashed;
+  border-width: 2px;
+}
+
+.project-grid.list-view,
+.company-grid.list-view,
+.gallery-grid.list-view {
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+.project-grid.list-view .new-project-card,
+.company-grid.list-view .new-company-card,
+.gallery-grid.list-view .new-gallery-card,
+.project-grid.list-view .tender-card,
+.company-grid.list-view .company-card,
+.gallery-grid.list-view .gallery-card {
+  height: var(--list-row-height);
+}
+.project-grid.list-view .new-project-card,
+.company-grid.list-view .new-company-card,
+.gallery-grid.list-view .new-gallery-card {
+  flex-direction: row;
+  gap: 14px;
+}
+.project-grid.list-view .tender-card { padding: 18px 22px 18px 84px; }
+.project-grid.list-view .tender-card-icon {
+  position: absolute;
+  top: 23px;
+  left: 22px;
+}
+.project-grid.list-view .tender-card-title { margin-top: 0; max-width: 42%; }
+.project-grid.list-view .tender-card-description { max-width: 42%; }
+.project-grid.list-view .tender-card-date {
+  right: 22px;
+  bottom: 28px;
+  left: auto;
+}
+.project-grid.list-view .tender-card-actions { right: 18px; bottom: 33px; }
+/* 卡片底部的编辑人 + 时间（与标书审查列表一致） */
+.tender-card-owner {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #666;
+  white-space: nowrap;
+  font-size: 12px;
+  line-height: 20px;
+  pointer-events: none;
+}
+.tender-card-owner svg {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  color: #8b919c;
+  display: block;
+}
+.tender-card-date { white-space: nowrap; }
+/* 列表视图的卡片高度只有 94px，时间右侧紧邻操作按钮，编辑人只在网格视图展示 */
+.project-grid.list-view .tender-card-owner { display: none; }
+.company-grid.list-view .company-card { min-height: var(--list-row-height); }
+.gallery-grid.list-view .gallery-card { padding: 18px 22px 18px 84px; }
+
+@media (max-width: 1280px) {
+  .list-inner { width: calc(100% - 56px); }
+  .project-grid,
+  .company-grid,
+  .gallery-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 960px) {
+  .list-toolbar { height: auto; align-items: flex-start; flex-direction: column; }
+  .list-actions { align-self: flex-end; }
+  .project-grid,
+  .company-grid,
+  .gallery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .project-section,
+  .company-section,
+  .gallery-section { margin-top: 32px; }
+}
+@media (max-width: 720px) {
+  .app.is-list .topbar { height: 62px; padding: 0 43px 0 16px; }
+  .app.is-list .brand-mark,
+  .app.is-list .brand-mark img { width: 250px; height: 48px; }
+  .app.is-list .brand-mark img { width: 400px; height: 64px; }
+  .app.is-list .brand-mark { flex-basis: 250px; }
+  .list-page { margin: 14px; border-radius: 10px; }
+  .list-inner { width: calc(100% - 28px); }
+  .primary-tabs { width: 100%; gap: 8px; overflow-x: auto; padding-bottom: 3px; scrollbar-width: none; }
+  .primary-tabs::-webkit-scrollbar { display: none; }
+  .primary-tab { min-width: max-content; height: 36px; padding: 0 13px; font-size: 13px; }
+  .primary-tab.active { min-width: max-content; padding: 0 13px; }
+  .view-switch { width: 106px; height: 36px; border-radius: 7px; }
+  .view-button { height: 34px; }
+  .view-button.active { border-radius: 6px; }
+  .create-button { width: 92px !important; height: 36px; border-radius: 6px; font-size: 14px; }
+  .list-actions { width: 100%; align-self: stretch; justify-content: flex-end; flex-wrap: wrap; gap: 8px; }
+  .project-grid,
+  .company-grid,
+  .gallery-grid { grid-template-columns: 1fr; }
+  .project-grid.list-view .tender-card-title,
+  .project-grid.list-view .tender-card-description { max-width: calc(100% - 72px); }
+}
+@media (max-width: 500px) {
+  .app.is-list .brand-product,
+  .app.is-list .brand-dot { display: none; }
+  .gallery-grid:not(.list-view) .new-gallery-card,
+  .gallery-grid:not(.list-view) .gallery-card { height: 164px; }
+  .search-control.open { order: 5; width: 100%; }
+}

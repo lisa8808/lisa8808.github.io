@@ -1,0 +1,11 @@
+const back = () => { window.location.href = './company-management.html'; };
+const continueProfile = () => { window.location.href = './company-info.html'; };
+const toast = (message) => { const node = document.querySelector('#toast'); node.textContent = message; node.hidden = false; setTimeout(() => { node.hidden = true; }, 2500); };
+window.renderCompanyDocumentGallery?.();
+document.querySelectorAll('[data-back]').forEach((button) => button.addEventListener('click', back));
+document.querySelectorAll('input[type="file"]').forEach((input) => input.addEventListener('change', () => { const target = document.querySelector(`#${input.id}Name`); if (target && input.files[0]) { target.textContent = input.files[0].name; target.dataset.userFile = 'true'; } const slot = input.closest('.upload-field')?.querySelector('[data-document-gallery]'); if (slot && input.files[0]) { const image = slot.querySelector('.document-gallery-image'); if (image) image.src = URL.createObjectURL(input.files[0]); slot.classList.add('has-document-preview'); } }));
+document.querySelector('#longTerm').addEventListener('change', (event) => { const endDate = document.querySelector('#endDate'); endDate.disabled = event.target.checked; if (event.target.checked) endDate.value = ''; });
+document.querySelector('#companyForm').addEventListener('submit', (event) => { event.preventDefault(); const name = document.querySelector('[name="name"]'); if (!name.value.trim()) { name.focus(); toast('请填写“企业名称”'); return; } document.querySelector('#successModal').hidden = false; document.querySelector('#continueProfile').focus(); });
+document.querySelector('#cancelContinue').addEventListener('click', back);
+document.querySelector('#continueProfile').addEventListener('click', continueProfile);
+document.querySelector('#successModal').addEventListener('click', (event) => { if (event.target === event.currentTarget) back(); });

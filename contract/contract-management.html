@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI合同管理</title>
+    <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #1a73e8;
+            --primary-dark: #1557b0;
+            --secondary: #5f6368;
+            --bg-light: #f8f9fa;
+            --bg-white: #ffffff;
+            --border: #e8eaed;
+            --text-primary: #202124;
+            --text-secondary: #5f6368;
+            --success: #34a853;
+            --warning: #fbbc04;
+            --danger: #ea4335;
+            --purple: #8b5cf6;
+            --gold: #f59e0b;
+        }
+        body {
+            font-family: "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+        }
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo { display: flex; align-items: center; gap: 12px; font-size: 20px; font-weight: 600; cursor: pointer; }
+        .logo-icon {
+            width: 36px; height: 36px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px; display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 18px;
+        }
+        .header-center { flex: 1; display: flex; justify-content: center; }
+        .task-name-display { font-size: 14px; color: var(--text-secondary); display: flex; align-items: center; gap: 8px; }
+        .task-name-display strong { color: var(--text-primary); }
+        .header-right { display: flex; align-items: center; gap: 16px; }
+        .lang-select {
+            padding: 8px 16px; border: 1px solid var(--border); border-radius: 8px;
+            background: white; font-size: 14px; cursor: pointer; outline: none;
+        }
+        .user-avatar {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: 500; font-size: 14px;
+        }
+        .main-container {
+            display: grid;
+            gap: 20px; padding: 20px;
+            grid-template-columns: 280px 1fr 380px;
+            min-height: calc(100vh - 60px);
+        }
+        .panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .panel-header {
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .panel-header-icon {
+            width: 26px; height: 26px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; font-size: 13px;
+        }
+        .panel-content { flex: 1; overflow-y: auto; padding: 14px; }
+        .upload-area {
+            border: 2px dashed var(--border); border-radius: 12px;
+            padding: 18px; text-align: center; cursor: pointer; transition: all 0.3s; margin-bottom: 12px;
+        }
+        .upload-area:hover { border-color: var(--primary); background: #f8f9fa; }
+        .upload-icon { font-size: 28px; margin-bottom: 6px; color: var(--primary); }
+        .upload-text { color: var(--text-secondary); font-size: 12px; }
+        .selection-cards { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+        .selection-card {
+            display: flex; align-items: center; gap: 10px;
+            padding: 12px; background: white; border: 1px solid var(--border);
+            border-radius: 10px; cursor: pointer; transition: all 0.3s;
+        }
+        .selection-card:hover { border-color: var(--primary); transform: translateX(4px); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .selection-card-icon {
+            width: 36px; height: 36px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; font-size: 16px;
+        }
+        .selection-card-icon.template { background: rgba(26, 86, 219, 0.1); color: #1a73e8; }
+        .selection-card-icon.rule { background: rgba(16, 185, 129, 0.1); color: #34a853; }
+        .selection-card-icon.translate { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
+        .selection-card-icon.legal { background: rgba(245, 158, 11, 0.1); color: #b06000; }
+        .selection-card-info { flex: 1; }
+        .selection-card-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+        .selection-card-desc { font-size: 11px; color: var(--text-secondary); }
+        .nav-menu { display: flex; flex-direction: column; gap: 4px; }
+        .nav-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 11px 14px; border-radius: 10px; cursor: pointer;
+            transition: all 0.3s; font-size: 13px; color: var(--text-secondary);
+        }
+        .nav-item:hover { background: var(--bg-light); color: var(--text-primary); }
+        .nav-item.active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .nav-item-icon { font-size: 15px; width: 18px; text-align: center; }
+        .nav-item .badge {
+            margin-left: auto; background: rgba(255,255,255,0.2); color: white;
+            font-size: 10px; padding: 2px 6px; border-radius: 10px;
+        }
+        .file-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+        .file-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px; background: var(--bg-light); border-radius: 8px;
+        }
+        .file-icon {
+            width: 32px; height: 32px; border-radius: 6px;
+            display: flex; align-items: center; justify-content: center; font-size: 14px;
+        }
+        .file-icon.pdf { background: #fce8e6; color: #ea4335; }
+        .file-icon.doc { background: #e8f0fe; color: #1a73e8; }
+        .file-info { flex: 1; min-width: 0; }
+        .file-name { font-size: 12px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .file-size { font-size: 10px; color: var(--text-secondary); }
+        .chat-messages { display: flex; flex-direction: column; gap: 14px; padding-bottom: 16px; }
+        .message { display: flex; gap: 10px; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .message-avatar {
+            width: 30px; height: 30px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0;
+        }
+        .message-avatar.ai { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .message-avatar.user { background: #e8f0fe; color: #1a73e8; }
+        .message-content {
+            flex: 1; background: var(--bg-light); padding: 12px 14px;
+            border-radius: 14px; border-top-left-radius: 4px; font-size: 13px; line-height: 1.6;
+        }
+        .message.user .message-content { background: #e8f0fe; border-radius: 14px; border-top-right-radius: 4px; }
+        .suggested-questions {
+            display: flex; flex-direction: column; gap: 6px; margin-top: 10px; padding-top: 10px;
+            border-top: 1px solid var(--border);
+        }
+        .suggested-question {
+            padding: 9px 12px; background: white; border: 1px solid var(--border);
+            border-radius: 8px; font-size: 12px; cursor: pointer; transition: all 0.2s;
+            color: var(--text-secondary);
+        }
+        .suggested-question:hover { border-color: var(--primary); color: var(--primary); background: #f8f9fa; }
+        .chat-input-area { padding: 14px; border-top: 1px solid var(--border); flex-shrink: 0; }
+        .chat-input-wrapper { display: flex; gap: 10px; align-items: flex-end; }
+        .chat-input {
+            flex: 1; padding: 12px 14px; border: 2px solid var(--border);
+            border-radius: 24px; font-size: 13px; resize: none; outline: none;
+            transition: all 0.3s; font-family: inherit; max-height: 100px;
+        }
+        .chat-input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(26, 115, 232, 0.1); }
+        .send-btn {
+            width: 44px; height: 44px; border: none;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%; color: white; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; font-size: 16px; transition: all 0.3s;
+        }
+        .send-btn:hover { transform: scale(1.1); box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4); }
+        .result-section { margin-bottom: 16px; }
+        .result-section-header {
+            font-size: 12px; font-weight: 600; color: var(--text-secondary);
+            margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
+        }
+        .result-card {
+            background: var(--bg-light); border-radius: 12px; padding: 14px; margin-bottom: 10px;
+            border-left: 3px solid transparent;
+        }
+        .result-card.high-risk { border-left-color: var(--danger); background: rgba(234,67,53,0.05); }
+        .result-card.medium-risk { border-left-color: var(--warning); background: rgba(251,188,4,0.05); }
+        .result-card.low-risk { border-left-color: var(--success); background: rgba(52,168,83,0.05); }
+        .result-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+        .result-card-title { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .result-tag { padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; }
+        .result-tag.high { background: #fce8e6; color: #ea4335; }
+        .result-tag.medium { background: #fef7e0; color: #b06000; }
+        .result-tag.low { background: #e6f4ea; color: #34a853; }
+        .result-tag.info { background: #e8f0fe; color: #1a73e8; }
+        .result-card-content { font-size: 12px; color: var(--text-secondary); line-height: 1.6; }
+        .result-card-content ul { margin: 6px 0; padding-left: 18px; }
+        .result-card-content li { margin-bottom: 3px; }
+        .accept-btn {
+            display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px;
+            border: 1px solid var(--border); background: white; border-radius: 6px;
+            font-size: 11px; cursor: pointer; transition: all 0.2s; margin-top: 8px;
+        }
+        .accept-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .accept-btn.accepted { background: var(--success); color: white; border-color: var(--success); }
+        .action-btn {
+            padding: 9px 16px; border: none; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; border-radius: 8px; font-size: 13px; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 6px; transition: all 0.3s;
+        }
+        .action-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(102,126,234,0.4); }
+        .action-btn.secondary { background: white; color: var(--primary); border: 1px solid var(--primary); }
+        .action-btn.secondary:hover { background: #e8f0fe; }
+        .action-btn.success { background: var(--success); }
+        .tab-container { display: flex; gap: 4px; padding: 6px; background: var(--bg-light); border-radius: 10px; margin-bottom: 14px; }
+        .tab-btn {
+            flex: 1; padding: 9px 10px; border: none; background: transparent;
+            border-radius: 8px; font-size: 12px; cursor: pointer; transition: all 0.3s; font-weight: 500;
+            color: var(--text-secondary);
+        }
+        .tab-btn.active { background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); color: var(--primary); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .quick-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+        .quick-action-btn {
+            padding: 12px 8px; border: 1px solid var(--border); background: white;
+            border-radius: 10px; cursor: pointer; transition: all 0.3s; text-align: center;
+        }
+        .quick-action-btn:hover { border-color: var(--primary); transform: translateY(-2px); }
+        .quick-action-icon { font-size: 20px; margin-bottom: 4px; }
+        .quick-action-text { font-size: 11px; color: var(--text-secondary); }
+        .contract-flow { position: relative; padding-left: 20px; }
+        .flow-item { position: relative; padding-bottom: 20px; padding-left: 20px; border-left: 2px solid var(--border); }
+        .flow-item:last-child { border-left: none; padding-bottom: 0; }
+        .flow-dot {
+            position: absolute; left: -8px; top: 0; width: 14px; height: 14px;
+            border-radius: 50%; background: white; border: 2px solid var(--primary);
+        }
+        .flow-item.completed .flow-dot { background: var(--primary); }
+        .flow-item.current .flow-dot { background: var(--primary); box-shadow: 0 0 0 4px rgba(26,115,232,0.2); }
+        .flow-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+        .flow-desc { font-size: 12px; color: var(--text-secondary); }
+        .flow-time { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+        .key-data-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+        .key-data-tag {
+            padding: 5px 10px; border-radius: 20px; font-size: 11px; font-weight: 500;
+            display: flex; align-items: center; gap: 5px;
+        }
+        .key-data-tag.involved { background: rgba(251,188,4,0.15); color: #b06000; }
+        .key-data-tag.not-involved { background: var(--bg-light); color: var(--text-secondary); }
+        .key-data-tag.alert { background: rgba(234,67,53,0.15); color: var(--danger); }
+        .progress-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-top: 8px; }
+        .progress-fill {
+            height: 100%; background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 3px; transition: width 0.3s;
+        }
+        .milestone-list { display: flex; flex-direction: column; gap: 8px; }
+        .milestone-item { display: flex; align-items: center; gap: 8px; font-size: 12px; padding: 8px; background: white; border-radius: 8px; }
+        .milestone-item.completed { color: var(--success); }
+        .milestone-item.pending { color: var(--text-secondary); }
+        .milestone-item.warning { color: var(--warning); }
+        .milestone-item i { font-size: 14px; }
+        .company-info-card { background: var(--bg-light); border-radius: 10px; padding: 12px; margin-bottom: 10px; }
+        .company-info-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+        .company-info-name { font-size: 14px; font-weight: 600; }
+        .company-info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+        .company-info-item { font-size: 11px; }
+        .company-info-label { color: var(--text-secondary); margin-bottom: 1px; }
+        .company-info-value { font-weight: 500; }
+        .company-info-value.risk { color: var(--danger); }
+        .company-info-value.warning { color: var(--warning); }
+        .company-info-value.success { color: var(--success); }
+        .translation-result { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-bottom: 8px; }
+        .translation-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+        .translation-lang { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; }
+        .translation-lang-flag { font-size: 16px; }
+        .translation-content { font-size: 12px; line-height: 1.6; color: var(--text-secondary); max-height: 120px; overflow-y: auto; }
+        .tracking-point { display: flex; align-items: center; gap: 10px; padding: 10px; background: white; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px; }
+        .tracking-point-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        .tracking-point-icon.nda { background: rgba(139,92,246,0.1); color: var(--purple); }
+        .tracking-point-icon.payment { background: rgba(245,158,11,0.1); color: var(--warning); }
+        .tracking-point-info { flex: 1; }
+        .tracking-point-name { font-size: 13px; font-weight: 500; margin-bottom: 1px; }
+        .tracking-point-meta { font-size: 11px; color: var(--text-secondary); }
+        .tracking-point-status { padding: 3px 8px; border-radius: 20px; font-size: 10px; font-weight: 500; }
+        .tracking-point-status.normal { background: rgba(52,168,83,0.1); color: var(--success); }
+        .tracking-point-status.warning { background: rgba(251,188,4,0.1); color: var(--warning); }
+        .tracking-point-status.pending { background: var(--bg-light); color: var(--text-secondary); }
+        .seal-status-card { text-align: center; padding: 20px; background: var(--bg-light); border-radius: 12px; }
+        .seal-status-icon { font-size: 40px; margin-bottom: 10px; }
+        .seal-status-title { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+        .seal-status-desc { font-size: 12px; color: var(--text-secondary); margin-bottom: 14px; }
+        .seal-btn {
+            padding: 12px 20px; border: none;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; border-radius: 10px; font-size: 13px; font-weight: 500;
+            cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .seal-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(102,126,234,0.4); }
+        .archive-compare { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 14px; }
+        .archive-compare-item { padding: 12px; background: var(--bg-light); border-radius: 8px; text-align: center; }
+        .archive-compare-label { font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; }
+        .archive-compare-value { font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .archive-compare-value.match { color: var(--success); }
+        .archive-compare-value.mismatch { color: var(--danger); }
+        .archive-compare-value.pending { color: var(--warning); }
+        .litigation-link { display: flex; align-items: center; gap: 10px; padding: 14px; background: rgba(234,67,53,0.05); border: 1px solid rgba(234,67,53,0.2); border-radius: 10px; cursor: pointer; }
+        .litigation-link:hover { background: rgba(234,67,53,0.1); }
+        .litigation-icon { width: 36px; height: 36px; border-radius: 8px; background: var(--danger); color: white; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+        .litigation-info { flex: 1; }
+        .litigation-title { font-size: 13px; font-weight: 600; color: var(--danger); margin-bottom: 2px; }
+        .litigation-desc { font-size: 11px; color: var(--text-secondary); }
+        .vip-history-panel { background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(217,119,6,0.08)); border: 1px solid rgba(245,158,11,0.2); border-radius: 12px; padding: 14px; margin-top: 14px; }
+        .vip-history-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+        .vip-history-icon { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, var(--gold), #d97706); color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+        .vip-history-title { font-size: 13px; font-weight: 600; }
+        .vip-history-sub { font-size: 11px; color: var(--text-secondary); }
+        .history-item { display: flex; align-items: center; gap: 8px; padding: 8px; background: white; border-radius: 8px; margin-bottom: 6px; cursor: pointer; }
+        .history-item:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .history-item-date { font-size: 11px; color: var(--text-secondary); min-width: 70px; }
+        .history-item-name { flex: 1; font-size: 12px; font-weight: 500; }
+        .history-item-tag { padding: 2px 6px; border-radius: 4px; font-size: 10px; }
+        .history-item-tag.normal { background: rgba(52,168,83,0.1); color: var(--success); }
+        .history-item-tag.abnormal { background: rgba(234,67,53,0.1); color: var(--danger); }
+        .generated-results { margin-top: 8px; }
+        .generated-item {
+            display: flex; align-items: center; gap: 10px; padding: 10px;
+            background: white; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px;
+        }
+        .generated-item-icon { width: 32px; height: 32px; border-radius: 8px; background: #e8f0fe; color: #1a73e8; display: flex; align-items: center; justify-content: center; }
+        .generated-item-info { flex: 1; }
+        .generated-item-name { font-size: 12px; font-weight: 500; }
+        .generated-item-meta { font-size: 11px; color: var(--text-secondary); }
+        .generated-item-time { font-size: 10px; color: var(--text-secondary); }
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); display: none;
+            align-items: center; justify-content: center; z-index: 1000;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal {
+            background: white; border-radius: 16px; width: 480px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3); animation: modalIn 0.3s ease;
+        }
+        @keyframes modalIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        .modal-header {
+            padding: 16px 18px; border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .modal-title { font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .modal-close {
+            width: 28px; height: 28px; border: none; background: var(--bg-light);
+            border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+        }
+        .modal-body { padding: 16px 18px; }
+        .form-group { margin-bottom: 12px; }
+        .form-label { display: block; font-size: 12px; font-weight: 500; margin-bottom: 6px; color: var(--text-secondary); }
+        .form-input {
+            width: 100%; padding: 10px 12px; border: 1px solid var(--border);
+            border-radius: 8px; font-size: 13px; outline: none;
+        }
+        .form-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,115,232,0.1); }
+        .form-select {
+            width: 100%; padding: 10px 12px; border: 1px solid var(--border);
+            border-radius: 8px; font-size: 13px; outline: none; background: white;
+        }
+        .modal-footer {
+            padding: 14px 18px; border-top: 1px solid var(--border);
+            display: flex; justify-content: flex-end; gap: 10px;
+        }
+        .btn-cancel {
+            padding: 8px 16px; border: 1px solid var(--border); background: white;
+            border-radius: 8px; font-size: 12px; cursor: pointer;
+        }
+        .btn-confirm {
+            padding: 8px 16px; border: none; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; border-radius: 8px; font-size: 12px; cursor: pointer;
+            display: flex; align-items: center; gap: 6px;
+        }
+        @media (max-width: 1400px) {
+            .main-container { grid-template-columns: 260px 1fr 340px; }
+        }
+        @media (max-width: 1100px) {
+            .main-container { grid-template-columns: 1fr; }
+            .panel { min-height: 350px; }
+        }
+    </style>
+    <style>
+        body { font-family: "PingFang SC", "Microsoft YaHei", Arial, sans-serif; background: #f6fafe; }
+        .header { height: 62px; padding: 0 43px 0 16px; background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,.08); }
+        .logo-icon { display: none; }
+        .brand-img { width: 300px; height: 48px; object-fit: contain; }
+        .lang-select { display: none; }
+        .user-avatar { width: 40px; height: 40px; background: #e8f0ff; color: #025dff; }
+        .main-container { min-height: calc(100vh - 62px); padding: 20px; gap: 20px; }
+        .panel { background: #fff; border: 1px solid #e8edf4; border-radius: 10px; box-shadow: none; backdrop-filter: none; }
+        .panel-header { border-bottom-color: #e8edf4; }
+        .nav-item.active, .message-avatar.ai, .send-btn, .action-btn { background: #025dff; }
+        .nav-item:hover, .selection-card:hover, .suggested-question:hover { background: #f7f8f8; }
+        .action-btn { border-radius: 6px; box-shadow: none; }
+        .action-btn:hover, .send-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(2,93,255,.12); }
+        .ai-review-link { height: 32px; border-radius: 6px; padding: 0 12px; display: inline-flex; align-items: center; gap: 6px; background: #025dff; color: #fff; text-decoration: none; font-size: 13px; margin-left: 12px; }
+        .ai-review-link:hover { background: #004bd1; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo" onclick="location.href='contract-dashboard.html'">
+            <img class="brand-img" src="assets/huakun-contract-logo.png" alt="华鲲元启 | 合同审查">
+        </div>
+        <div class="header-center">
+            <div class="task-name-display">
+                <i class="fas fa-file-alt"></i>
+                任务名称：<strong id="taskName">设备采购合同 - 深圳XX科技有限公司</strong>
+                <a class="ai-review-link" href="detail.html"><i class="fas fa-robot"></i> 进入 AI 合同审查工作台</a>
+            </div>
+        </div>
+        <div class="header-right">
+            <select class="lang-select" id="langSelect">
+                <option value="zh">中文</option>
+                <option value="en">English</option>
+                <option value="vi">Tiếng Việt</option>
+            </select>
+            <div class="user-avatar"><i class="fas fa-user"></i></div>
+        </div>
+    </header>
+
+    <div class="main-container" id="mainContainer">
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-header-icon" style="background: #e8f0fe; color: #1a73e8;"><i class="fas fa-folder-open"></i></div>
+                <span>源材料</span>
+            </div>
+            <div class="panel-content">
+                <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                    <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                    <div class="upload-text">点击或拖拽上传合同文件</div>
+                </div>
+                <input type="file" id="fileInput" multiple style="display:none" onchange="handleFileUpload(event)">
+                
+                <div class="selection-cards">
+                    <div class="selection-card" onclick="openTemplateLibrary()">
+                        <div class="selection-card-icon template"><i class="fas fa-book"></i></div>
+                        <div class="selection-card-info">
+                            <div class="selection-card-title">标准合同库</div>
+                            <div class="selection-card-desc">援引标准合同模板</div>
+                        </div>
+                    </div>
+                    <div class="selection-card" onclick="openRiskRules()">
+                        <div class="selection-card-icon rule"><i class="fas fa-shield-alt"></i></div>
+                        <div class="selection-card-info">
+                            <div class="selection-card-title">审核清单</div>
+                            <div class="selection-card-desc">配置审核规则</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="uploadedFiles" class="file-list"></div>
+
+                <div class="nav-menu" style="margin-top: 16px;">
+                    <div class="nav-item active" data-panel="review" onclick="switchPanel('review')">
+                        <span class="nav-item-icon"><i class="fas fa-search"></i></span>
+                        <span>合同预审</span>
+                    </div>
+                    <div class="nav-item" data-panel="approval" onclick="switchPanel('approval')">
+                        <span class="nav-item-icon"><i class="fas fa-check-circle"></i></span>
+                        <span>合同审批</span>
+                    </div>
+                    <div class="nav-item" data-panel="tracking" onclick="switchPanel('tracking')">
+                        <span class="nav-item-icon"><i class="fas fa-chart-line"></i></span>
+                        <span>履行跟踪</span>
+                    </div>
+                    <div class="nav-item" data-panel="seal" onclick="switchPanel('seal')">
+                        <span class="nav-item-icon"><i class="fas fa-stamp"></i></span>
+                        <span>合同施印</span>
+                    </div>
+                    <div class="nav-item" data-panel="archive" onclick="switchPanel('archive')">
+                        <span class="nav-item-icon"><i class="fas fa-archive"></i></span>
+                        <span>合同归档</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-header-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;"><i class="fas fa-robot"></i></div>
+                <span>AI助手</span>
+                <span style="margin-left: auto; padding: 3px 10px; background: rgba(52,168,83,0.1); color: var(--success); border-radius: 20px; font-size: 11px; font-weight: 500;">
+                    <i class="fas fa-circle" style="font-size: 6px; margin-right: 3px;"></i> 在线
+                </span>
+            </div>
+            <div class="panel-content" id="chatContainer">
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message">
+                        <div class="message-avatar ai">AI</div>
+                        <div class="message-content">您好！我是AI合同管理助手。我可以帮助您完成以下工作：
+
+<ul>
+<li><strong>合同预审</strong>：AI条款比对、风险点分析、资信审核</li>
+<li><strong>多语言翻译</strong>：中、英、越三语种合同翻译</li>
+<li><strong>法律援引审核</strong>：外国法律条款AI审核</li>
+<li><strong>合同审批</strong>：关键数据抓取、OA流程链接</li>
+<li><strong>履行跟踪</strong>：跟踪点管理、风险预警</li>
+<li><strong>合同归档</strong>：文件比对、用印审核</li>
+</ul>
+
+请上传合同文件或选择功能模块开始工作。</div>
+                    </div>
+                </div>
+                <div class="suggested-questions" id="suggestedQuestions">
+                    <div class="suggested-question" onclick="askQuestion('介绍非标合同的预设风险点审核逻辑')">
+                        <i class="fas fa-lightbulb"></i> 非标合同预设风险点审核
+                    </div>
+                    <div class="suggested-question" onclick="askQuestion('对合同相对方进行资信审核')">
+                        <i class="fas fa-building"></i> 合同相对方资信审核
+                    </div>
+                    <div class="suggested-question" onclick="askQuestion('翻译合同为中、英、越三语种')">
+                        <i class="fas fa-language"></i> 多语言翻译
+                    </div>
+                </div>
+            </div>
+            <div class="chat-input-area">
+                <div class="chat-input-wrapper">
+                    <textarea class="chat-input" id="chatInput" placeholder="请输入您的问题..." rows="1"></textarea>
+                    <button class="send-btn" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel" id="rightPanel">
+            <div class="panel-header">
+                <div class="panel-header-icon" style="background: #e6f4ea; color: #34a853;"><i class="fas fa-chart-pie"></i></div>
+                <span id="resultPanelTitle">分析结果</span>
+            </div>
+            <div class="panel-content">
+                <div id="reviewTab" class="tab-content active">
+                    <div class="tab-container">
+                        <button class="tab-btn active" onclick="switchTab('risk', this)">风险分析</button>
+                        <button class="tab-btn" onclick="switchTab('compare', this)">条款比对</button>
+                        <button class="tab-btn" onclick="switchTab('translate', this)">翻译</button>
+                        <button class="tab-btn" onclick="switchTab('legal', this)">法律援引</button>
+                    </div>
+
+                    <div id="riskTabContent" class="tab-content active">
+                        <div class="result-section">
+                            <div class="result-section-header">
+                                <i class="fas fa-building" style="color: var(--primary);"></i>
+                                <span>合同相对方资信审核（企查查API）</span>
+                            </div>
+                            <div class="company-info-card">
+                                <div class="company-info-header">
+                                    <span class="company-info-name">深圳XX科技有限公司</span>
+                                    <span class="result-tag high">高风险</span>
+                                </div>
+                                <div class="company-info-grid">
+                                    <div class="company-info-item">
+                                        <div class="company-info-label">注册资本</div>
+                                        <div class="company-info-value">500万（实缴200万）</div>
+                                    </div>
+                                    <div class="company-info-item">
+                                        <div class="company-info-label">被执行记录</div>
+                                        <div class="company-info-value risk">3 条</div>
+                                    </div>
+                                    <div class="company-info-item">
+                                        <div class="company-info-label">经营状态</div>
+                                        <div class="company-info-value warning">存续</div>
+                                    </div>
+                                    <div class="company-info-item">
+                                        <div class="company-info-label">风险评级</div>
+                                        <div class="company-info-value risk">高风险</div>
+                                    </div>
+                                </div>
+                                <div style="margin-top: 10px; padding: 8px; background: rgba(234,67,53,0.05); border-radius: 8px; font-size: 12px; color: var(--danger);">
+                                    <i class="fas fa-exclamation-triangle"></i> 建议：增加担保措施或降低交易金额
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="result-section">
+                            <div class="result-section-header">
+                                <i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>
+                                <span>风险点</span>
+                            </div>
+                            <div class="result-card high-risk">
+                                <div class="result-card-header">
+                                    <div class="result-card-title">
+                                        <span>条款风险 - 违约责任</span>
+                                        <span class="result-tag high">高风险</span>
+                                    </div>
+                                </div>
+                                <div class="result-card-content">
+                                    <strong>问题：</strong>第5条违约责任条款不明确<br><br>
+                                    <strong>建议：</strong>明确违约金为合同总金额的20%
+                                </div>
+                                <button class="accept-btn" onclick="toggleAccept(this)">
+                                    <i class="fas fa-check"></i> 接纳建议
+                                </button>
+                            </div>
+                            <div class="result-card medium-risk">
+                                <div class="result-card-header">
+                                    <div class="result-card-title">
+                                        <span>条款风险 - 争议解决</span>
+                                        <span class="result-tag medium">中风险</span>
+                                    </div>
+                                </div>
+                                <div class="result-card-content">
+                                    <strong>问题：</strong>第8条未约定仲裁方式<br><br>
+                                    <strong>建议：</strong>约定由合同签订地人民法院管辖
+                                </div>
+                                <button class="accept-btn" onclick="toggleAccept(this)">
+                                    <i class="fas fa-check"></i> 接纳建议
+                                </button>
+                            </div>
+                            <div class="result-card low-risk">
+                                <div class="result-card-header">
+                                    <div class="result-card-title">
+                                        <span>合规性审核</span>
+                                        <span class="result-tag low">低风险</span>
+                                    </div>
+                                </div>
+                                <div class="result-card-content">
+                                    合同内容符合现行法律法规要求。
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 10px;">
+                            <button class="action-btn" style="flex: 1;" onclick="generatePreApprovalNote()">
+                                <i class="fas fa-file-medical"></i> 生成预审批注
+                            </button>
+                            <button class="action-btn secondary" style="flex: 1;" onclick="openAddSuggestionModal()">
+                                <i class="fas fa-plus"></i> 手动添加建议
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="compareTabContent" class="tab-content">
+                        <div class="result-section">
+                            <div class="result-section-header">
+                                <i class="fas fa-balance-scale" style="color: var(--primary);"></i>
+                                <span>与标准合同条款比对</span>
+                            </div>
+                            <div class="result-card">
+                                <div class="result-card-title">差异统计</div>
+                                <div class="result-card-content">
+                                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 8px;">
+                                        <div style="text-align: center; padding: 10px; background: rgba(251,188,4,0.1); border-radius: 8px;">
+                                            <div style="font-size: 20px; font-weight: 700; color: var(--warning);">3</div>
+                                            <div style="font-size: 11px; color: var(--text-secondary);">修改条款</div>
+                                        </div>
+                                        <div style="text-align: center; padding: 10px; background: rgba(26,115,232,0.1); border-radius: 8px;">
+                                            <div style="font-size: 20px; font-weight: 700; color: var(--primary);">1</div>
+                                            <div style="font-size: 11px; color: var(--text-secondary);">新增条款</div>
+                                        </div>
+                                        <div style="text-align: center; padding: 10px; background: rgba(52,168,83,0.1); border-radius: 8px;">
+                                            <div style="font-size: 20px; font-weight: 700; color: var(--success);">0</div>
+                                            <div style="font-size: 11px; color: var(--text-secondary);">删除条款</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="result-card">
+                                <div class="result-card-title">修改建议</div>
+                                <div class="result-card-content">
+                                    <ul style="margin: 0; padding-left: 18px;">
+                                        <li style="margin-bottom: 6px;"><strong>第3条付款条款</strong>：建议增加分阶段付款节点</li>
+                                        <li style="margin-bottom: 6px;"><strong>第7条保密期限</strong>：建议延长至5年</li>
+                                        <li style="margin-bottom: 6px;"><strong>第10条知识产权</strong>：建议补充归属条款</li>
+                                        <li><strong>新增条款</strong>：建议增加数据安全保护条款</li>
+                                    </ul>
+                                </div>
+                                <button class="accept-btn" onclick="acceptAllSuggestions()">
+                                    <i class="fas fa-check-double"></i> 接纳全部建议
+                                </button>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="action-btn" style="flex: 1;" onclick="generateCompareNote()">
+                                <i class="fas fa-file-medical"></i> 生成预审批注
+                            </button>
+                            <button class="action-btn secondary" style="flex: 1;" onclick="openAddSuggestionModal()">
+                                <i class="fas fa-plus"></i> 手动添加建议
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="translateTabContent" class="tab-content">
+                        <div class="result-section">
+                            <div class="result-section-header">
+                                <i class="fas fa-language" style="color: var(--purple);"></i>
+                                <span>多语言翻译服务</span>
+                            </div>
+                            <div class="quick-actions">
+                                <div class="quick-action-btn" onclick="translateContract('zh')">
+                                    <div class="quick-action-icon">🇨🇳</div>
+                                    <div class="quick-action-text">中文</div>
+                                </div>
+                                <div class="quick-action-btn" onclick="translateContract('en')">
+                                    <div class="quick-action-icon">🇺🇸</div>
+                                    <div class="quick-action-text">英文</div>
+                                </div>
+                                <div class="quick-action-btn" onclick="translateContract('vi')">
+                                    <div class="quick-action-icon">🇻🇳</div>
+                                    <div class="quick-action-text">越南文</div>
+                                </div>
+                            </div>
+                            <div class="translation-result" id="translationResult" style="display: none;">
+                                <div class="translation-header">
+                                    <div class="translation-lang">
+                                        <span class="translation-lang-flag" id="targetLangFlag">🇨🇳</span>
+                                        <span id="targetLangName">中文</span>
+                                    </div>
+                                    <button class="action-btn secondary" style="padding: 5px 10px; font-size: 11px;" onclick="requestLegalReview()">
+                                        <i class="fas fa-gavel"></i> 法律援引
+                                    </button>
+                                </div>
+                                <div class="translation-content" id="translationContent">
+                                    翻译内容将显示在这里...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="legalTabContent" class="tab-content">
+                        <div class="result-section">
+                            <div class="result-section-header">
+                                <i class="fas fa-gavel" style="color: var(--gold);"></i>
+                                <span>外国法律AI援引</span>
+                            </div>
+                            <div class="result-card">
+                                <div class="result-card-title">审核范围</div>
+                                <div class="result-card-content">
+                                    <ul style="margin: 0; padding-left: 18px;">
+                                        <li>合同适用法律条款</li>
+                                        <li>违约责任与赔偿条款</li>
+                                        <li>争议解决机制条款</li>
+                                        <li>知识产权保护条款</li>
+                                        <li>数据隐私与安全条款</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <button class="action-btn" style="width: 100%;" onclick="startLegalReview()">
+                                <i class="fas fa-search"></i> 开始法律援引审核
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="approvalTab" class="tab-content">
+                    <div class="result-section">
+                        <div class="result-section-header">
+                            <i class="fas fa-tasks" style="color: var(--primary);"></i>
+                            <span>审批流程</span>
+                            <button class="action-btn secondary" style="margin-left: auto; padding: 5px 10px; font-size: 11px;" onclick="openOAApproval()">
+                                <i class="fas fa-external-link-alt"></i> OA审批
+                            </button>
+                        </div>
+                        <div class="contract-flow">
+                            <div class="flow-item completed">
+                                <div class="flow-dot"></div>
+                                <div class="flow-title">
+                                    提交申请
+                                    <span class="result-tag low" style="font-size: 9px; padding: 2px 5px;">已完成</span>
+                                </div>
+                                <div class="flow-desc">发起人: 张三</div>
+                                <div class="flow-time">2026-04-10 09:30</div>
+                            </div>
+                            <div class="flow-item completed">
+                                <div class="flow-dot"></div>
+                                <div class="flow-title">
+                                    部门审批
+                                    <span class="result-tag low" style="font-size: 9px; padding: 2px 5px;">已完成</span>
+                                </div>
+                                <div class="flow-desc">审批人: 李经理</div>
+                                <div class="flow-time">2026-04-10 14:20</div>
+                            </div>
+                            <div class="flow-item current">
+                                <div class="flow-dot"></div>
+                                <div class="flow-title">
+                                    法务审核
+                                    <span class="result-tag info" style="font-size: 9px; padding: 2px 5px;">进行中</span>
+                                </div>
+                                <div class="flow-desc">审核人: 王律师</div>
+                                <div class="flow-time">预计完成: 2026-04-13</div>
+                            </div>
+                            <div class="flow-item">
+                                <div class="flow-dot"></div>
+                                <div class="flow-title">领导签批</div>
+                                <div class="flow-desc">待提交</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="result-section">
+                        <div class="result-section-header">
+                            <i class="fas fa-key" style="color: var(--warning);"></i>
+                            <span>关键数据抓取</span>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-card-title">合同标识</div>
+                            <div class="key-data-tags">
+                                <span class="key-data-tag involved"><i class="fas fa-lock"></i> 涉及限制条款</span>
+                                <span class="key-data-tag not-involved"><i class="fas fa-unlock"></i> 无担保条款</span>
+                                <span class="key-data-tag involved"><i class="fas fa-handshake"></i> 涉及关联交易</span>
+                                <span class="key-data-tag alert"><i class="fas fa-exclamation"></i> 重大合同</span>
+                                <span class="key-data-tag not-involved"><i class="fas fa-ban"></i> 非越底线</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="vip-history-panel">
+                        <div class="vip-history-header">
+                            <div class="vip-history-icon"><i class="fas fa-crown"></i></div>
+                            <div>
+                                <div class="vip-history-title">大客户RT条款历史</div>
+                                <div class="vip-history-sub">华为技术有限公司 | 历史合同 12 份</div>
+                            </div>
+                        </div>
+                        <div class="history-item">
+                            <div class="history-item-date">2026-03-15</div>
+                            <div class="history-item-name">设备采购合同</div>
+                            <span class="history-item-tag abnormal">RT异常</span>
+                        </div>
+                        <div class="history-item">
+                            <div class="history-item-date">2026-02-20</div>
+                            <div class="history-item-name">软件服务合同</div>
+                            <span class="history-item-tag normal">正常</span>
+                        </div>
+                        <div class="history-item">
+                            <div class="history-item-date">2026-01-10</div>
+                            <div class="history-item-name">战略合作协议</div>
+                            <span class="history-item-tag normal">正常</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="trackingTab" class="tab-content">
+                    <div class="result-section">
+                        <div class="result-section-header">
+                            <i class="fas fa-chart-line" style="color: var(--purple);"></i>
+                            <span>合同履行状态</span>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-card-header">
+                                <div class="result-card-title">
+                                    <span>合同进度</span>
+                                    <span class="result-tag info">执行中</span>
+                                </div>
+                            </div>
+                            <div class="result-card-content">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                                    <span>完成度</span>
+                                    <span>65%</span>
+                                </div>
+                                <div class="progress-bar"><div class="progress-fill" style="width: 65%;"></div></div>
+                            </div>
+                        </div>
+
+                        <div class="result-section-header" style="margin-top: 12px;">
+                            <i class="fas fa-bullseye" style="color: var(--primary);"></i>
+                            <span>跟踪点管理</span>
+                        </div>
+                        <div class="tracking-point">
+                            <div class="tracking-point-icon nda"><i class="fas fa-file-contract"></i></div>
+                            <div class="tracking-point-info">
+                                <div class="tracking-point-name">保密协议到期</div>
+                                <div class="tracking-point-meta">期限：2026-04-30 | 剩余15天</div>
+                            </div>
+                            <span class="tracking-point-status warning">即将到期</span>
+                        </div>
+                        <div class="tracking-point">
+                            <div class="tracking-point-icon payment"><i class="fas fa-credit-card"></i></div>
+                            <div class="tracking-point-info">
+                                <div class="tracking-point-name">第二期付款节点</div>
+                                <div class="tracking-point-meta">日期：2026-04-20 | ¥500,000</div>
+                            </div>
+                            <span class="tracking-point-status normal">正常</span>
+                        </div>
+                    </div>
+
+                    <div class="result-section">
+                        <div class="result-section-header">
+                            <i class="fas fa-bell" style="color: var(--warning);"></i>
+                            <span>风险预警</span>
+                        </div>
+                        <div class="result-card medium-risk">
+                            <div class="result-card-content">
+                                <i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i>
+                                保密合同将于15天后到期
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="result-section">
+                        <div class="result-section-header">
+                            <i class="fas fa-gavel" style="color: var(--danger);"></i>
+                            <span>诉讼争议入口</span>
+                        </div>
+                        <div class="litigation-link" onclick="openLitigationFlow()">
+                            <div class="litigation-icon"><i class="fas fa-balance-scale"></i></div>
+                            <div class="litigation-info">
+                                <div class="litigation-title">进入诉讼流程</div>
+                                <div class="litigation-desc">链接到争议处理系统</div>
+                            </div>
+                            <i class="fas fa-chevron-right" style="color: var(--text-secondary);"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="sealTab" class="tab-content">
+                    <div class="result-section">
+                        <div class="result-section-header">
+                            <i class="fas fa-stamp" style="color: var(--primary);"></i>
+                            <span>电子印章（e签宝）</span>
+                        </div>
+                        <div class="seal-status-card">
+                            <div class="seal-status-icon" style="color: var(--success);"><i class="fas fa-check-circle"></i></div>
+                            <div class="seal-status-title">合同已通过审核</div>
+                            <div class="seal-status-desc">可发起电子签章申请</div>
+                            <button class="seal-btn" onclick="applyElectronicSeal()">
+                                <i class="fas fa-file-signature"></i>
+                                申请电子签章
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="archiveTab" class="tab-content">
+                    <div class="result-section">
+                        <div class="result-section-header">
+                            <i class="fas fa-archive" style="color: var(--primary);"></i>
+                            <span>归档核对</span>
+                        </div>
+                        <div class="archive-compare">
+                            <div class="archive-compare-item">
+                                <div class="archive-compare-label">审批定稿文件</div>
+                                <div class="archive-compare-value match">
+                                    <i class="fas fa-check"></i> 已上传
+                                </div>
+                            </div>
+                            <div class="archive-compare-item">
+                                <div class="archive-compare-label">双方签署件</div>
+                                <div class="archive-compare-value match">
+                                    <i class="fas fa-check"></i> 已上传
+                                </div>
+                            </div>
+                            <div class="archive-compare-item">
+                                <div class="archive-compare-label">文件比对</div>
+                                <div class="archive-compare-value match">
+                                    <i class="fas fa-check-double"></i> 一致
+                                </div>
+                            </div>
+                            <div class="archive-compare-item">
+                                <div class="archive-compare-label">用印规范性</div>
+                                <div class="archive-compare-value pending">
+                                    <i class="fas fa-clock"></i> 待审核
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="result-section">
+                        <div class="result-section-header">
+                            <i class="fas fa-folder" style="color: var(--warning);"></i>
+                            <span>档案信息</span>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-card-content">
+                                <div style="margin-bottom: 8px;"><strong>档案编号：</strong>DA-2026-0045</div>
+                                <div style="margin-bottom: 8px;"><strong>存放位置：</strong>档案室A区3排5号</div>
+                                <div><strong>归档状态：</strong><span class="result-tag info">待归档</span></div>
+                            </div>
+                        </div>
+                        <button class="action-btn success" style="width: 100%; margin-top: 10px;" onclick="submitToArchive()">
+                            <i class="fas fa-archive"></i> 提交归档
+                        </button>
+                    </div>
+                </div>
+
+                <div class="generated-results" id="generatedResults">
+                    <div class="result-section-header" style="margin-top: 16px; padding-top: 16px; border-top: 2px solid var(--border);">
+                        <i class="fas fa-file-export" style="color: var(--primary);"></i>
+                        <span>生成结果记录</span>
+                    </div>
+                    <div id="generatedList">
+                        <div class="empty-state" style="padding: 16px;">
+                            <i class="fas fa-inbox"></i>
+                            <div style="font-size: 12px;">暂无生成记录</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="addSuggestionModal">
+        <div class="modal" style="width: 450px;">
+            <div class="modal-header">
+                <div class="modal-title"><i class="fas fa-plus-circle"></i> 添加修改建议</div>
+                <button class="modal-close" onclick="closeSuggestionModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">建议类型</label>
+                    <select class="form-select" id="suggestionType">
+                        <option value="clause">条款修改</option>
+                        <option value="risk">风险提示</option>
+                        <option value="legal">法律依据</option>
+                        <option value="other">其他</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">条款位置</label>
+                    <input type="text" class="form-input" id="suggestionClause" placeholder="如：第5条违约责任">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">建议内容</label>
+                    <textarea class="form-input" id="suggestionContent" rows="4" placeholder="请输入建议内容..." style="resize: none;"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeSuggestionModal()">取消</button>
+                <button class="btn-confirm" onclick="addSuggestion()">
+                    <i class="fas fa-check"></i> 确认添加
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPanel = 'review';
+        let currentTab = 'risk';
+        let uploadedFiles = [];
+        let generatedResults = [];
+
+        function addGeneratedResult(type, name, meta) {
+            const now = new Date();
+            const time = now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+            const result = { type, name, meta, time };
+            generatedResults.unshift(result);
+            renderGeneratedResults();
+        }
+
+        function renderGeneratedResults() {
+            const container = document.getElementById('generatedList');
+            if (generatedResults.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state" style="padding: 16px;">
+                        <i class="fas fa-inbox"></i>
+                        <div style="font-size: 12px;">暂无生成记录</div>
+                    </div>
+                `;
+                return;
+            }
+            container.innerHTML = generatedResults.map(r => `
+                <div class="generated-item">
+                    <div class="generated-item-icon"><i class="fas fa-${r.type === 'note' ? 'file-medical' : r.type === 'translate' ? 'language' : r.type === 'legal' ? 'gavel' : r.type === 'seal' ? 'stamp' : r.type === 'archive' ? 'archive' : 'file-alt'}"></i></div>
+                    <div class="generated-item-info">
+                        <div class="generated-item-name">${r.name}</div>
+                        <div class="generated-item-meta">${r.meta}</div>
+                    </div>
+                    <div class="generated-item-time">${r.time}</div>
+                </div>
+            `).join('');
+        }
+
+        function switchPanel(panel) {
+            currentPanel = panel;
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            document.querySelector(`[data-panel="${panel}"]`).classList.add('active');
+            
+            const titles = {
+                review: '分析结果',
+                approval: '审批信息',
+                tracking: '履行跟踪',
+                seal: '施印管理',
+                archive: '归档管理'
+            };
+            document.getElementById('resultPanelTitle').textContent = titles[panel];
+
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            const tabElement = document.getElementById(panel + 'Tab');
+            if (tabElement) {
+                tabElement.classList.add('active');
+            }
+
+            switchTab('risk', document.querySelector(`#${panel}Tab .tab-btn`));
+        }
+
+        function switchTab(tab, btn) {
+            if (!btn) return;
+            currentTab = tab;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            document.querySelectorAll('[id$="TabContent"]').forEach(c => c.classList.remove('active'));
+            const tabContent = document.getElementById(tab + 'TabContent');
+            if (tabContent) {
+                tabContent.classList.add('active');
+            }
+        }
+
+        function handleFileUpload(event) {
+            const files = event.target.files;
+            const container = document.getElementById('uploadedFiles');
+            
+            for (let file of files) {
+                uploadedFiles.push(file);
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <div class="file-icon ${file.type.includes('pdf') ? 'pdf' : 'doc'}">
+                        <i class="fas fa-file-${file.type.includes('pdf') ? 'pdf' : 'word'}"></i>
+                    </div>
+                    <div class="file-info">
+                        <div class="file-name">${file.name}</div>
+                        <div class="file-size">${(file.size / 1024).toFixed(1)} KB</div>
+                    </div>
+                `;
+                container.appendChild(fileItem);
+            }
+            
+            addAIMessage('系统', `已上传 ${files.length} 个文件，开始进行AI分析...`);
+            
+            setTimeout(() => {
+                addAIMessage('AI', '文件上传完成，开始进行合同预审分析...');
+            }, 1000);
+        }
+
+        function addAIMessage(type, content) {
+            const chatMessages = document.getElementById('chatMessages');
+            const message = document.createElement('div');
+            message.className = 'message';
+            message.innerHTML = `
+                <div class="message-avatar ${type === 'AI' ? 'ai' : 'user'}">${type === 'AI' ? 'AI' : 'U'}</div>
+                <div class="message-content">${content.replace(/\n/g, '<br>')}</div>
+            `;
+            chatMessages.appendChild(message);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (!message) return;
+            
+            addAIMessage('用户', message);
+            input.value = '';
+            
+            setTimeout(() => {
+                addAIMessage('AI', '已收到您的消息，正在处理中...');
+            }, 1000);
+        }
+
+        function askQuestion(question) {
+            document.getElementById('chatInput').value = question;
+            sendMessage();
+        }
+
+        function toggleAccept(btn) {
+            btn.classList.toggle('accepted');
+            if (btn.classList.contains('accepted')) {
+                btn.innerHTML = '<i class="fas fa-undo"></i> 撤销接纳';
+            } else {
+                btn.innerHTML = '<i class="fas fa-check"></i> 接纳建议';
+            }
+        }
+
+        function acceptAllSuggestions() {
+            document.querySelectorAll('.accept-btn').forEach(btn => {
+                btn.classList.add('accepted');
+                btn.innerHTML = '<i class="fas fa-check-double"></i> 已接纳';
+            });
+            addAIMessage('AI', '已接纳全部修改建议。');
+        }
+
+        function translateContract(lang) {
+            const flags = { zh: '🇨🇳', en: '🇺🇸', vi: '🇻🇳' };
+            const names = { zh: '中文', en: '英文', vi: '越南文' };
+            
+            document.getElementById('targetLangFlag').textContent = flags[lang];
+            document.getElementById('targetLangName').textContent = names[lang];
+            document.getElementById('translationResult').style.display = 'block';
+            document.getElementById('translationContent').innerHTML = '正在翻译中，请稍候...';
+            
+            addAIMessage('AI', `已启动${names[lang]}翻译服务...`);
+            
+            setTimeout(() => {
+                document.getElementById('translationContent').innerHTML = `${names[lang]}翻译结果将在此处显示。`;
+                addAIMessage('AI', `${names[lang]}翻译已完成。`);
+                addGeneratedResult('translate', `${names[lang]}翻译文档`, `合同ID: CT-2026-0048`);
+            }, 2000);
+        }
+
+        function requestLegalReview() {
+            switchTab('legal', document.querySelectorAll('.tab-btn')[3]);
+        }
+
+        function startLegalReview() {
+            addAIMessage('AI', '正在启动外国法律AI援引审核服务...');
+            setTimeout(() => {
+                addGeneratedResult('legal', '外国法律AI援引审核报告', `审核完成时间: ${new Date().toLocaleString()}`);
+                addAIMessage('AI', '外国法律AI援引审核已完成，审核结果已生成。');
+            }, 2500);
+        }
+
+        function generatePreApprovalNote() {
+            addAIMessage('AI', '正在生成预审批注，请稍候...');
+            setTimeout(() => {
+                addGeneratedResult('note', '合同预审批注', `包含风险点清单、条款分析、资信审核结果`);
+                addAIMessage('AI', '预审批注已生成，包含：合同基本信息、相对方资信审核结果、风险点清单及建议、条款比对差异分析。');
+            }, 2000);
+        }
+
+        function generateCompareNote() {
+            addAIMessage('AI', '正在生成条款比对预审批注，请稍候...');
+            setTimeout(() => {
+                addGeneratedResult('note', '条款比对预审批注', `包含差异分析、修改建议、新增条款`);
+                addAIMessage('AI', '条款比对预审批注已生成。');
+            }, 2000);
+        }
+
+        function openAddSuggestionModal() {
+            document.getElementById('addSuggestionModal').classList.add('show');
+        }
+
+        function closeSuggestionModal() {
+            document.getElementById('addSuggestionModal').classList.remove('show');
+        }
+
+        function addSuggestion() {
+            const type = document.getElementById('suggestionType').value;
+            const clause = document.getElementById('suggestionClause').value;
+            const content = document.getElementById('suggestionContent').value;
+            
+            if (!content.trim()) {
+                alert('请输入建议内容');
+                return;
+            }
+            
+            const typeNames = { clause: '条款修改', risk: '风险提示', legal: '法律依据', other: '其他' };
+            addGeneratedResult('suggestion', `手动添加-${typeNames[type]}`, clause ? `${clause}: ${content.substring(0, 20)}...` : content.substring(0, 30) + '...');
+            addAIMessage('AI', `已添加修改建议：${content}`);
+            
+            document.getElementById('suggestionContent').value = '';
+            document.getElementById('suggestionClause').value = '';
+            closeSuggestionModal();
+        }
+
+        function openTemplateLibrary() {
+            alert('标准合同库管理功能');
+        }
+
+        function openRiskRules() {
+            alert('审核清单管理功能');
+        }
+
+        function openOAApproval() {
+            alert('演示模式：已打开 OA 审批入口');
+        }
+
+        function openLitigationFlow() {
+            alert('演示模式：已打开诉讼流程入口');
+        }
+
+        function applyElectronicSeal() {
+            addAIMessage('AI', '正在调用e签宝API发起电子签章申请...');
+            setTimeout(() => {
+                addGeneratedResult('seal', 'e签宝电子签章申请', `申请时间: ${new Date().toLocaleString()}`);
+                addAIMessage('系统', 'e签宝签章申请已提交，请查收手机验证码完成签署。');
+            }, 2000);
+        }
+
+        function submitToArchive() {
+            addAIMessage('AI', '正在提交至档案系统...');
+            setTimeout(() => {
+                addGeneratedResult('archive', '合同归档完成', `档案编号: DA-2026-0045`);
+                addAIMessage('系统', '合同已成功归档，档案编号：DA-2026-0045');
+            }, 2000);
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const taskId = urlParams.get('id');
+        const initialPage = urlParams.get('page');
+        if (taskId) {
+            document.getElementById('taskName').textContent = `合同-${taskId}`;
+        }
+        if (initialPage) {
+            const panelMap = { pending: 'review', review: 'review', approval: 'approval', tracking: 'tracking', seal: 'seal', archive: 'archive' };
+            switchPanel(panelMap[initialPage] || 'review');
+        }
+    </script>
+</body>
+</html>

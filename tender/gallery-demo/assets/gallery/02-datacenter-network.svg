@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+  <rect width="1200" height="800" fill="#f8fafc"/>
+  <text x="80" y="80" font-family="Arial" font-size="34" font-weight="700" fill="#0f172a">数据中心 Spine-Leaf 网络拓扑</text>
+  <text x="80" y="116" font-family="Arial" font-size="18" fill="#475569">4 台 Spine · 12 台 Leaf · 双防火墙 HA</text>
+  <g stroke="#94a3b8" stroke-width="4" fill="none">
+    <path d="M360 190 L250 390"/><path d="M480 190 L360 390"/><path d="M600 190 L470 390"/><path d="M720 190 L580 390"/><path d="M840 190 L690 390"/><path d="M960 190 L800 390"/>
+  </g>
+  <g fill="#025dff" font-family="Arial" font-size="15" fill-opacity=".9">
+    <rect x="310" y="130" width="130" height="60" rx="14"/><text x="345" y="168" fill="#fff">Spine 01</text>
+    <rect x="430" y="130" width="130" height="60" rx="14"/><text x="465" y="168" fill="#fff">Spine 02</text>
+    <rect x="550" y="130" width="130" height="60" rx="14"/><text x="585" y="168" fill="#fff">Spine 03</text>
+    <rect x="670" y="130" width="130" height="60" rx="14"/><text x="705" y="168" fill="#fff">Spine 04</text>
+  </g>
+  <g fill="#16a34a" font-family="Arial" font-size="14">
+    <rect x="190" y="390" width="120" height="54" rx="12"/><text x="218" y="423" fill="#fff">Leaf 01</text>
+    <rect x="330" y="390" width="120" height="54" rx="12"/><text x="358" y="423" fill="#fff">Leaf 02</text>
+    <rect x="470" y="390" width="120" height="54" rx="12"/><text x="498" y="423" fill="#fff">Leaf 03</text>
+    <rect x="610" y="390" width="120" height="54" rx="12"/><text x="638" y="423" fill="#fff">Leaf 04</text>
+    <rect x="750" y="390" width="120" height="54" rx="12"/><text x="778" y="423" fill="#fff">Leaf 05</text>
+  </g>
+  <g stroke="#0f172a" stroke-width="6" fill="none"><path d="M250 444 L250 520 L190 520"/><path d="M390 444 L390 520 L330 520"/><path d="M530 444 L530 520 L470 520"/><path d="M670 444 L670 520 L610 520"/><path d="M810 444 L810 520 L750 520"/></g>
+  <g fill="#fff" stroke="#cbd5e1" font-family="Arial" font-size="15">
+    <rect x="150" y="520" width="180" height="90" rx="14"/><text x="185" y="558">计算资源池</text><text x="185" y="584">128 台服务器</text>
+    <rect x="380" y="520" width="180" height="90" rx="14"/><text x="415" y="558">存储资源池</text><text x="415" y="584">3.2 PB 可用</text>
+    <rect x="610" y="520" width="180" height="90" rx="14"/><text x="645" y="558">AI 资源池</text><text x="645" y="584">64 张加速卡</text>
+  </g>
+  <g fill="#f97316" font-family="Arial" font-size="16"><rect x="850" y="250" width="220" height="90" rx="16"/><text x="885" y="290" fill="#fff">出口防火墙 HA</text><text x="885" y="316" fill="#fff">主备双活</text></g>
+  <path d="M850 295 L820 295 L820 250 L810 250" stroke="#f97316" stroke-width="5" fill="none"/>
+  <g stroke="#025dff" stroke-width="4" fill="none"><path d="M120 700 h240"/><path d="M120 725 h180"/></g>
+  <text x="380" y="708" font-family="Arial" font-size="16" fill="#475569">东西向流量 2 跳可达，南北向经防火墙统一策略</text>
+</svg>

@@ -1,0 +1,72 @@
+/* 商务标对话区：把技术标两步式大纲配置面板收敛为单步「商务标生成大纲要素确认」 */
+
+/* 只保留关闭入口，隐藏 1/2 步骤切换 */
+.bid-config-panel .bid-config-nav > button[aria-label="上一步"],
+.bid-config-panel .bid-config-nav > button[aria-label="下一步"],
+.bid-config-panel .bid-config-nav > span {
+  display: none !important;
+}
+
+/* 商务标大纲面板不依赖招标文件解读，也没有页数、目录层级设置 */
+.bid-config-panel[data-business-config="outline"] .outline-dependency,
+.bid-config-panel .outline-step-two .page-setting-heading,
+.bid-config-panel .outline-step-two .page-setting-control,
+.bid-config-panel .outline-step-two .range-labels,
+.bid-config-panel .outline-step-two .depth-setting {
+  display: none !important;
+}
+
+/* 保留「招标文件」要素，与精准模式 01 弹窗一致 */
+.bid-config-panel .outline-config-content[data-business-source]::before {
+  content: "招标文件：" attr(data-business-source);
+  display: block;
+  padding: 6px 4px 14px;
+  color: #365d91;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 22px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bid-config-panel .outline-config-content .outline-step-two > .config-field > span {
+  color: var(--color-heading);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.bid-config-panel .outline-config-content .outline-step-two::after {
+  content: "提示：将引用左侧勾选的参考文件生成结果";
+  display: block;
+  padding: 10px 4px 0;
+  color: #8a94a6;
+  font-size: 12px;
+  line-height: 20px;
+}
+
+/* 正文配置面板：参照精准模式 02 撰写全文弹窗的要素 */
+.bid-config-panel[data-business-config="body"] .outline-source-switch {
+  display: none !important;
+}
+
+.bid-config-panel[data-business-config="body"] .outline-config-content > .business-chat-company {
+  margin-top: 6px;
+  padding: 0 4px;
+}
+
+.bid-config-panel[data-business-config="body"] .business-chat-requirement-hint {
+  margin: 4px 4px 0;
+  color: #e5484d;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.bid-config-panel[data-business-config="body"] .business-chat-requirement-hint[hidden] {
+  display: none;
+}
+
+/* 正文面板里的大纲卡片保持可见可点 */
+.bid-config-panel[data-business-config="body"] .outline-dependency {
+  display: block;
+}

@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>应用中心 · 行业应用 · 大模型智算平台</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230F1418'/%3E%3Cpath d='M9 21V11l4 6 3-4 4 8' fill='none' stroke='%230B6E7F' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/app.css?v=20260924-4">
+</head>
+<body data-module="apps" data-page="A-01" data-title="应用中心"
+      data-tabs="行业应用|智能体|平台产品" data-tab="0"
+      data-search="搜索应用、能力、标签" data-sort="推荐|热度|更新时间" data-view="1"
+      data-register="1" data-register-value="discovery">
+<div class="shell" id="shell">
+  <nav class="rail" id="rail" aria-label="模块导航"></nav>
+
+  <div class="main">
+    <header class="band" id="band"></header>
+
+    <div class="mid">
+      <!-- 筛选列：即 PRD 要求的「左侧侧边栏」 -->
+      <aside class="filter" aria-label="筛选">
+        <div class="filter__group">
+          <h3>行业分类</h3>
+          <label class="filter__opt"><input type="radio" name="ind" checked> 全部<span class="cnt">24</span></label>
+          <label class="filter__opt"><input type="radio" name="ind"> 内容办公<span class="cnt">7</span></label>
+          <label class="filter__opt"><input type="radio" name="ind"> 法务合规<span class="cnt">4</span></label>
+          <label class="filter__opt"><input type="radio" name="ind"> 财务会计<span class="cnt">3</span></label>
+          <label class="filter__opt"><input type="radio" name="ind"> 人力资源<span class="cnt">4</span></label>
+          <label class="filter__opt"><input type="radio" name="ind"> 研发效能<span class="cnt">3</span></label>
+          <label class="filter__opt"><input type="radio" name="ind"> 市场营销<span class="cnt">3</span></label>
+        </div>
+        <div class="filter__group">
+          <h3>能力标签</h3>
+          <label class="filter__opt"><input type="checkbox"> 文本生成</label>
+          <label class="filter__opt"><input type="checkbox"> 文档解析</label>
+          <label class="filter__opt"><input type="checkbox"> 多模态</label>
+          <label class="filter__opt"><input type="checkbox"> 企业模板</label>
+          <label class="filter__opt"><input type="checkbox"> 知识库</label>
+        </div>
+        <div class="filter__group">
+          <h3>权限范围</h3>
+          <label class="filter__opt"><input type="radio" name="perm" checked> 全部可见</label>
+          <label class="filter__opt"><input type="radio" name="perm"> 本租户已授权<span class="cnt">18</span></label>
+          <label class="filter__opt"><input type="radio" name="perm"> 公开</label>
+        </div>
+        <div class="filter__group">
+          <h3>我的应用</h3>
+          <a class="filter__nav" href="app-detail.html">我创建的<span class="cnt">3</span></a>
+          <a class="filter__nav" href="app-detail.html">我收藏的<span class="cnt">6</span></a>
+          <a class="filter__nav" href="app-detail.html">已授权的<span class="cnt">18</span></a>
+        </div>
+      </aside>
+
+      <!-- 主舞台：发现语域（低密度、能力叙述优先） -->
+      <main class="stage" id="stage">
+        <div class="selected-bar">
+          <span>行业分类：全部</span><span class="dot-sep">·</span>
+          <span>权限：全部可见</span>
+          <button class="btn btn--sm btn--ghost">清空筛选</button>
+          <span class="total">共 24 个应用</span>
+        </div>
+
+        <div class="objgrid">
+
+          <article class="objcard">
+            <div class="objcard__top">
+              <div class="objcard__icon">写</div>
+              <div><div class="objcard__name">写作助手</div><div class="objcard__sub">行业应用 · 内容办公</div></div>
+            </div>
+            <p class="objcard__desc">公文、周报、方案初稿生成，支持企业模板库与语气约束，可直接导出 Word。</p>
+            <div class="objcard__tags"><span class="tag">文本生成</span><span class="tag">企业模板</span></div>
+            <div class="objcard__foot">
+              <a class="costbtn costbtn--sm" href="app-console.html"><span class="costbtn__label">试用</span><span class="costbtn__est">≈0.8k Token</span></a>
+            </div>
+          </article>
+
+          <article class="objcard">
+            <div class="objcard__top">
+              <div class="objcard__icon objcard__icon--soft">P</div>
+              <div><div class="objcard__name">PPT 生成</div><div class="objcard__sub">行业应用 · 内容办公</div></div>
+            </div>
+            <p class="objcard__desc">从大纲或长文一键生成演示文稿，内置企业版式与图表规范。</p>
+            <div class="objcard__tags"><span class="tag">文本生成</span><span class="tag">多模态</span></div>
+            <div class="objcard__foot">
+              <a class="costbtn costbtn--sm" href="app-console.html"><span class="costbtn__label">试用</span><span class="costbtn__est">≈2.4k Token</span></a>
+            </div>
+          </article>
+
+          <article class="objcard">
+            <div class="objcard__top">
+              <div class="objcard__icon objcard__icon--soft">法</div>
+              <div><div class="objcard__name">法务合同审查</div><div class="objcard__sub">行业应用 · 法务合规</div></div>
+            </div>
+            <p class="objcard__desc">条款风险识别与修订建议，支持与标准模板逐条比对并输出审查台账。</p>
+            <div class="objcard__tags"><span class="tag">文档解析</span><span class="tag">知识库</span></div>
+            <div class="objcard__foot">
+              <a class="costbtn costbtn--sm" href="app-console.html"><span class="costbtn__label">试用</span><span class="costbtn__est">≈6.1k Token</span></a>
+            </div>
+          </article>
+
+          <article class="objcard">
+            <div class="objcard__top">
+              <div class="objcard__icon objcard__icon--soft">财</div>
+              <div><div class="objcard__name">财务报告助手</div><div class="objcard__sub">行业应用 · 财务会计</div></div>
+            </div>
+            <p class="objcard__desc">从科目余额表生成经营分析报告，自动核对同比环比异常项。</p>
+            <div class="objcard__tags"><span class="tag">文档解析</span><span class="tag">企业模板</span></div>
+            <div class="objcard__foot">
+              <a class="costbtn costbtn--sm" href="app-console.html"><span class="costbtn__label">试用</span><span class="costbtn__est">≈3.2k Token</span></a>
+            </div>
+          </article>
+
+          <article class="objcard">
+            <div class="objcard__top">
+              <div class="objcard__icon objcard__icon--soft">标</div>
+              <div><div class="objcard__name">招投标文件撰写</div><div class="objcard__sub">行业应用 · 市场营销</div></div>
+            </div>
+            <p class="objcard__desc">依据招标文件与技术方案库生成应答文件，自动比对偏离项并提示废标风险。</p>
+            <div class="objcard__tags"><span class="chip chip--insight"><i class="chip__dot"></i>灰度中 40%</span><span class="tag">知识库</span></div>
+            <div class="objcard__foot">
+              <a class="costbtn costbtn--sm" href="app-console.html"><span class="costbtn__label">试用</span><span class="costbtn__est">≈5.8k Token</span></a>
+            </div>
+          </article>
+
+          <article class="objcard">
+            <div class="objcard__top">
+              <div class="objcard__icon objcard__icon--soft">纪</div>
+              <div><div class="objcard__name">会议纪要</div><div class="objcard__sub">行业应用 · 内容办公</div></div>
+            </div>
+            <p class="objcard__desc">录音转写并抽取决议、责任人、截止时间，输出可跟踪的任务清单。</p>
+            <div class="objcard__tags"><span class="tag">多模态</span><span class="tag">文本生成</span></div>
+            <div class="objcard__foot">
+              <a class="costbtn costbtn--sm" href="app-console.html"><span class="costbtn__label">试用</span><span class="costbtn__est">≈1.1k Token</span></a>
+            </div>
+          </article>
+
+          <article class="objcard">
+            <div class="objcard__top">
+              <div class="objcard__icon objcard__icon--soft">质</div>
+              <div><div class="objcard__name">客服质检</div><div class="objcard__sub">行业应用 · 运营</div></div>
+            </div>
+            <p class="objcard__desc">全量通话质检，按话术合规、情绪、解决率打分并生成改进建议。</p>
+            <div class="objcard__tags"><span class="tag">多模态</span><span class="tag">知识库</span></div>
+            <div class="objcard__foot">
+              <a class="costbtn costbtn--sm" href="app-console.html"><span class="costbtn__label">试用</span><span class="costbtn__est">≈4.4k Token</span></a>
+            </div>
+          </article>
+
+          <!-- 未授权：不置灰，显示原因与出路（10.8 约定 6） -->
+          <article class="objcard">
+            <div class="objcard__top">
+              <div class="objcard__icon objcard__icon--soft">筛</div>
+              <div><div class="objcard__name">简历初筛</div><div class="objcard__sub">行业应用 · 人力资源</div></div>
+            </div>
+            <p class="objcard__desc">按岗位画像批量解析简历、打分排序，输出面试建议与风险提示。</p>
+            <div class="objcard__tags"><span class="chip chip--neutral"><i class="chip__dot"></i>本租户未授权</span></div>
+            <div class="objcard__foot">
+              <span class="t-micro">本租户未授权</span><span class="spacer"></span>
+              <button class="btn btn--sm" onclick="DSH.ui.toggleLedger(true)">申请授权</button>
+            </div>
+          </article>
+
+          <!-- 额度不足：显示缺口而非灰按钮（10.8 约定 6） -->
+          <article class="objcard">
+            <div class="objcard__top">
+              <div class="objcard__icon objcard__icon--soft">制</div>
+              <div><div class="objcard__name">制度问答</div><div class="objcard__sub">行业应用 · 人力资源</div></div>
+            </div>
+            <p class="objcard__desc">基于企业制度知识库的问答与引用溯源，回答附带原文条款定位。</p>
+            <div class="objcard__tags"><span class="tag">知识库</span><span class="tag">文本生成</span></div>
+            <div class="objcard__foot">
+              <button class="costbtn costbtn--sm" data-state="short" onclick="DSH.ui.toggleLedger(true)"><span class="costbtn__label">试用</span><span class="costbtn__est">缺 0.6k Token</span></button>
+            </div>
+          </article>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <aside class="ledger" id="ledger" aria-label="消耗上下文"></aside>
+</div>
+
+<template id="band-actions">
+  <a class="btn" href="app-detail.html">API 接入</a>
+  <button class="btn btn--primary">创建智能体</button>
+</template>
+
+<script src="assets/charts.js"></script>
+<script src="assets/app.js?v=20260924-7"></script>
+<script>
+  Array.prototype.forEach.call(document.querySelectorAll('.search'), function (s) {
+    if (!s.querySelector('svg')) s.insertAdjacentHTML('afterbegin', DSH.icon('search'));
+  });
+</script>
+</body>
+</html>

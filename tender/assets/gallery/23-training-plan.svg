@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+  <rect width="1200" height="800" fill="#f8fafc"/>
+  <text x="70" y="76" font-family="Arial" font-size="34" font-weight="700" fill="#0f172a">项目培训实施计划</text>
+  <g font-family="Arial" font-size="16">
+    <rect x="80" y="130" width="320" height="110" rx="18" fill="#fff" stroke="#cbd5e1"/><text x="115" y="175">管理员培训 · 2 天</text><text x="115" y="205">用户 / 权限 / 参数配置</text>
+    <rect x="440" y="130" width="320" height="110" rx="18" fill="#fff" stroke="#cbd5e1"/><text x="475" y="175">业务用户培训 · 3 天</text><text x="475" y="205">标书撰写 / 审查 / 图库</text>
+    <rect x="800" y="130" width="320" height="110" rx="18" fill="#fff" stroke="#cbd5e1"/><text x="835" y="175">运维培训 · 2 天</text><text x="835" y="205">巡检 / 备份 / 应急恢复</text>
+  </g>
+  <g stroke="#025dff" stroke-width="5" fill="none"><path d="M240 240 L240 320"/><path d="M600 240 L600 320"/><path d="M960 240 L960 320"/></g>
+  <rect x="80" y="320" width="1040" height="140" rx="20" fill="#eff6ff"/>
+  <g font-family="Arial" font-size="17" fill="#1d4ed8"><text x="120" y="370">第 1 周：平台概述与基础操作</text><text x="120" y="410">第 2 周：标书生成与智能审查实战</text><text x="650" y="370">第 3 周：图库管理与知识库维护</text><text x="650" y="410">第 4 周：综合演练与考核</text></g>
+  <g font-family="Arial" font-size="16" fill="#475569"><text x="80" y="550">培训方式：现场集中培训 + 录播课程 + 操作手册 + 常见问题库</text><text x="80" y="590">考核标准：完成综合场景演练，正确率不低于 90%，管理员需通过应急恢复考核</text></g>
+</svg>

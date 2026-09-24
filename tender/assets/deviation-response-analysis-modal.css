@@ -1,0 +1,38 @@
+.business-outline-modal.deviation-analysis-modal { overflow: hidden; }
+.deviation-analysis-modal .analysis-meta { margin-left: auto; color: #8792a0; font-size: 12px; }
+.deviation-analysis-modal .analysis-page { flex: 1 1 auto; min-height: 0; overflow: hidden; }
+.deviation-analysis-modal .workspace { display: grid; grid-template-columns: minmax(280px, 32%) 8px minmax(0, 1fr); height: 100%; min-height: 0; }
+.deviation-analysis-modal .left, .deviation-analysis-modal .main { min-height: 0; overflow: auto; background: #fff; }
+.deviation-analysis-modal .left { padding: 20px 12px; }
+.deviation-analysis-modal .main { padding: 0 24px 28px; }
+.deviation-analysis-modal .outline-resizer { background: #f4f6f9; border-left: 1px solid #e7ebf0; border-right: 1px solid #dfe4eb; }
+.deviation-analysis-modal .directory-head { display: flex; justify-content: space-between; align-items: center; padding: 16px 6px 14px; margin: -20px -12px 10px; border-bottom: 1px solid #e5e9ef; }
+.deviation-analysis-modal .directory-head span { color: #8b95a5; font-size: 12px; }
+.deviation-analysis-modal .node { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; min-height: 44px; padding: 8px 10px; margin: 4px 0; border: 1px solid transparent; border-radius: 7px; background: #fff; color: #344054; text-align: left; cursor: pointer; }
+.deviation-analysis-modal .node:hover, .deviation-analysis-modal .node.active { border-color: #1769e0; background: #f6f9ff; color: #1769e0; }
+.deviation-analysis-modal .node .label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; }
+.deviation-analysis-modal .origin { flex: none; padding: 2px 6px; border: 1px solid #6680ec; border-radius: 10px; color: #355ad8; background: #f5f7ff; font-size: 10px; font-style: normal; }
+.deviation-analysis-modal .source-head { display: flex; align-items: center; min-height: 72px; border-bottom: 1px solid #e5e9ef; }
+.deviation-analysis-modal .source-heading { display: grid; gap: 4px; }
+.deviation-analysis-modal .source-heading span { color: #18202e; font-size: 16px; font-weight: 600; }
+.deviation-analysis-modal .source-heading small { color: #8b95a5; font-size: 12px; }
+.deviation-analysis-modal .analysis-source { padding-top: 20px; }
+.deviation-analysis-modal .analysis-source-note { display: flex; align-items: center; gap: 10px; padding: 12px 14px; margin-bottom: 16px; color: #657286; background: #f7f9ff; border: 1px solid #e3e9ff; border-radius: 8px; font-size: 13px; }
+.deviation-analysis-modal .analysis-kind { padding: 3px 8px; border-radius: 10px; color: #1769e0; background: #eaf2ff; font-size: 12px; font-weight: 600; }
+.deviation-analysis-modal .analysis-table-wrap { overflow: auto; border: 1px solid #dce3eb; border-radius: 8px; }
+.deviation-analysis-modal .analysis-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.deviation-analysis-modal .analysis-table th { color: #64748b; background: #f6f8fb; font-weight: 600; }
+.deviation-analysis-modal .analysis-table th, .deviation-analysis-modal .analysis-table td { padding: 13px 12px; border-bottom: 1px solid #e8edf3; text-align: left; vertical-align: top; }
+.deviation-analysis-modal .analysis-table tr:last-child td { border-bottom: 0; }
+.deviation-analysis-modal .analysis-empty-cell { min-width: 116px; background: #fbfcfe; }
+.deviation-analysis-modal .analysis-response-cell { min-width: 180px; color: #344054; line-height: 1.65; }
+.deviation-analysis-modal .analysis-tag { display: inline-flex; padding: 3px 8px; color: #1769e0; background: #eaf2ff; border-radius: 10px; font-size: 12px; white-space: nowrap; }
+.deviation-analysis-modal .analysis-score-table th:nth-child(2) { min-width: 210px; }
+.deviation-analysis-modal .score-index-node { margin-bottom: 12px; border-bottom-color: #d7e4fb; }
+.deviation-analysis-modal .analysis-requirements { display: grid; gap: 10px; }
+.deviation-analysis-modal .analysis-requirement { display: grid; grid-template-columns: 54px minmax(0, 1fr) auto; gap: 12px; padding: 14px; border: 1px solid #dce3eb; border-radius: 8px; }
+.deviation-analysis-modal .analysis-requirement > span { color: #1769e0; font-weight: 600; }
+.deviation-analysis-modal .analysis-requirement strong { font-size: 14px; font-weight: 600; }
+.deviation-analysis-modal .analysis-requirement p { margin: 8px 0 0; color: #657286; line-height: 1.7; }
+.deviation-analysis-modal .analysis-requirement em { color: #77859a; font-size: 12px; font-style: normal; }
+@media (max-width: 720px) { .deviation-analysis-modal .workspace { grid-template-columns: 1fr; } .deviation-analysis-modal .outline-resizer { display: none; } .deviation-analysis-modal .left { max-height: 35vh; } }

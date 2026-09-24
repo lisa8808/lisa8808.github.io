@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>人员管理 - AI投标助手</title>
+  <link rel="stylesheet" href="./assets/company-create.css" />
+  <link rel="stylesheet" href="./assets/company-detail.css" />
+  <link rel="stylesheet" href="./assets/company-detail-pages.css" />
+  <link rel="stylesheet" href="./assets/company-personnel.css" />
+  <link rel="stylesheet" href="./assets/company-info-personnel.css" />
+  <link rel="stylesheet" href="./assets/company-document-gallery.css" />
+  <script defer src="./assets/company-document-gallery.js"></script>
+  <script defer src="./assets/company-personnel.js"></script>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar"><button class="brand" data-back type="button"><span class="brand-content"><span class="brand-logo-crop"><img src="./assets/list-huakun-tender-logo-cczIqQ47.png" alt="华鲲元启" /></span><span class="brand-dot">·</span><span class="brand-product">AI投标助手</span></span></button><button class="profile" type="button"><img class="avatar-image" src="./assets/figma/avatar.svg" alt="" /><span>易天行</span></button></header>
+    <div class="breadcrumb"><button data-back type="button">企业信息</button><span>/</span><strong><span data-company-name>四川华鲲振宇智能科技有限责任公司</span> / 企业管理</strong></div>
+    <main class="detail-page">
+      <nav class="detail-tabs"><button data-tab="info">企业信息</button><button data-tab="qualifications">企业资质</button><button data-tab="performance">企业业绩</button><button class="active" data-tab="personnel">人员管理</button><button data-tab="finance">财务信息</button><button data-tab="other">其他</button></nav>
+      <section class="detail-content personnel-content">
+        <div class="personnel-intro"><div><h1>人员管理</h1></div><div class="personnel-stat"><b id="activeCount">0</b><span>在职人员</span></div></div>
+        <div class="personnel-note">人员社保证明按具体投标项目收集，本页面不维护长期社保状态。</div>
+        <div class="personnel-toolbar"><div class="personnel-filters"><input id="personSearch" placeholder="搜索姓名、岗位或专业" aria-label="搜索姓名、岗位或专业" /><select id="statusFilter" aria-label="筛选人员状态"><option value="在职">在职</option><option value="全部">全部状态</option><option value="离职">离职</option><option value="停用">停用</option></select></div><button class="primary-button" id="addPerson" type="button">新增人员</button></div>
+        <div class="personnel-table-wrap"><table class="detail-table data-table personnel-table"><thead><tr><th>姓名</th><th>岗位/角色</th><th>专业</th><th>学历</th><th>工作年限</th><th>证书</th><th>状态</th><th>操作</th></tr></thead><tbody id="personnelRows"></tbody></table></div>
+      </section>
+    </main>
+  </div>
+  <div class="toast" id="toast" hidden role="status"></div>
+</body>
+</html>

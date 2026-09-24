@@ -1,0 +1,69 @@
+.technical-response-requirements {
+  color: #4c5563;
+  font-size: 13px;
+  line-height: 21px;
+}
+
+.technical-response-intro {
+  padding: 10px 12px;
+  margin: 0 0 14px !important;
+  color: #3e4653 !important;
+  background: #f4f7ff;
+  border: 1px solid #dce5ff;
+  border-radius: 6px;
+  font-size: 13px !important;
+  line-height: 21px !important;
+}
+
+.technical-response-section + .technical-response-section {
+  margin-top: 18px;
+}
+
+.technical-response-section h3 {
+  padding-bottom: 7px;
+  margin: 0 0 9px;
+  color: #18202e;
+  border-bottom: 1px solid #edf0f5;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 22px;
+}
+
+.technical-response-source-grid,
+.technical-response-rule-list {
+  display: grid;
+  gap: 8px;
+}
+
+.technical-response-source-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.technical-response-rule {
+  padding: 10px 12px;
+  background: #fafbfd;
+  border: 1px solid #edf0f5;
+  border-radius: 6px;
+}
+
+.technical-response-rule strong {
+  display: block;
+  margin-bottom: 3px;
+  color: #343943;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 20px;
+}
+
+.technical-response-rule span {
+  display: block;
+  color: #596270;
+  font-size: 13px;
+  line-height: 21px;
+}
+
+@media (max-width: 720px) {
+  .technical-response-source-grid {
+    grid-template-columns: 1fr;
+  }
+}

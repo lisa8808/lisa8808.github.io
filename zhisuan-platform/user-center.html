@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>用户中心 · 元启saas</title>
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/app.css?v=20260924-4">
+<style>
+  .profile-hero { display:flex; align-items:center; gap:var(--sp-4); }
+  .profile-avatar { width:64px; height:64px; border-radius:18px; display:grid; place-items:center; background:var(--compute-soft); color:var(--brand); font-size:24px; font-weight:700; }
+  .profile-meta { display:flex; flex-wrap:wrap; gap:var(--sp-2); margin-top:var(--sp-2); }
+  .profile-fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--sp-4) var(--sp-6); }
+  .profile-field { padding-bottom:var(--sp-3); border-bottom:1px solid var(--line-soft); }
+  .profile-field span { display:block; color:var(--ink-400); font-size:var(--text-micro); }
+  .profile-field strong { display:block; margin-top:4px; color:var(--ink-800); font-size:var(--text-meta); font-weight:550; }
+  .setting-row { display:flex; align-items:center; gap:var(--sp-3); padding:var(--sp-3) 0; }
+  .setting-row + .setting-row { border-top:1px solid var(--line-soft); }
+  .setting-row__icon { width:34px; height:34px; border-radius:var(--r-2); display:grid; place-items:center; background:var(--surface-sunken); color:var(--ink-600); }
+  .setting-row__icon svg { width:17px; height:17px; }
+  .setting-row__copy { flex:1 1 auto; min-width:0; }
+  .setting-row__copy b { display:block; color:var(--ink-800); font-size:var(--text-meta); font-weight:600; }
+  .setting-row__copy span { color:var(--ink-400); font-size:var(--text-micro); }
+  @media (max-width:767px) { .profile-fields { grid-template-columns:1fr; } }
+</style>
+</head>
+<body data-module="user" data-page="U-01" data-title="用户中心">
+<div class="shell no-ledger" id="shell">
+  <nav class="rail" id="rail" aria-label="模块导航"></nav>
+  <div class="main">
+    <header class="band" id="band"></header>
+    <template id="band-actions"><button class="btn btn--primary">编辑资料</button></template>
+    <div class="mid">
+      <main class="stage" id="stage">
+        <section class="card">
+          <div class="card__body profile-hero">
+            <div class="profile-avatar" aria-hidden="true">华</div>
+            <div>
+              <div class="t-page">华鲲元启</div>
+              <div class="t-meta mt-2">租户管理员 · 企业主账号</div>
+              <div class="profile-meta">
+                <span class="chip chip--compute"><i class="chip__dot"></i>账号正常</span>
+                <span class="chip chip--quota"><i class="chip__dot"></i>已完成企业认证</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="grid grid--2 mt-5">
+          <section class="card">
+            <div class="card__head"><h2>基本资料</h2><button class="btn btn--sm">修改</button></div>
+            <div class="card__body profile-fields">
+              <div class="profile-field"><span>姓名</span><strong>华鲲元启</strong></div>
+              <div class="profile-field"><span>账号 ID</span><strong class="t-mono">usr_8f3a91c4</strong></div>
+              <div class="profile-field"><span>所属组织</span><strong>华鲲元启科技有限公司</strong></div>
+              <div class="profile-field"><span>角色</span><strong>租户管理员</strong></div>
+              <div class="profile-field"><span>手机</span><strong>138 **** 2026</strong></div>
+              <div class="profile-field"><span>邮箱</span><strong>admin@yuanqi.example</strong></div>
+            </div>
+          </section>
+
+          <section class="card" id="security">
+            <div class="card__head"><h2>安全设置</h2><span class="chip chip--compute"><i class="chip__dot"></i>安全等级高</span></div>
+            <div class="card__body">
+              <div class="setting-row"><span class="setting-row__icon">✓</span><div class="setting-row__copy"><b>登录密码</b><span>已设置 · 90 天内更新过</span></div><button class="btn btn--sm">修改</button></div>
+              <div class="setting-row"><span class="setting-row__icon">盾</span><div class="setting-row__copy"><b>双重验证</b><span>已启用短信与验证器</span></div><button class="btn btn--sm">管理</button></div>
+              <div class="setting-row"><span class="setting-row__icon">钥</span><div class="setting-row__copy"><b>登录设备</b><span>当前有 3 台可信设备</span></div><button class="btn btn--sm">查看</button></div>
+            </div>
+          </section>
+        </div>
+
+        <div class="grid grid--2 mt-5">
+          <section class="card" id="members">
+            <div class="card__head"><h2>组织成员</h2><span class="spacer"></span><span class="t-micro">28 位成员</span><button class="btn btn--sm">管理成员</button></div>
+            <div class="card__body"><p class="t-meta">成员分布在平台管理员、开发者、审计员和普通成员四类角色中。</p></div>
+          </section>
+          <section class="card" id="roles">
+            <div class="card__head"><h2>角色权限</h2><span class="spacer"></span><span class="t-micro">4 个角色</span><button class="btn btn--sm">权限设置</button></div>
+            <div class="card__body"><p class="t-meta">当前账号拥有应用、模型、算力、费用和组织管理的全部权限。</p></div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+</div>
+<script src="assets/charts.js"></script>
+<script src="assets/app.js?v=20260924-7"></script>
+</body>
+</html>

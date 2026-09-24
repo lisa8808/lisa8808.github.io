@@ -1,0 +1,10 @@
+# macOS
+.DS_Store
+
+# 本地备份（git 已可追溯历史，无需再留副本）
+.backup/
+
+# 编辑器 / 工具
+.idea/
+.vscode/
+*.log

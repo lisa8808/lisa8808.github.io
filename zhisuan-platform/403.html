@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>无访问权限 · 大模型智算平台</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230F1418'/%3E%3Cpath d='M9 21V11l4 6 3-4 4 8' fill='none' stroke='%230B6E7F' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/app.css?v=20260924-4">
+<style>
+/* ============================================================
+   G-06 无权限 403 · 无外壳页面
+   自建居中式独立布局（不写 .shell / .rail / .band / .ledger）。
+   语义：无权限 ≠ 故障 —— 用琥珀（--spend：预估 / 待处理 / 需申请）
+   而不是朱红（--risk：超支 / 故障 / 驳回）。
+   文案必答两问：为什么是我、我该怎么办。
+   ============================================================ */
+
+body.standalone {
+  display: flex;
+  height: auto;
+  min-height: 100%;
+  background: var(--canvas);
+  position: relative;
+}
+/* 背景网格：只用令牌与透明度，不做彩色装饰 */
+body.standalone::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 56px 56px, 56px 56px;
+  opacity: .5;
+}
+
+.err {
+  position: relative;
+  z-index: 1;
+  margin: auto;
+  width: min(720px, 100%);
+  padding: var(--sp-8) var(--sp-6);
+}
+.err__head { text-align: center; }
+.err__badge {
+  width: 64px; height: 64px; margin: 0 auto var(--sp-4);
+  border-radius: var(--r-3);
+  display: grid; place-items: center;
+  background: var(--spend-soft);
+  border: 1px solid var(--spend-line);
+  color: var(--spend-strong);
+}
+.err__badge svg { width: 30px; height: 30px; }
+.err__code { font-size: 54px; font-weight: 600; line-height: 1; color: var(--spend-strong); }
+.err__sub { margin-top: var(--sp-2); }
+.err__card { margin-top: var(--sp-6); text-align: left; }
+.err__why { font-size: var(--text-meta); color: var(--ink-600); line-height: 1.75; }
+
+.err__steps { counter-reset: s; list-style: none; margin: 0; padding: 0; display: grid; gap: var(--sp-3); }
+.err__steps li {
+  display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: var(--sp-3);
+  font-size: var(--text-meta); color: var(--ink-600); line-height: 1.7;
+}
+.err__steps li::before {
+  counter-increment: s; content: counter(s);
+  width: 22px; height: 22px; border-radius: var(--r-1);
+  background: var(--ink-900); color: var(--surface);
+  font-family: var(--font-num); font-size: 11px; font-weight: 600;
+  display: grid; place-items: center;
+}
+.err__steps b { color: var(--ink-900); font-weight: 600; }
+.err__foot { text-align: center; margin-top: var(--sp-5); }
+</style>
+</head>
+<body class="standalone" data-page="G-06">
+
+<main class="err">
+  <div class="err__head">
+    <div class="err__badge" aria-hidden="true" id="errBadge"></div>
+    <div class="err__code num">403</div>
+    <h1 class="t-page mt-2">无访问权限</h1>
+    <p class="t-meta err__sub">这一页需要一项你当前账号没有的权限。它没有被删除，只是不该由你看到。</p>
+  </div>
+
+  <section class="card err__card">
+    <div class="card__head">
+      <h2>为什么看到这一页</h2>
+      <span class="chip chip--spend"><i class="chip__dot"></i>缺少权限</span>
+      <span class="spacer"></span>
+      <span class="t-micro">租户级数据范围</span>
+    </div>
+    <div class="card__body">
+      <p class="err__why">当前账号在项目「标书撰写」上只被授予「用量概览 · 本人」与「消耗明细 · 本人」两项，缺少 <span class="t-strong">预算与配额管理</span> 的查看权限（权限点 <span class="t-mono">console:quota:manage</span>）。该权限默认只授予租户管理员，用于调整项目配额与预算阈值。</p>
+
+      <dl class="kv mt-5">
+        <dt>账号</dt><dd>张越 · zhangyue@hkyq.internal</dd>
+        <dt>角色</dt><dd>算法 / 开发者 <span class="dot-sep">·</span> 项目级</dd>
+        <dt>租户</dt><dd>华鲲元启</dd>
+        <dt>请求路径</dt><dd class="num">/console/quota?project=标书撰写</dd>
+        <dt>缺少权限</dt><dd><span class="chip chip--spend"><i class="chip__dot"></i>console:quota:manage</span></dd>
+        <dt>错误编号</dt><dd class="num">ERR-403-8F3A91</dd>
+        <dt>时间</dt><dd class="num">2026-09-24 14:32:07</dd>
+      </dl>
+
+      <hr class="divider">
+
+      <div class="t-micro mb-3">你可以这样做</div>
+      <ol class="err__steps">
+        <li><span><b>你可能要找的不是这一页。</b>返回工作台，或前往「用量概览」查看你自己的 Token 与卡时消耗 —— 这两项你本来就有权限。</span></li>
+        <li><span><b>确实需要这项权限。</b>点击下方「申请权限」，选择审批人（项目管理员 / 租户管理员）并填写用途；审批通常在一个工作日内完成，通过后本页立即可见。</span></li>
+        <li><span><b>需要马上处理。</b>联系租户管理员 陈默（<span class="t-mono">chenmo@hkyq.internal</span>），或平台运维值班分机 <span class="num">8620</span>，并附上上面的错误编号。</span></li>
+      </ol>
+    </div>
+    <div class="card__foot row">
+      <a class="btn btn--primary" href="home.html">返回工作台</a>
+      <button class="btn" type="button">申请权限</button>
+      <span class="spacer"></span>
+      <a class="btn btn--ghost" href="login.html">切换账号</a>
+    </div>
+  </section>
+
+  <p class="err__foot t-micro">错误编号 <span class="num-sm">ERR-403-8F3A91</span> · <span class="num-sm">2026-09-24 14:32:07</span> · 若同一账号反复出现，请把编号一并提供给平台运维</p>
+</main>
+
+<!-- 无外壳页面不引入 app.js；图标复用 charts.js 的同一套 SVG -->
+<script src="assets/charts.js"></script>
+<script>
+  document.getElementById('errBadge').innerHTML = DSH.icon('shield');
+</script>
+</body>
+</html>

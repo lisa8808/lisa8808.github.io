@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>华鲲元启 - 合同审查助手</title>
+  <style>
+    :root {
+      --blue: #025dff;
+      --blue-soft: #eef4ff;
+      --purple: #7257d8;
+      --ink: #18202e;
+      --title: #0d162a;
+      --text: #333;
+      --muted: rgba(0, 0, 0, .6);
+      --line: #e8edf4;
+      --canvas: #f6fafe;
+      --surface: #fff;
+      --surface-soft: #f7f8f8;
+      --danger: #f04438;
+      --warning: #ed7b2f;
+      --success: #22a35a;
+      font-family: "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+      color: var(--ink);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { width: 100%; min-height: 100%; margin: 0; background: var(--canvas); }
+    body { font-size: 14px; overflow-y: auto; }
+    a { color: inherit; text-decoration: none; }
+    button { border: 0; padding: 0; background: none; color: inherit; font: inherit; cursor: pointer; }
+    a:focus-visible, button:focus-visible { outline: 2px solid rgba(2, 93, 255, .32); outline-offset: 2px; }
+    img { display: block; }
+
+    .topbar {
+      height: 62px;
+      padding: 0 43px 0 16px;
+      background: #fff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      z-index: 5;
+    }
+    .brand { width: 300px; height: 48px; object-fit: contain; }
+    .profile { height: 40px; display: flex; align-items: center; gap: 10px; color: #1f2026; line-height: 20px; }
+    .profile img { width: 40px; height: 40px; }
+    .profile-arrow { width: 10px; height: 10px; border-right: 1.5px solid #6b7280; border-bottom: 1.5px solid #6b7280; transform: rotate(45deg) translateY(-2px); }
+
+    .layout {
+      min-height: calc(100vh - 62px);
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 240px minmax(0, 1fr) 390px;
+      gap: 20px;
+      align-items: start;
+      overflow: visible;
+    }
+
+    .sidebar, .content-card, .side-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+    }
+
+    .sidebar { padding: 18px 0; overflow: hidden; }
+    .menu-title { padding: 0 20px 12px; color: var(--muted); font-weight: 600; line-height: 22px; }
+    .menu-group { padding: 8px 0 12px; border-bottom: 1px solid var(--line); }
+    .menu-group:last-child { border-bottom: 0; }
+    .menu-item {
+      min-height: 48px;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #5f6368;
+      font-size: 16px;
+      line-height: 24px;
+      border-left: 3px solid transparent;
+      transition: background .16s ease, color .16s ease, border-color .16s ease;
+    }
+    .menu-item:hover { background: var(--surface-soft); color: var(--title); }
+    .menu-item.active { color: var(--blue); background: var(--blue-soft); border-left-color: var(--blue); font-weight: 500; }
+    .menu-item.loading-link { cursor: wait; }
+    .menu-icon { position: relative; width: 22px; height: 22px; flex: none; color: inherit; }
+    .menu-icon::before, .menu-icon::after { content: ""; position: absolute; box-sizing: border-box; }
+    .icon-home::before { left: 3px; top: 5px; width: 16px; height: 13px; border: 1.8px solid currentColor; border-top: 0; border-radius: 2px; }
+    .icon-home::after { left: 4px; top: 2px; width: 14px; height: 14px; border-left: 1.8px solid currentColor; border-top: 1.8px solid currentColor; transform: rotate(45deg); border-radius: 2px 0 0; }
+    .icon-project::before { inset: 3px; border: 1.8px solid currentColor; border-radius: 4px; }
+    .icon-project::after { left: 6px; top: 6px; width: 4px; height: 4px; border-radius: 1px; background: currentColor; box-shadow: 6px 0 0 currentColor, 0 6px 0 currentColor, 6px 6px 0 currentColor; }
+    .icon-approval::before { left: 4px; top: 4px; width: 14px; height: 14px; border: 1.8px solid currentColor; border-radius: 50%; }
+    .icon-approval::after { left: 8px; top: 7px; width: 7px; height: 5px; border-left: 1.8px solid currentColor; border-bottom: 1.8px solid currentColor; transform: rotate(-45deg); }
+    .icon-seal::before { left: 5px; top: 3px; width: 12px; height: 10px; border: 1.8px solid currentColor; border-radius: 5px 5px 3px 3px; }
+    .icon-seal::after { left: 3px; bottom: 4px; width: 16px; height: 5px; border: 1.8px solid currentColor; border-radius: 2px; }
+    .icon-archive::before { left: 3px; top: 6px; width: 16px; height: 12px; border: 1.8px solid currentColor; border-radius: 3px; }
+    .icon-archive::after { left: 7px; top: 3px; width: 8px; height: 5px; border: 1.8px solid currentColor; border-bottom: 0; border-radius: 2px 2px 0 0; }
+    .icon-report::before { left: 4px; bottom: 4px; width: 3px; height: 8px; background: currentColor; border-radius: 1px; box-shadow: 6px -4px 0 currentColor, 12px -8px 0 currentColor; }
+    .icon-report::after { left: 3px; bottom: 3px; width: 16px; height: 1.8px; background: currentColor; border-radius: 1px; }
+    .icon-client::before { left: 4px; top: 4px; width: 14px; height: 14px; border: 1.8px solid currentColor; border-radius: 50%; }
+    .icon-client::after { left: 9px; top: 7px; width: 4px; height: 4px; border-radius: 50%; background: currentColor; box-shadow: -4px 7px 0 -1px currentColor, 4px 7px 0 -1px currentColor; }
+    .icon-library::before { left: 5px; top: 3px; width: 11px; height: 16px; border: 1.8px solid currentColor; border-radius: 2px; }
+    .icon-library::after { left: 8px; top: 3px; width: 1.8px; height: 16px; background: currentColor; }
+    .icon-template::before { left: 4px; top: 5px; width: 13px; height: 13px; border: 1.8px solid currentColor; border-radius: 2px; }
+    .icon-template::after { left: 7px; top: 2px; width: 13px; height: 13px; border: 1.8px solid currentColor; border-radius: 2px; background: var(--surface); }
+    .badge { margin-left: auto; min-width: 26px; height: 22px; border-radius: 11px; padding: 0 8px; display: inline-flex; align-items: center; justify-content: center; color: #fff; background: var(--danger); font-size: 13px; font-weight: 600; }
+    .loading-toast { position: fixed; left: 50%; top: 86px; z-index: 20; height: 40px; padding: 0 18px; border-radius: 8px; display: inline-flex; align-items: center; gap: 10px; color: var(--title); background: #fff; border: 1px solid var(--line); box-shadow: 0 4px 12px rgba(0, 0, 0, .08); opacity: 0; pointer-events: none; transform: translate(-50%, -8px); transition: opacity .16s ease, transform .16s ease; }
+    .loading-toast.show { opacity: 1; transform: translate(-50%, 0); }
+    .loading-spinner { width: 16px; height: 16px; border-radius: 50%; border: 2px solid #dce6fb; border-top-color: var(--blue); animation: spin .8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .main { min-width: 0; padding-right: 2px; }
+    .welcome { margin: 4px 0 18px; color: var(--title); font-size: 20px; line-height: 28px; font-weight: 600; }
+    .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-bottom: 20px; }
+    .stat-card {
+      min-height: 130px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-top: 3px solid #627bff;
+      border-radius: 10px;
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: transform .16s ease, box-shadow .16s ease;
+    }
+    .stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(24, 32, 46, .08); }
+    .stat-icon { width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; font-size: 22px; flex: none; }
+    .stat-icon.clock { background: #fff1c8; color: #f3a800; }
+    .stat-icon.todo { background: #e8f0ff; color: var(--blue); }
+    .stat-icon.flow { background: #efe7ff; color: #7d4eff; }
+    .stat-icon.done { background: #def7eb; color: var(--success); }
+    .stat-num { display: block; color: #161a22; font-size: 26px; line-height: 32px; font-weight: 700; }
+    .stat-label { color: var(--text); line-height: 22px; }
+
+    .content-card { padding: 28px; }
+    .card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+    .card-title { margin: 0; color: var(--title); font-size: 16px; line-height: 26px; font-weight: 500; }
+    .all-link { height: 36px; border-radius: 8px; padding: 0 14px; display: inline-flex; align-items: center; gap: 6px; color: #fff; background: linear-gradient(90deg, #5175ff, #7457d7); font-size: 14px; line-height: 20px; }
+    .projects { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+    .project-card {
+      position: relative;
+      min-height: 190px;
+      border: 1px solid #d9e6fb;
+      border-radius: 10px;
+      background: linear-gradient(180deg, #edf5ff 0%, #fff 100%);
+      padding: 22px 22px 58px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease;
+    }
+    .project-card:hover { border-color: #9ab8ff; box-shadow: 0 8px 20px rgba(2, 93, 255, .08); transform: translateY(-2px); }
+    .project-card.create { border: 2px dashed #cfe0fb; background: #fff; align-items: center; justify-content: center; gap: 16px; }
+    .plus { width: 68px; height: 68px; border-radius: 50%; background: #dce9ff; color: var(--blue); display: grid; place-items: center; font-size: 42px; line-height: 1; }
+    .create strong { color: var(--title); font-size: 24px; line-height: 32px; }
+    .project-icon { width: 52px; height: 52px; opacity: .9; }
+    .project-name { margin: 22px 0 8px; color: var(--title); font-size: 18px; line-height: 26px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .project-files { color: var(--text); font-size: 16px; line-height: 24px; }
+    .project-meta { position: absolute; left: 22px; right: 18px; bottom: 20px; display: flex; justify-content: space-between; align-items: center; color: #8a8a8a; font-size: 14px; line-height: 20px; }
+    .project-date { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .card-actions { display: flex; align-items: center; gap: 12px; flex: none; }
+    .icon-button { width: 20px; height: 20px; border-radius: 4px; display: grid; place-items: center; transition: background .15s ease, transform .12s ease; }
+    .icon-button:hover { background: var(--blue-soft); }
+    .icon-button:active { transform: scale(.9); }
+    .icon-button img { width: 20px; height: 20px; }
+
+    .right { padding-top: 50px; }
+    .side-card { margin-bottom: 20px; overflow: hidden; }
+    .side-head { min-height: 58px; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); }
+    .side-title { display: flex; align-items: center; gap: 8px; color: var(--title); font-size: 16px; line-height: 26px; font-weight: 500; }
+    .quick-card { height: 130px; border-top: 3px solid #627bff; }
+    .quick-card .side-head { min-height: 47px; }
+    .quick-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding: 12px 20px; }
+    .quick-action { min-height: 56px; border: 1px solid var(--line); border-radius: 10px; background: #fff; padding: 10px 12px; display: flex; align-items: center; gap: 12px; transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease; }
+    .quick-action:hover { border-color: #9ab8ff; box-shadow: 0 4px 12px rgba(2, 93, 255, .08); transform: translateY(-1px); }
+    .quick-icon { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: linear-gradient(135deg, #6f7cff, #8a62d6); color: #fff; font-size: 22px; flex: none; }
+    .quick-name { color: var(--title); font-size: 16px; line-height: 24px; font-weight: 600; }
+    .quick-desc { color: var(--muted); line-height: 20px; }
+    .enter-btn { height: 36px; border-radius: 8px; padding: 0 14px; display: inline-flex; align-items: center; gap: 6px; color: #fff; background: linear-gradient(90deg, #5175ff, #7457d7); }
+    .todo-list { padding: 20px; display: grid; gap: 14px; }
+    .todo { min-height: 66px; border-radius: 10px; background: var(--surface-soft); padding: 12px; display: grid; grid-template-columns: 40px 1fr auto; gap: 12px; align-items: center; border-left: 3px solid transparent; }
+    .todo.high { border-left-color: var(--danger); }
+    .todo.medium { border-left-color: var(--warning); }
+    .todo.processing { border-left-color: var(--success); }
+    .todo-icon { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; }
+    .todo.high .todo-icon { background: #fde8ea; color: var(--danger); }
+    .todo.medium .todo-icon { background: #fff3db; color: var(--warning); }
+    .todo.processing .todo-icon { background: #e3f7ed; color: var(--success); }
+    .todo-name { color: var(--title); font-weight: 600; line-height: 22px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .todo-meta { color: var(--muted); font-size: 12px; line-height: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .status { height: 26px; border-radius: 13px; padding: 0 10px; display: inline-flex; align-items: center; font-size: 13px; font-weight: 500; }
+    .status.pending { color: var(--warning); background: #fff4da; }
+    .status.processing { color: var(--blue); background: #e8f0ff; }
+
+    @media (max-width: 1280px) {
+      body { overflow-y: auto; }
+      .layout { min-height: auto; grid-template-columns: 220px 1fr; }
+      .right { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; padding-top: 0; }
+    }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .stats, .projects, .right { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a href="index.html"><img class="brand" src="assets/huakun-contract-logo.png" alt="华鲲元启 | 合同审查"></a>
+    <div class="profile"><img src="assets/avatar.svg" alt=""><span>易天行</span><span class="profile-arrow"></span></div>
+  </header>
+
+  <main class="layout">
+    <aside class="sidebar" aria-label="功能菜单">
+      <div class="menu-title">功能菜单</div>
+      <div class="menu-group">
+        <a class="menu-item active" href="index.html"><span class="menu-icon icon-home"></span><span>首页</span></a>
+        <a class="menu-item" href="contract-dashboard.html"><span class="menu-icon icon-project"></span><span>项目及审查</span></a>
+        <a class="menu-item loading-link" href="#"><span class="menu-icon icon-approval"></span><span>审批管理</span></a>
+        <a class="menu-item loading-link" href="#"><span class="menu-icon icon-seal"></span><span>施印管理</span></a>
+        <a class="menu-item loading-link" href="#"><span class="menu-icon icon-archive"></span><span>归档管理</span></a>
+      </div>
+      <div class="menu-title">数据中心</div>
+      <div class="menu-group">
+        <a class="menu-item loading-link" href="#"><span class="menu-icon icon-report"></span><span>数据报表</span></a>
+        <a class="menu-item loading-link" href="#"><span class="menu-icon icon-client"></span><span>大客户追踪</span></a>
+      </div>
+      <div class="menu-title">配置管理</div>
+      <div class="menu-group">
+        <a class="menu-item loading-link" href="#"><span class="menu-icon icon-library"></span><span>标准合同库</span></a>
+        <a class="menu-item loading-link" href="#"><span class="menu-icon icon-template"></span><span>合同模板库</span></a>
+      </div>
+    </aside>
+
+    <section class="main">
+      <h1 class="welcome">欢迎使用华鲲合同审查助手</h1>
+      <div class="stats">
+        <a class="stat-card" href="contract-management.html?page=review"><span class="stat-icon clock">◷</span><span><strong class="stat-num">23</strong><span class="stat-label">项目</span></span></a>
+        <a class="stat-card" href="contract-management.html?page=review"><span class="stat-icon todo">◌</span><span><strong class="stat-num">15</strong><span class="stat-label">待办</span></span></a>
+        <a class="stat-card" href="contract-management.html?page=tracking"><span class="stat-icon flow">⌁</span><span><strong class="stat-num">67</strong><span class="stat-label">履行中合同</span></span></a>
+        <a class="stat-card" href="contract-management.html?page=archive"><span class="stat-icon done">✓</span><span><strong class="stat-num">156</strong><span class="stat-label">已归档</span></span></a>
+      </div>
+
+      <section class="content-card" aria-label="最近创建的项目">
+        <div class="card-head"><h2 class="card-title">最近创建的项目</h2><a class="all-link" href="contract-dashboard.html">查看所有项目 &gt;</a></div>
+        <div class="projects">
+          <a class="project-card create" href="contract-management.html?action=pre-review"><span class="plus">+</span><strong>新建</strong></a>
+          <a class="project-card" href="detail.html"><div><img class="project-icon" src="assets/contract-review.svg" alt=""><h3 class="project-name">供应链保理合同审查项目</h3><div class="project-files">5个文件</div></div><div class="project-meta"><span class="project-date">2026-07-22 09:20:47</span><span class="card-actions"><span class="icon-button"><img src="assets/edit.svg" alt="编辑"></span><span class="icon-button"><img src="assets/delete.svg" alt="删除"></span></span></div></a>
+          <a class="project-card" href="detail.html"><div><img class="project-icon" src="assets/contract-review.svg" alt=""><h3 class="project-name">信息技术服务合同审查项目</h3><div class="project-files">4个文件</div></div><div class="project-meta"><span class="project-date">2026-07-21 16:45:12</span><span class="card-actions"><span class="icon-button"><img src="assets/edit.svg" alt="编辑"></span><span class="icon-button"><img src="assets/delete.svg" alt="删除"></span></span></div></a>
+          <a class="project-card" href="detail.html"><div><img class="project-icon" src="assets/contract-review.svg" alt=""><h3 class="project-name">年度物料采购合同审查项目</h3><div class="project-files">3个文件</div></div><div class="project-meta"><span class="project-date">2026-07-20 14:08:33</span><span class="card-actions"><span class="icon-button"><img src="assets/edit.svg" alt="编辑"></span><span class="icon-button"><img src="assets/delete.svg" alt="删除"></span></span></div></a>
+        </div>
+      </section>
+    </section>
+
+    <aside class="right" aria-label="快捷操作与当前待办">
+      <section class="side-card quick-card">
+        <div class="side-head"><h2 class="side-title">⚡ 快捷操作</h2></div>
+        <div class="quick-grid">
+          <a class="quick-action" href="contract-management.html?action=pre-review"><span class="quick-icon">+</span><span><span class="quick-name">发起流程</span><br><span class="quick-desc">新建任务</span></span></a>
+          <a class="quick-action" href="contract-management.html?page=review"><span class="quick-icon">⇧</span><span><span class="quick-name">上传合同</span><br><span class="quick-desc">AI预审</span></span></a>
+        </div>
+      </section>
+
+      <section class="side-card">
+        <div class="side-head"><h2 class="side-title">☷ 当前待办</h2><a class="enter-btn" href="contract-management.html?page=review">进入详细页面</a></div>
+        <div class="todo-list">
+          <a class="todo high" href="contract-management.html?page=review"><span class="todo-icon">!</span><span><span class="todo-name">设备采购合同 - 深圳XX科技</span><br><span class="todo-meta">深圳XX科技有限公司 | 2026-07-21 18:30</span></span><span class="status pending">待处理</span></a>
+          <a class="todo medium" href="contract-management.html?page=review"><span class="todo-icon">△</span><span><span class="todo-name">软件外包合同 - 北京XX软件</span><br><span class="todo-meta">北京XX软件公司 | 2026-07-21 15:10</span></span><span class="status pending">待处理</span></a>
+          <a class="todo processing" href="contract-management.html?page=tracking"><span class="todo-icon">▣</span><span><span class="todo-name">战略合作协议 - XX集团</span><br><span class="todo-meta">XX集团 | 2026-07-20 11:45</span></span><span class="status processing">处理中</span></a>
+          <a class="todo medium" href="contract-management.html?page=review"><span class="todo-icon">△</span><span><span class="todo-name">运维服务合同 - 成都XX信息</span><br><span class="todo-meta">成都XX信息技术有限公司 | 2026-07-20 10:20</span></span><span class="status pending">待处理</span></a>
+          <a class="todo processing" href="contract-management.html?page=approval"><span class="todo-icon">▣</span><span><span class="todo-name">办公用品采购 - 成都XX文具</span><br><span class="todo-meta">成都XX文具 | 2026-07-19 09:25</span></span><span class="status pending">待处理</span></a>
+          <a class="todo processing" href="contract-management.html?page=tracking"><span class="todo-icon">▣</span><span><span class="todo-name">仓储配送协议 - 重庆XX物流</span><br><span class="todo-meta">重庆XX物流有限公司 | 2026-07-18 16:40</span></span><span class="status processing">处理中</span></a>
+        </div>
+      </section>
+    </aside>
+  </main>
+  <div class="loading-toast" role="status" aria-live="polite"><span class="loading-spinner"></span><span>正在加载...</span></div>
+  <script>
+    const loadingToast = document.querySelector('.loading-toast');
+    let loadingTimer;
+
+    document.querySelectorAll('.loading-link').forEach((link) => {
+      link.addEventListener('click', (event) => {
+        event.preventDefault();
+        clearTimeout(loadingTimer);
+        loadingToast.classList.add('show');
+        loadingTimer = setTimeout(() => loadingToast.classList.remove('show'), 1400);
+      });
+    });
+  </script>
+</body>
+</html>

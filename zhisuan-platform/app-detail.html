@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>法务合同审查 · 应用详情 · 大模型智算平台</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230F1418'/%3E%3Cpath d='M9 21V11l4 6 3-4 4 8' fill='none' stroke='%230B6E7F' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/app.css?v=20260924-4">
+<style>
+  /* 页面专属样式：详情页头（标识 + 试用入口 + 预估卡并列）。
+     颜色一律取自令牌，不引入任何硬编码色值。 */
+  .detail-top {
+    display: grid; grid-template-columns: minmax(0, 1fr) 300px;
+    gap: var(--sp-5); align-items: start;
+  }
+  .capart {
+    width: 34px; height: 34px; border-radius: var(--r-1);
+    display: grid; place-items: center; background: var(--surface-sunken); color: var(--ink-600);
+    flex: none;
+  }
+  .capart svg { width: 18px; height: 18px; }
+  /* 代码块：结构用墨，仅用承载面与线色 */
+  .codeblock {
+    background: var(--surface-sunken); border: 1px solid var(--line);
+    border-radius: var(--r-2); padding: var(--sp-3); overflow-x: auto;
+  }
+  .codeblock pre { margin: 0; line-height: 1.75; color: var(--ink-800); white-space: pre; }
+</style>
+</head>
+<body data-module="apps" data-page="A-04" data-title="法务合同审查"
+      data-register="1" data-register-value="discovery">
+<div class="shell" id="shell">
+  <nav class="rail" id="rail" aria-label="模块导航"></nav>
+
+  <div class="main">
+    <header class="band" id="band"></header>
+
+    <div class="mid">
+      <!-- 筛选列在详情页承担「页内锚点导航 + 相关应用」 -->
+      <aside class="filter" aria-label="详情页导航">
+        <div class="filter__group">
+          <h3>法务合同审查</h3>
+          <a class="filter__nav" href="#intro" aria-current="page">应用介绍</a>
+          <a class="filter__nav" href="#cap">能力说明</a>
+          <a class="filter__nav" href="#params">参数</a>
+          <a class="filter__nav" href="#versions">版本</a>
+          <a class="filter__nav" href="#perm">权限说明</a>
+          <a class="filter__nav" href="#api">API 调用</a>
+        </div>
+        <div class="filter__group">
+          <h3>相关应用</h3>
+          <a class="filter__nav" href="apps-industry.html">写作助手</a>
+          <a class="filter__nav" href="apps-agents.html">知识问答</a>
+          <a class="filter__nav" href="apps-agents.html">文档比对</a>
+        </div>
+        <div class="filter__group">
+          <h3>我的应用</h3>
+          <a class="filter__nav" href="apps-industry.html">我收藏的<span class="cnt">6</span></a>
+          <a class="filter__nav" href="apps-industry.html">已授权的<span class="cnt">18</span></a>
+        </div>
+      </aside>
+
+      <main class="stage" id="stage">
+
+        <!-- ============ 应用标识 · 试用入口 · 预估卡 ============ -->
+        <div class="card" id="intro">
+          <div class="card__body detail-top">
+            <div class="col">
+              <div class="row">
+                <div class="objcard__icon">法</div>
+                <div>
+                  <div class="row row--wrap" style="gap:var(--sp-2)">
+                    <span class="t-page">法务合同审查</span>
+                    <span class="chip chip--quota"><i class="chip__dot"></i>本租户已授权</span>
+                    <span class="chip chip--compute"><i class="chip__dot"></i>v2.3 在线</span>
+                  </div>
+                  <div class="t-micro mt-2">提供方 平台内置 · 最近更新 2026-08-18 · 应用 ID app_legal_review</div>
+                </div>
+              </div>
+
+              <p class="t-body">面向企业法务与合同管理岗：上传合同后自动识别条款风险、与标准模板逐条比对，并输出可直接归档的审查台账。适用于采购、销售、服务外包三类高频合同的初审环节，单份 30 页以内合同平均 42s 出结果。</p>
+
+              <div class="row row--wrap" style="gap:5px">
+                <span class="chip chip--neutral"><i class="chip__dot"></i>行业应用 · 法务合规</span>
+                <span class="tag">文档解析</span><span class="tag">知识库</span>
+                <span class="tag">条款比对</span><span class="tag">引用溯源</span>
+              </div>
+
+              <!-- 试用入口为 CostButton，预估前置（10.8 约定 1） -->
+              <div class="row row--wrap" style="gap:var(--sp-3)">
+                <button class="costbtn">
+                  <span class="costbtn__label">开始试用</span>
+                  <span class="costbtn__est">≈6.1k Token / 次</span>
+                </button>
+                <button class="btn">获取 API</button>
+                <span class="t-micro">先确认右侧预估与余额变化，再进入应用交互工作台</span>
+              </div>
+            </div>
+
+            <!-- CostPreviewCard：余额变化模拟 + 阈值提示 -->
+            <div class="preview">
+              <div class="preview__head">本次试用预估（来源：Token 银行费率接口）</div>
+              <div class="preview__body">
+                <div class="row row--between"><span class="t-meta">预估消耗</span><span class="num-md">6.1k Token</span></div>
+                <div class="row row--between"><span class="t-meta">输入 / 输出</span><span class="num-sm">4.2k / 1.9k</span></div>
+                <div class="preview__sim">
+                  <span>4.39M</span><span class="preview__arrow">→</span><span class="preview__after">4.38M</span>
+                  <span class="t-micro">可用余额</span>
+                </div>
+                <div class="levelbar levelbar--sm">
+                  <div class="levelbar__track">
+                    <div class="levelbar__seg levelbar__seg--used" style="width:61.83%"></div>
+                    <div class="levelbar__seg levelbar__seg--frozen" style="width:1.55%"></div>
+                    <div class="levelbar__seg levelbar__seg--avail" style="width:36.62%"></div>
+                  </div>
+                  <div class="levelbar__tick" style="left:80%"></div>
+                  <div class="levelbar__tick levelbar__tick--limit" style="left:100%"></div>
+                </div>
+                <div class="preview__warn">距项目 Token 80% 预警线尚差 18.1 个百分点（已用 61.8% → 试用后 61.9%），本次不触发告警</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ 能力说明 ============ -->
+        <div class="row mt-6 mb-3" id="cap">
+          <h2 class="t-section">能力说明</h2>
+          <span class="t-micro">4 项核心能力 · 全部结论支持引用溯源</span>
+        </div>
+        <div class="grid grid--4">
+          <div class="card"><div class="card__body">
+            <div class="capart" data-icon="shield"></div>
+            <h3 class="t-section mt-3">条款风险识别</h3>
+            <p class="t-meta mt-2">覆盖权责对等、违约责任、付款条件等 32 类风险条款，逐条给出风险等级与修订建议。</p>
+          </div></div>
+          <div class="card"><div class="card__body">
+            <div class="capart" data-icon="list"></div>
+            <h3 class="t-section mt-3">模板逐条比对</h3>
+            <p class="t-meta mt-2">与标准模板按条款粒度对齐，标注缺失、新增与实质性偏离，输出条款级偏离度。</p>
+          </div></div>
+          <div class="card"><div class="card__body">
+            <div class="capart" data-icon="ledger"></div>
+            <h3 class="t-section mt-3">审查台账输出</h3>
+            <p class="t-meta mt-2">一键导出审查台账（Excel / Markdown），含条款定位、风险等级、处理状态与责任人。</p>
+          </div></div>
+          <div class="card"><div class="card__body">
+            <div class="capart" data-icon="search"></div>
+            <h3 class="t-section mt-3">引用溯源</h3>
+            <p class="t-meta mt-2">每条结论回链到合同原文段落与知识库依据，可点开查看上下文，避免“只给结论不给出处”。</p>
+          </div></div>
+        </div>
+
+        <!-- ============ 参数 ============ -->
+        <div class="row mt-6 mb-3" id="params">
+          <h2 class="t-section">参数</h2>
+          <span class="t-micro">来自模型广场模型卡 · 应用侧覆写项已标注</span>
+        </div>
+        <div class="dg-wrap">
+          <table class="dg">
+            <thead><tr><th>参数</th><th>取值</th><th>说明</th></tr></thead>
+            <tbody>
+              <tr><td class="dg-primary">模型</td><td>Qwen3-32B-Instruct</td><td>主体推理模型，负责条款理解、风险判定与建议生成</td></tr>
+              <tr><td class="dg-primary">检索模型</td><td>BGE-M3</td><td>知识库向量检索，用于条款范本与制度依据召回</td></tr>
+              <tr><td class="dg-primary">上下文窗口</td><td class="num">128k Token</td><td>单次请求输入上限，超长合同自动分段并合并结论</td></tr>
+              <tr><td class="dg-primary">最大输出</td><td class="num">8k Token</td><td>单次响应输出上限，超出部分截断并标记「已截断」</td></tr>
+              <tr><td class="dg-primary">RPM</td><td class="num">60</td><td>每 API-Key 每分钟请求数，超出返回 4290</td></tr>
+              <tr><td class="dg-primary">并发上限</td><td class="num">8</td><td>单租户并发会话数，超出排队并提示预计等待</td></tr>
+              <tr><td class="dg-primary">超时</td><td class="num">120s</td><td>网关等待上限；超时按已产生用量结算，不整单扣罚</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ============ 版本 ============ -->
+        <div class="row mt-6 mb-3" id="versions">
+          <h2 class="t-section">版本</h2>
+          <span class="t-micro">当前版本 v2.3 · 灰度范围 40% 已转全量</span>
+        </div>
+        <div class="dg-wrap">
+          <table class="dg">
+            <thead><tr><th>版本</th><th>发布日期</th><th>变更说明</th><th>状态</th></tr></thead>
+            <tbody>
+              <tr><td class="dg-primary">v2.3</td><td class="num">2026-08-18</td>
+                <td>新增条款引用溯源与审查台账导出；风险条款库扩容至 32 类</td>
+                <td><span class="chip chip--compute"><i class="chip__dot"></i>当前版本</span></td></tr>
+              <tr><td class="dg-primary">v2.2</td><td class="num">2026-05-06</td>
+                <td>支持多模板并行比对；单次预估消耗下降约 18%</td>
+                <td><span class="chip chip--neutral"><i class="chip__dot"></i>已退役</span></td></tr>
+              <tr><td class="dg-primary">v2.1</td><td class="num">2026-02-11</td>
+                <td>首个正式版本，支持条款风险识别与模板逐条比对</td>
+                <td><span class="chip chip--neutral"><i class="chip__dot"></i>已退役</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ============ 权限说明 ============ -->
+        <div class="row mt-6 mb-3" id="perm">
+          <h2 class="t-section">权限说明</h2>
+          <span class="t-micro">数据不出域 · 权重不可下载</span>
+        </div>
+        <div class="dg-wrap">
+          <table class="dg">
+            <thead><tr><th>项</th><th>取值</th><th>说明</th></tr></thead>
+            <tbody>
+              <tr><td class="dg-primary">可见范围</td><td>本租户 + 已授权项目</td>
+                <td>视觉检索平台、合同审查；其余项目不可见、不可调用</td></tr>
+              <tr><td class="dg-primary">授权租户</td><td>华鲲元启</td>
+                <td>授权有效期至 <span class="num">2027-03-31</span>，到期前 30 天自动提醒续期</td></tr>
+              <tr><td class="dg-primary">权重下载权限</td><td>不可下载</td>
+                <td>仅在线调用；模型权重与微调产物均不出平台</td></tr>
+              <tr><td class="dg-primary">数据是否出域</td><td>否</td>
+                <td>数据不出租户 VPC；调用日志脱敏后留存 <span class="num">180</span> 天，可申请提前清除</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ============ API 调用入口 ============ -->
+        <div class="card mt-6" id="api">
+          <div class="card__head">
+            <h2>API 调用入口</h2>
+            <span class="chip chip--quota"><i class="chip__dot"></i>OpenAPI v2</span>
+            <span class="spacer"></span>
+            <button class="btn btn--sm">获取 API Key</button>
+            <button class="btn btn--sm">查看完整文档</button>
+          </div>
+          <div class="card__body col" style="gap:var(--sp-4)">
+            <div>
+              <div class="t-micro mb-2">调用示例 · curl</div>
+              <div class="codeblock"><pre class="t-mono">curl -X POST https://api.zhisuan.local/v1/apps/legal-contract-review/invoke \
+  -H "Authorization: Bearer $ZS_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "version": "v2.3",
+    "input": {
+      "contract_url": "https://oss.local/contracts/HT-2026-0912.pdf",
+      "template_id": "TPL-采购-标准版"
+    },
+    "stream": false
+  }'</pre></div>
+              <p class="t-micro mt-2">限流 60 RPM / 单租户 8 并发；超出返回 4290，请按 Retry-After 退避重试。批量任务改用 <span class="num">callback_url</span> 异步回传。</p>
+            </div>
+
+            <div class="grid grid--2">
+              <div>
+                <div class="t-micro mb-2">请求字段</div>
+                <div class="dg-wrap">
+                  <table class="dg dg--compact">
+                    <thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead>
+                    <tbody>
+                      <tr><td class="dg-primary">contract_url</td><td>string</td><td>必填。合同地址，支持 PDF / DOCX，单文件 ≤ 50MB</td></tr>
+                      <tr><td class="dg-primary">template_id</td><td>string</td><td>必填。标准模板编号，如 TPL-采购-标准版</td></tr>
+                      <tr><td class="dg-primary">version</td><td>string</td><td>选填。应用版本，默认 v2.3</td></tr>
+                      <tr><td class="dg-primary">stream</td><td>boolean</td><td>选填。是否流式返回，默认 false</td></tr>
+                      <tr><td class="dg-primary">callback_url</td><td>string</td><td>选填。异步回调地址，批量任务使用</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div>
+                <div class="t-micro mb-2">响应字段</div>
+                <div class="dg-wrap">
+                  <table class="dg dg--compact">
+                    <thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead>
+                    <tbody>
+                      <tr><td class="dg-primary">trace_id</td><td>string</td><td>链路 ID，可在消耗回执中下钻到工具调用链路</td></tr>
+                      <tr><td class="dg-primary">status</td><td>string</td><td>succeeded / partial / failed</td></tr>
+                      <tr><td class="dg-primary">usage</td><td>object</td><td>输入与输出 Token 用量，用于对账</td></tr>
+                      <tr><td class="dg-primary">ledger_id</td><td>string</td><td>结算单号，对应一条消耗回执</td></tr>
+                      <tr><td class="dg-primary">result.risks[]</td><td>array</td><td>风险条款清单，含等级、原文定位与修订建议</td></tr>
+                      <tr><td class="dg-primary">result.ledger_url</td><td>string</td><td>审查台账下载地址，有效期 7 天</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div class="t-micro mb-2">错误码</div>
+              <div class="dg-wrap">
+                <table class="dg dg--compact">
+                  <thead><tr><th>错误码</th><th>说明</th><th>处理建议</th></tr></thead>
+                  <tbody>
+                    <tr data-state="risk"><td class="num">4001</td><td>额度不足</td>
+                      <td>项目可用 Token 小于本次预估，请求被拦截。请充值或在控制中心申请追加额度；缺口量与当前水位见右侧账板</td></tr>
+                    <tr><td class="num">4003</td><td>参数非法</td><td>缺少必填字段，或 template_id 不存在；按请求字段表校验后重试</td></tr>
+                    <tr><td class="num">4010</td><td>未授权</td><td>API-Key 失效或应用未授权给该租户；重建密钥或提交授权申请</td></tr>
+                    <tr><td class="num">4290</td><td>触发限流</td><td>超过 60 RPM 或 8 并发；按 Retry-After 退避重试</td></tr>
+                    <tr><td class="num">4480</td><td>文件解析失败</td><td>合同损坏、加密或超出 50MB；转码为可解析 PDF 后重试</td></tr>
+                    <tr><td class="num">5001</td><td>模型服务异常</td><td>推理实例不可用，平台已自动切流；持续失败请提交工单</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <aside class="ledger" id="ledger" aria-label="消耗上下文"></aside>
+</div>
+
+<template id="band-actions">
+  <button class="btn">收藏</button>
+  <a class="btn btn--primary" href="app-console.html">打开工作台</a>
+</template>
+
+<!-- 账板追加：本应用费率明细（输入/输出单价、阶梯、租户折扣） -->
+<template id="ledger-extra">
+  <h3>费率明细 · 法务合同审查</h3>
+  <div class="col" style="gap:var(--sp-2)">
+    <div class="row row--between"><span class="t-meta">输入单价</span><span class="num-sm">¥0.004 / 千Token</span></div>
+    <div class="row row--between"><span class="t-meta">输出单价</span><span class="num-sm">¥0.012 / 千Token</span></div>
+  </div>
+  <hr class="divider">
+  <div class="t-micro mb-2">阶梯（按项目月消耗）</div>
+  <div class="col" style="gap:var(--sp-2)">
+    <div class="row row--between"><span class="t-meta">0 – 5.00M</span><span class="num-sm">标准价</span></div>
+    <div class="row row--between"><span class="t-meta">5.00M – 20.00M</span><span class="num-sm">9 折</span></div>
+    <div class="row row--between"><span class="t-meta">&gt; 20.00M</span><span class="num-sm">8 折</span></div>
+  </div>
+  <hr class="divider">
+  <div class="row row--between"><span class="t-meta">租户折扣</span><span class="num-sm">华鲲元启 · 9 折</span></div>
+  <div class="t-micro mt-2">年度框架协议折扣，与阶梯价叠加后取优。</div>
+  <div class="row row--between mt-3"><span class="t-meta">本次预估折算</span><span class="num-sm">≈6.1k Token</span></div>
+  <div class="t-micro mt-2">预估来源：Token 银行费率接口 · 定价版本 PRICE-2026Q3</div>
+</template>
+
+<script src="assets/charts.js"></script>
+<script src="assets/app.js?v=20260924-7"></script>
+<script>
+  Array.prototype.forEach.call(document.querySelectorAll('.search'), function (s) {
+    if (!s.querySelector('svg')) s.insertAdjacentHTML('afterbegin', DSH.icon('search'));
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('[data-icon]'), function (el) {
+    el.innerHTML = DSH.icon(el.getAttribute('data-icon'));
+  });
+</script>
+</body>
+</html>

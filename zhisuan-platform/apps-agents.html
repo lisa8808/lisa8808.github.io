@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>应用中心 · 智能体 · 大模型智算平台</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230F1418'/%3E%3Cpath d='M9 21V11l4 6 3-4 4 8' fill='none' stroke='%230B6E7F' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/app.css?v=20260924-4">
+<style>
+  /* 页面专属样式：智能体「编排拓扑」标识。
+     颜色一律取自令牌：节点=算力（运行时/节点），连线=结构线，无装饰色。 */
+  .flowline { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; }
+  .flowline__chain { display: flex; align-items: center; gap: 2px; flex: none; }
+  .flowline__node { width: 2px; height: 9px; border-radius: 1px; background: var(--compute); flex: none; }
+  .flowline__link { width: 3px; height: 1px; background: var(--line-strong); flex: none; }
+</style>
+</head>
+<body data-module="apps" data-page="A-02" data-title="应用中心"
+      data-tabs="行业应用|智能体|平台产品" data-tab="1"
+      data-search="搜索智能体、工具、知识库" data-sort="推荐|热度|更新时间" data-view="1"
+      data-register="1" data-register-value="discovery">
+<div class="shell" id="shell">
+  <nav class="rail" id="rail" aria-label="模块导航"></nav>
+
+  <div class="main">
+    <header class="band" id="band"></header>
+
+    <div class="mid">
+      <!-- 筛选列：智能体按「领域 / 工具类型 / 发布状态」切分，而非行业应用的行业分类 -->
+      <aside class="filter" aria-label="筛选">
+        <div class="filter__group">
+          <h3>领域分类</h3>
+          <label class="filter__opt"><input type="radio" name="domain" checked> 全部<span class="cnt">6</span></label>
+          <label class="filter__opt"><input type="radio" name="domain"> 视觉质检<span class="cnt">1</span></label>
+          <label class="filter__opt"><input type="radio" name="domain"> 知识管理<span class="cnt">1</span></label>
+          <label class="filter__opt"><input type="radio" name="domain"> 数据分析<span class="cnt">2</span></label>
+          <label class="filter__opt"><input type="radio" name="domain"> 流程自动化<span class="cnt">1</span></label>
+          <label class="filter__opt"><input type="radio" name="domain"> 研发效能<span class="cnt">1</span></label>
+        </div>
+        <div class="filter__group">
+          <h3>工具类型</h3>
+          <label class="filter__opt"><input type="checkbox"> HTTP API<span class="cnt">5</span></label>
+          <label class="filter__opt"><input type="checkbox"> 知识库<span class="cnt">6</span></label>
+          <label class="filter__opt"><input type="checkbox"> 代码执行<span class="cnt">1</span></label>
+          <label class="filter__opt"><input type="checkbox"> 数据库<span class="cnt">1</span></label>
+        </div>
+        <div class="filter__group">
+          <h3>是否已发布</h3>
+          <label class="filter__opt"><input type="radio" name="pub" checked> 全部<span class="cnt">6</span></label>
+          <label class="filter__opt"><input type="radio" name="pub"> 已发布<span class="cnt">5</span></label>
+          <label class="filter__opt"><input type="radio" name="pub"> 灰度中<span class="cnt">1</span></label>
+        </div>
+        <div class="filter__group">
+          <h3>我的应用</h3>
+          <a class="filter__nav" href="apps-industry.html">我创建的<span class="cnt">2</span></a>
+          <a class="filter__nav" href="apps-industry.html">我收藏的<span class="cnt">3</span></a>
+          <a class="filter__nav" href="apps-industry.html">已授权的<span class="cnt">5</span></a>
+        </div>
+      </aside>
+
+      <!-- 主舞台：发现语域。智能体卡片额外暴露「工具 / 知识库绑定」与「编排拓扑」 -->
+      <main class="stage" id="stage">
+        <div class="selected-bar">
+          <span>领域分类：全部</span><span class="dot-sep">·</span>
+          <span>工具类型：全部</span><span class="dot-sep">·</span>
+          <span>发布状态：全部</span>
+          <button class="btn btn--sm btn--ghost">清空筛选</button>
+          <span class="total">共 6 个智能体 · 本租户已授权 5 个</span>
+        </div>
+
+        <div class="objgrid">
+
+          <!-- 智能体与行业应用的差异：副标题写「智能体 · 领域」，描述强调编排，
+               标签暴露所挂工具与知识库，底部给出编排节点数与平均时延。 -->
+          <article class="objcard">
+            <div class="objcard__top">
+              <div class="objcard__icon objcard__icon--soft">视</div>
+              <div><div class="objcard__name">视频检查</div><div class="objcard__sub">智能体 · 视觉质检</div></div>
+            </div>
+            <p class="objcard__desc">自主编排「抽帧 → 视觉检测 → 规则判定」三段链路，批量任务自动扩缩，异常片段回流人工复核队列。</p>
+            <div class="flowline">
+              <span class="flowline__chain" aria-hidden="true"><i class="flowline__node"></i><i class="flowline__link"></i><i class="flowline__node"></i><i class="flowline__link"></i><i class="flowline__node"></i><i class="flowline__link"></i><i class="flowline__node"></i><i class="flowline__link"></i><i class="flowline__node"></i><i class="flowline__link"></i><i class="flowline__node"></i></span>
+              <span class="t-micro">编排 6 节点 · 平均 4.2s</span>
+            </div>
+            <div class="objcard__tags">
+              <span class="tag">工具 · 视觉检测API</span><span class="tag">工具 · 抽帧服务</span><span class="tag">KB · 缺陷样本库</span>
+            </div>
+            <div class="objcard__foot">
+              <a class="costbtn costbtn--sm" href="app-console.html"><span class="costbtn__label">试用</span><span class="costbtn__est">≈6.4k Token</span></a>
+            </div>
+          </article>
+
+          <article class="objcard">
+            <div class="objcard__top">
+              <div class="objcard__icon objcard__icon--soft">知</div>
+              <div><div class="objcard__name">知识问答</div><div class="objcard__sub">智能体 · 知识管理</div></div>
+            </div>
+            <p class="objcard__desc">多轮会话中自主决定是否检索与调用摘要工具，回答附原文条款定位，引用可逐条溯源。</p>
+            <div class="flowline">
+              <span class="flowline__chain" aria-hidden="true"><i class="flowline__node"></i><i class="flowline__link"></i><i class="flowline__node"></i><i class="flowline__link"></i><i class="flowline__node"></i><i class="flowline__link"></i><i class="flowline__node"></i></span>
+              <span class="t-micro">编排 4 节点 · 平均 1.8s</span>
+            </div>
+            <div class="objcard__tags">
+              <span class="tag">工具 · 检索API</span><span class="tag">KB · 制度库</span><span class="tag">KB · 产品手册</span>
+            </div>
+            <div class="objcard__foot">
+              <a class="costbtn costbtn--sm" href="app-console.html"><span class="costbtn__label">试用</span><span class="costbtn__est">≈1.2k Token</span></a>
+            </div>
+          </article>
+
+          <article class="objcard">
+            <div class="objcard__top">
+              <div class="objcard__icon objcard__icon--soft">析</div>
+              <div><div class="objcard__name">数据分析</div><div class="objcard__sub">智能体 · 数据分析</div></div>
+            </div>
+            <p class="objcard__desc">把自然语言问题拆解为取数、计算、归因三类节点，自动执行 SQL 与脚本，计算过程可回放复算。</p>
+            <div class="flowline">
+              <span class="flowline__chain" aria-hidden="true"><i class="flowline__node"></i><i class="flowline__link"></i><i class="flowline__node"></i><i class="flowline__link"></i><i class="flowline__node"></i><i class="flowline__link"></i><i class="flowline__node"></i><i class="flowline__link"></i><i class="flowline__node"></i><i class="flowline__link"></i><i class="flowline__node"></i><i class="flowline__link"></i><i class="flowline__node"></i></span>
+              <span class="t-micro">编排 7 节点 · 平均 5.6s</span>
+            </div>
+            <div class="objcard__tags">
+              <span class="tag">工具 · SQL 执行</span><span class="tag">工具 · 代码执行</span><span class="tag">KB · 指标口径库</span>
+            </div>
+            <div class="objcard__foot">
+              <a class="costbtn costbtn--sm" href="app-console.html"><span class="costbtn__label">试用</span><span class="costbtn__est">≈3.8k Token</span></a>
+            </div>
+          </article>
+
+          <article class="objcard">
+            <div class="objcard__top">
+              <div class="objcard__icon objcard__icon--soft">流</div>
+              <div><div class="objcard__name">流程编排</div><div class="objcard__sub">智能体 · 流程自动化</div></div>
+            </div>
+            <p class="objcard__desc">以节点画布串接审批、通知与外部系统回调，支持条件分支、失败重试与人工介入断点。</p>
+            <div class="flowline">
+              <span class="flowline__chain" aria-hidden="true"><i class="flowline__node"></i><i class="flowline__link"></i><i class="flowline__node"></i><i class="flowline__link"></i><i class="flowline__node"></i><i class="flowline__link"></i><i class="flowline__node"></i><i class="flowline__link"></i><i class="flowline__node"></i><i class="flowline__link"></i><i class="flowline__node"></i><i class="flowline__link"></i><i class="flowline__node"></i><i class="flowline__link"></i><i class="flowline__node"></i></span>
+              <span class="t-micro">编排 9 节点 · 平均 2.4s</span>
+            </div>
+            <div class="objcard__tags">
+              <span class="tag">工具 · HTTP API</span><span class="tag">工具 · 消息推送</span><span class="tag">KB · 流程规范库</span>
+            </div>
+            <div class="objcard__foot">
+              <a class="costbtn costbtn--sm" href="app-console.html"><span class="costbtn__label">试用</span><span class="costbtn__est">≈2.2k Token</span></a>
+            </div>
+          </article>
+
+          <!-- 灰度中：以洞察色标注灰度比例，同时保留完整可用状态与试用入口 -->
+          <article class="objcard">
+            <div class="objcard__top">
+              <div class="objcard__icon objcard__icon--soft">比</div>
+              <div><div class="objcard__name">文档比对</div><div class="objcard__sub">智能体 · 研发效能</div></div>
+            </div>
+            <p class="objcard__desc">双文档逐条对齐并输出差异清单，可挂载条款与接口契约库做合规判定，支持版本间回归比对。</p>
+            <div class="flowline">
+              <span class="flowline__chain" aria-hidden="true"><i class="flowline__node"></i><i class="flowline__link"></i><i class="flowline__node"></i><i class="flowline__link"></i><i class="flowline__node"></i><i class="flowline__link"></i><i class="flowline__node"></i><i class="flowline__link"></i><i class="flowline__node"></i></span>
+              <span class="t-micro">编排 5 节点 · 平均 3.9s</span>
+            </div>
+            <div class="objcard__tags">
+              <span class="chip chip--insight"><i class="chip__dot"></i>灰度中 40%</span>
+              <span class="tag">工具 · 文档解析</span><span class="tag">KB · 条款库</span>
+            </div>
+            <div class="objcard__foot">
+              <a class="costbtn costbtn--sm" href="app-console.html"><span class="costbtn__label">试用</span><span class="costbtn__est">≈4.7k Token</span></a>
+            </div>
+          </article>
+
+          <!-- 未授权：不置灰，给出原因与出路（10.8 约定 6） -->
+          <article class="objcard">
+            <div class="objcard__top">
+              <div class="objcard__icon objcard__icon--soft">报</div>
+              <div><div class="objcard__name">报表洞察</div><div class="objcard__sub">智能体 · 数据分析</div></div>
+            </div>
+            <p class="objcard__desc">定时拉取指标并生成洞察摘要，异常项自动下钻到明细并推送责任人，支持订阅式周报。</p>
+            <div class="flowline">
+              <span class="flowline__chain" aria-hidden="true"><i class="flowline__node"></i><i class="flowline__link"></i><i class="flowline__node"></i><i class="flowline__link"></i><i class="flowline__node"></i><i class="flowline__link"></i><i class="flowline__node"></i><i class="flowline__link"></i><i class="flowline__node"></i><i class="flowline__link"></i><i class="flowline__node"></i></span>
+              <span class="t-micro">编排 6 节点 · 平均 3.1s</span>
+            </div>
+            <div class="objcard__tags">
+              <span class="chip chip--neutral"><i class="chip__dot"></i>本租户未授权</span>
+              <span class="tag">工具 · 指标API</span><span class="tag">KB · 经营指标库</span>
+            </div>
+            <div class="objcard__foot">
+              <span class="objcard__cost">≈1.6k Token / 次</span><span class="spacer"></span>
+              <button class="btn btn--sm" onclick="DSH.ui.toggleLedger(true)">申请授权</button>
+            </div>
+          </article>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <aside class="ledger" id="ledger" aria-label="消耗上下文"></aside>
+</div>
+
+<template id="band-actions">
+  <button class="btn">编排画布</button>
+  <button class="btn btn--primary">创建智能体</button>
+</template>
+
+<script src="assets/charts.js"></script>
+<script src="assets/app.js?v=20260924-7"></script>
+<script>
+  Array.prototype.forEach.call(document.querySelectorAll('.search'), function (s) {
+    if (!s.querySelector('svg')) s.insertAdjacentHTML('afterbegin', DSH.icon('search'));
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>华鲲元启 - 审查结果</title>
+  <style>
+    :root { --blue:#025dff; --ink:#18202e; --muted:rgba(0,0,0,.6); --weak:rgba(0,0,0,.4); --line:#e7e7e7; --canvas:#f6fafe; --danger:#f53f3f; --danger-text:#f60417; --orange:#ed7b2f; font-family:"PingFang SC","Microsoft YaHei",Arial,sans-serif; color:var(--ink); }
+    * { box-sizing:border-box; }
+    html, body { width:100%; height:100%; margin:0; background:var(--canvas); }
+    body { min-width:1180px; overflow:hidden; font-size:14px; }
+    button { border:0; padding:0; background:none; font:inherit; color:inherit; cursor:pointer; }
+    button:focus-visible, a:focus-visible { outline:2px solid rgba(2,93,255,.32); outline-offset:2px; }
+    .page { position:relative; width:100vw; height:100vh; min-height:720px; padding:40px; background:rgba(246,250,254,.88); }
+    .result-shell { position:relative; width:100%; height:100%; min-height:640px; border-radius:10px; background:#fff; overflow:hidden; box-shadow:0 12px 36px rgba(24,32,46,.14); }
+    .result-header { height:84px; border-bottom:1px solid var(--line); display:flex; align-items:center; padding:0 22px 0 30px; gap:18px; }
+    .result-title { min-width:0; flex:1; display:flex; align-items:center; gap:8px; font-size:16px; line-height:24px; font-weight:500; color:rgba(0,0,0,.9); white-space:nowrap; }
+    .title-text { overflow:hidden; text-overflow:ellipsis; }
+    .edit-mark { width:16px; height:16px; color:#4e5969; flex:none; }
+    .standard-btn { height:32px; padding:5px 12px; border:1px solid var(--blue); border-radius:4px; color:var(--blue); font-size:14px; line-height:22px; transition:background .15s ease, transform .12s ease; }
+    .standard-btn:hover { background:#f2f7ff; }
+    .standard-btn:active { transform:scale(.98); }
+    .download-btn { height:32px; min-width:71px; border:1px solid #dcdcdc; border-radius:6px; padding:0 10px; display:inline-flex; align-items:center; justify-content:center; gap:6px; transition:background .15s ease, transform .12s ease; }
+    .download-btn:hover { background:#f7f8fa; }
+    .download-btn:active { transform:scale(.98); }
+    .close-link { width:30px; height:30px; border-radius:4px; display:grid; place-items:center; color:#4e5969; text-decoration:none; font-size:18px; line-height:1; transition:background .15s ease, transform .12s ease; }
+    .close-link:hover { background:#f2f3f5; }
+    .close-link:active { transform:scale(.94); }
+    .content { position:absolute; inset:84px 0 0; display:grid; grid-template-columns:minmax(720px, 1fr) 560px; min-height:0; }
+    .contract-pane { position:relative; overflow:auto; padding:30px 50px 80px; border-right:1px solid var(--line); color:rgba(0,0,0,.9); }
+    .contract-section { max-width:1070px; margin:0 auto; font-size:16px; line-height:31px; }
+    .contract-section h2 { margin:0 0 17px; font-size:20px; line-height:28px; font-weight:600; }
+    .contract-section p { margin:0 0 26px; }
+    .risk-highlight { display:block; margin:14px -6px 22px; padding:11px 6px; border-radius:4px; background:#fff8f2; }
+    .review-pane { overflow:auto; padding:32px 50px 40px; background:#fff; }
+    .summary { margin:0 0 18px; font-size:16px; line-height:22px; color:var(--ink); }
+    .summary strong { color:var(--orange); font-weight:500; }
+    .risk-tabs { display:flex; align-items:center; gap:16px; margin-bottom:30px; flex-wrap:wrap; }
+    .risk-tab { height:32px; padding:4px 12px; border-radius:3px; border:1px solid; font-size:14px; line-height:22px; position:relative; }
+    .risk-tab.all { color:#165dff; border-color:#266fe8; background:#e8f3ff; }
+    .risk-tab.normal { color:#1800ba; border-color:#6754fb; background:#e5e2ff; }
+    .risk-tab.minor { color:#db5300; border-color:#ed7b2f; background:#ffeadc; }
+    .risk-tab.major { color:var(--danger-text); border-color:#e34d59; background:#ffece8; }
+    .risk-tab.selected::after { content:""; position:absolute; right:-1px; bottom:-1px; width:12px; height:12px; background:linear-gradient(135deg, transparent 50%, currentColor 50%); }
+    .risk-card { border:1px solid var(--line); border-radius:10px; background:#fff; overflow:hidden; }
+    .risk-card + .risk-card { margin-top:18px; }
+    .risk-head { height:58px; padding:13px 16px; display:flex; align-items:center; gap:16px; }
+    .risk-name { flex:1; min-width:0; font-size:14px; line-height:20px; font-weight:600; color:#1d2129; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .fold { color:var(--muted); display:inline-flex; align-items:center; gap:8px; }
+    .fold.muted { color:var(--weak); }
+    .badge { height:24px; border-radius:3px; display:inline-flex; align-items:center; gap:5px; padding:0 8px 0 4px; font-size:12px; line-height:22px; flex:none; }
+    .badge.major { color:var(--danger-text); background:#ffece8; }
+    .badge.minor { color:#db5300; background:#ffeadc; padding-left:12px; }
+    .danger-icon { width:16px; height:16px; border-radius:2px; display:inline-grid; place-items:center; background:var(--danger); color:#fff; font-size:12px; line-height:16px; font-weight:600; }
+    .risk-source { margin:-5px 16px 16px; color:var(--weak); line-height:22px; }
+    .risk-body { padding:0 16px 18px; }
+    .risk-body h3 { margin:0 0 8px; font-size:14px; line-height:20px; font-weight:600; color:rgba(0,0,0,.9); }
+    .risk-body p { margin:0 0 16px; padding:12px 10px; border-radius:8px; font-size:14px; line-height:22px; color:rgba(0,0,0,.9); }
+    .risk-explain { background:#f9fafc; }
+    .risk-suggest { background:#fff8f2; }
+    @media (max-width:1440px) { body { min-width:1024px; } .content { grid-template-columns:minmax(620px, 1fr) 500px; } .review-pane { padding:32px 32px 40px; } .contract-pane { padding-left:40px; padding-right:40px; } }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="result-shell" aria-label="合同审查结果">
+      <header class="result-header">
+        <div class="result-title"><span>标题：</span><span class="title-text">关于2026年上半年公文写作培训工作的通知</span><span class="edit-mark" aria-hidden="true">✎</span></div>
+        <button class="standard-btn" type="button">查看本次审查标准</button>
+        <button class="download-btn" type="button"><span aria-hidden="true">⇩</span><span>下载</span></button>
+        <a class="close-link" href="detail.html" aria-label="关闭审查结果">×</a>
+      </header>
+      <main class="content">
+        <section class="contract-pane" aria-label="合同正文"><article class="contract-section"><h2>第四条 发布费用及付款节点、方式</h2><p>1、双方约定广告发布总费用（包括但不限于广告制作费、媒介发布费、服务费、税费及其他与本项目相关的费用）由甲乙双方按照本合同约定执行。乙方应在约定期限内提交完整、真实、合法的结算资料，甲方在完成资料审核后按照审批流程进行付款。</p><p>双方约定，若任一方未能按照本合同约定履行付款、交付或协助义务，应承担相应违约责任。迟延付款违约金以应付未付款项为基数计算，但违约金总额不得超过合同总金额的 10%。</p><p>2、乙方应确保广告内容、投放计划、验收材料及发票信息与合同约定保持一致。如因乙方提交资料不完整、不准确或存在瑕疵导致付款延迟，甲方不承担逾期付款责任。</p><h2>第五条 广告制作形式及发布要求</h2><p>1、广告制作发布的相关手续和费用由乙方负责，乙方应确保广告内容符合法律法规、行业规范及平台发布要求。未经甲方书面确认，乙方不得擅自调整广告内容、投放渠道或发布时间。</p><h2>第五条 广告制作形式及发布要求</h2><p>1、广告制作发布的相关手续和费用由乙方负责，乙方应按照甲方确认的最终稿件进行制作及投放，并在投放完成后提交对应的监测报告、截图、链接及其他证明材料。</p></article></section>
+        <aside class="review-pane" aria-label="风险审查结果"><p class="summary">基于当前的审查立场为<strong>委托方</strong>，共为您检测<strong>19</strong>处合同风险，请逐一审阅</p><div class="risk-tabs" aria-label="风险筛选"><button class="risk-tab all" type="button">全部（19）</button><button class="risk-tab normal" type="button">常规风险（4）</button><button class="risk-tab minor selected" type="button">次要风险（12）</button><button class="risk-tab major selected" type="button">重要风险（3）</button></div><section class="risk-card"><div class="risk-head"><span class="badge major"><span class="danger-icon">危</span>重要风险</span><strong class="risk-name">违约金上线过低</strong><button class="fold" type="button">收起⌃</button></div><div class="risk-source">审查来源：预置规则-租赁合同-违约责任条款</div><div class="risk-body"><h3>风险说明</h3><p class="risk-explain">依据商业秘密保护规定，原文“保密义务永久有效”，存在缺陷：①未区分信息类型 设置期限 ②未考虑技术迭代因素 ③增加保密管理成本，可能导致履约成本异常增高或触发解除权争议</p><h3>修订建议</h3><p class="risk-suggest">修改建议：区分违约类型设置责任上限<br>修改示例：“知识产权违约赔偿不设上限，迟延付款违约金上限为合同总额【150%】”。注：【150%】需符合最高法院关于违约金上限的司法解释</p></div></section><section class="risk-card"><div class="risk-head"><span class="badge minor">次要风险</span><strong class="risk-name">关联公司混用风险</strong><button class="fold muted" type="button">展开⌄</button></div></section><section class="risk-card"><div class="risk-head"><span class="badge major"><span class="danger-icon">危</span>重要风险</span><strong class="risk-name">违约金上线过低</strong><button class="fold muted" type="button">展开⌄</button></div></section><section class="risk-card"><div class="risk-head"><span class="badge major"><span class="danger-icon">危</span>重要风险</span><strong class="risk-name">违约金上线过低</strong><button class="fold muted" type="button">展开⌄</button></div></section></aside>
+      </main>
+    </section>
+  </div>
+</body>
+</html>

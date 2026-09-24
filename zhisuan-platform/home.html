@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>工作台 · 大模型智算平台</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230F1418'/%3E%3Cpath d='M9 21V11l4 6 3-4 4 8' fill='none' stroke='%230B6E7F' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/app.css?v=20260924-4">
+<style>
+/* ============================================================
+   G-02 平台工作台 · 双语域并列
+   上半部发现（低密度、能力叙述），下半部处置（高密度、数字状态），
+   两段之间用「账线」状态条缝合：卡面上的预估价，就是票据里的结算依据。
+   ============================================================ */
+
+/* 语域眉标：结构用墨，处置语域加墨底以示切换 */
+.reg { display: flex; align-items: center; gap: var(--sp-3); margin-bottom: var(--sp-4); }
+.reg__tag {
+  display: inline-flex; align-items: center; height: 22px; padding: 0 8px;
+  border: 1px solid var(--line); border-radius: var(--r-1);
+  background: var(--surface-sunken); color: var(--ink-700);
+  font-family: var(--font-num); font-size: 11px; font-weight: 600; letter-spacing: .04em;
+}
+.reg__tag--op { background: var(--ink-900); border-color: var(--ink-900); color: var(--surface); }
+
+/* 账线缝合条：同一套阶段条组件，标出两个语域的因果关系 */
+.seam {
+  display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2);
+  margin: var(--sp-5) 0 0;
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+}
+
+/* 工作台半宽卡只有 464px：auto-fill 会回落到 1 列，故两处对象网格固定两列 */
+.home-apps   { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.home-models { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+/* 表格列宽 */
+.dg .w-type    { width: 104px; }
+.dg .w-status  { width: 92px; }
+.dg .w-progress{ width: 168px; }
+.dg .w-num     { width: 104px; }
+.dg .w-actions { width: 88px; }
+
+/* 可点的消耗数字（10.8 约定 5：全站无死数字） */
+.numbtn { background: none; border: 0; padding: 0; border-radius: var(--r-1); cursor: pointer; }
+.numbtn:hover { color: var(--ink-900); text-decoration: underline dotted; }
+
+/* 工作台半宽卡只有 224px：计价行与 CostButton 竖排，避免横向挤压（契约铁律 6 / 7） */
+.objcard__foot--stack { flex-direction: column; align-items: flex-start; gap: var(--sp-2); }
+
+/* 待处理行 */
+.todo {
+  display: flex; align-items: center; gap: var(--sp-2);
+  min-width: 0; padding: 5px var(--sp-2);
+  border-radius: var(--r-1);
+}
+.todo:hover { background: var(--surface-sunken); }
+.todo__text {
+  flex: 1 1 auto; min-width: 0;
+  font-size: var(--text-meta); color: var(--ink-600);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.todo .btn { flex: none; }
+</style>
+</head>
+<!-- 本页不做发现 / 处置二选一，故不设 data-register：两个语域同屏并列 -->
+<body data-module="apps" data-page="G-02" data-title="工作台">
+<div class="shell ledger-open" id="shell">
+  <nav class="rail" id="rail" aria-label="模块导航"></nav>
+
+  <div class="main">
+    <header class="band" id="band"></header>
+
+    <div class="mid">
+      <main class="stage" id="stage">
+
+        <!-- ==================== 上半部 · 发现语域 ==================== -->
+        <div class="reg">
+          <span class="reg__tag">发现 · DISCOVERY</span>
+          <span class="t-micro">低密度 · 能力叙述优先 —— 找到能用的，再决定要不要花</span>
+        </div>
+
+        <div class="grid grid--2">
+
+          <!-- 常用应用 -->
+          <section class="card">
+            <div class="card__head">
+              <h2>常用应用</h2>
+              <span class="chip chip--quota"><i class="chip__dot"></i>本租户已授权 18</span>
+              <span class="spacer"></span>
+              <a class="btn btn--sm" href="apps-industry.html">全部应用</a>
+            </div>
+            <div class="card__body">
+              <div class="objgrid home-apps">
+
+                <article class="objcard">
+                  <div class="objcard__top">
+                    <div class="objcard__icon">写</div>
+                    <div><div class="objcard__name">写作助手</div><div class="objcard__sub">行业应用 · 内容办公</div></div>
+                  </div>
+                  <p class="objcard__desc">公文、周报与方案初稿，可套用企业模板库。</p>
+                  <div class="objcard__foot objcard__foot--stack">
+                    <button class="objcard__cost numbtn" data-receipt>本月已用 326.8k Token</button>
+                    <a class="costbtn costbtn--sm" href="app-console.html"><span class="costbtn__label">试用</span><span class="costbtn__est">≈0.8k Token</span></a>
+                  </div>
+                </article>
+
+                <article class="objcard">
+                  <div class="objcard__top">
+                    <div class="objcard__icon objcard__icon--soft">问</div>
+                    <div><div class="objcard__name">知识问答</div><div class="objcard__sub">智能体 · 知识库</div></div>
+                  </div>
+                  <p class="objcard__desc">基于制度与产品库回答，答案附原文条款定位。</p>
+                  <div class="objcard__foot objcard__foot--stack">
+                    <button class="objcard__cost numbtn" data-receipt>本月已用 1,842.6k Token</button>
+                    <a class="costbtn costbtn--sm" href="app-console.html"><span class="costbtn__label">试用</span><span class="costbtn__est">≈1.2k Token</span></a>
+                  </div>
+                </article>
+
+                <article class="objcard">
+                  <div class="objcard__top">
+                    <div class="objcard__icon objcard__icon--soft">法</div>
+                    <div><div class="objcard__name">法务合同审查</div><div class="objcard__sub">行业应用 · 法务合规</div></div>
+                  </div>
+                  <p class="objcard__desc">条款风险识别与修订建议，输出审查台账。</p>
+                  <div class="objcard__foot objcard__foot--stack">
+                    <button class="objcard__cost numbtn" data-receipt>本月已用 968.4k Token</button>
+                    <a class="costbtn costbtn--sm" href="app-console.html"><span class="costbtn__label">试用</span><span class="costbtn__est">≈6.1k Token</span></a>
+                  </div>
+                </article>
+
+                <article class="objcard">
+                  <div class="objcard__top">
+                    <div class="objcard__icon objcard__icon--soft">视</div>
+                    <div><div class="objcard__name">视频检查</div><div class="objcard__sub">智能体 · 多模态</div></div>
+                  </div>
+                  <p class="objcard__desc">视频流逐帧合规检测，异常片段自动截取留证。</p>
+                  <div class="objcard__foot objcard__foot--stack">
+                    <button class="objcard__cost numbtn" data-receipt>本月已用 742.0k Token</button>
+                    <a class="costbtn costbtn--sm" href="app-console.html"><span class="costbtn__label">试用</span><span class="costbtn__est">≈1.6k Token</span></a>
+                  </div>
+                </article>
+
+              </div>
+            </div>
+          </section>
+
+          <!-- 推荐模型 -->
+          <section class="card">
+            <div class="card__head">
+              <h2>推荐模型</h2>
+              <span class="t-micro">按你近 30 天的调用偏好</span>
+              <span class="spacer"></span>
+              <a class="btn btn--sm" href="models.html">模型广场</a>
+            </div>
+            <div class="card__body">
+              <div class="objgrid objgrid--dense home-models">
+
+                <article class="objcard">
+                  <div class="objcard__top">
+                    <div class="objcard__icon">Q</div>
+                    <div><div class="objcard__name">Qwen3-32B-Instruct</div><div class="objcard__sub">通用对话 · 32B</div></div>
+                  </div>
+                  <p class="objcard__desc">默认推理模型，长上下文稳定。</p>
+                  <div class="objcard__foot objcard__foot--stack">
+                    <span class="objcard__cost">0.004 元 / 千Token</span>
+                    <a class="costbtn costbtn--sm" href="model-detail.html"><span class="costbtn__label">试用</span><span class="costbtn__est">≈1.2k Token</span></a>
+                  </div>
+                </article>
+
+                <article class="objcard">
+                  <div class="objcard__top">
+                    <div class="objcard__icon objcard__icon--soft">DS</div>
+                    <div><div class="objcard__name">DeepSeek-V3</div><div class="objcard__sub">推理 · MoE</div></div>
+                  </div>
+                  <p class="objcard__desc">复杂推理与代码任务，成本偏高。</p>
+                  <div class="objcard__foot objcard__foot--stack">
+                    <span class="objcard__cost">0.008 元 / 千Token</span>
+                    <a class="costbtn costbtn--sm" href="model-detail.html"><span class="costbtn__label">试用</span><span class="costbtn__est">≈2.0k Token</span></a>
+                  </div>
+                </article>
+
+                <article class="objcard">
+                  <div class="objcard__top">
+                    <div class="objcard__icon objcard__icon--soft">IV</div>
+                    <div><div class="objcard__name">InternVL2-26B</div><div class="objcard__sub">多模态 · 26B</div></div>
+                  </div>
+                  <p class="objcard__desc">视频检查在用，当前版本微调中。</p>
+                  <div class="objcard__foot objcard__foot--stack">
+                    <span class="objcard__cost">0.011 元 / 千Token</span>
+                    <div class="row w-full" style="gap:var(--sp-2)">
+                      <span class="chip chip--insight"><i class="chip__dot"></i>微调中</span>
+                      <span class="spacer"></span>
+                      <a class="btn btn--sm" href="model-detail.html">查看</a>
+                    </div>
+                  </div>
+                </article>
+
+                <article class="objcard">
+                  <div class="objcard__top">
+                    <div class="objcard__icon objcard__icon--soft">BGE</div>
+                    <div><div class="objcard__name">BGE-M3</div><div class="objcard__sub">向量检索 · 8k</div></div>
+                  </div>
+                  <p class="objcard__desc">知识库召回，按卡时计费。</p>
+                  <div class="objcard__foot objcard__foot--stack">
+                    <span class="objcard__cost">按卡时计费 · 无 Token 消耗</span>
+                    <a class="costbtn costbtn--sm" href="model-detail.html"><span class="costbtn__label">试用</span><span class="costbtn__est">≈0.6 卡时</span></a>
+                  </div>
+                </article>
+
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- ==================== 账线：缝合两个语域 ==================== -->
+        <div class="seam">
+          <div class="strip" aria-label="账线阶段">
+            <div class="strip__step" data-state="done"><span class="strip__dot">1</span><span class="strip__label">预估</span></div>
+            <div class="strip__line" data-done="true"></div>
+            <div class="strip__step" data-state="done"><span class="strip__dot">2</span><span class="strip__label">冻结</span></div>
+            <div class="strip__line" data-done="true"></div>
+            <div class="strip__step" data-state="active"><span class="strip__dot">3</span><span class="strip__label">结算</span></div>
+            <div class="strip__line"></div>
+            <div class="strip__step"><span class="strip__dot">4</span><span class="strip__label">回执</span></div>
+            <span class="strip__meta">同一条账线：上面卡片里的预估价，就是下面票据的结算依据</span>
+          </div>
+        </div>
+
+        <!-- ==================== 下半部 · 处置语域 ==================== -->
+        <div class="reg mt-5">
+          <span class="reg__tag reg__tag--op">处置 · OPERATION</span>
+          <span class="t-micro">高密度 · 数字与状态优先 —— 还剩多少、正在跑什么、什么在等我</span>
+        </div>
+
+        <div class="grid grid--4">
+          <div class="card kpi kpi--accent-quota">
+            <div class="kpi__label">Token 可用</div>
+            <div class="kpi__value"><span class="num-xl">4.39M</span><span class="kpi__unit">Token</span></div>
+            <div class="levelbar levelbar--sm mt-3"><div class="levelbar__track">
+              <div class="levelbar__seg levelbar__seg--used" style="width:61.83%"></div>
+              <div class="levelbar__seg levelbar__seg--frozen" style="width:1.55%"></div>
+              <div class="levelbar__seg levelbar__seg--avail" style="width:36.62%"></div>
+            </div><div class="levelbar__tick" style="left:80%"></div><div class="levelbar__tick levelbar__tick--limit" style="left:100%"></div></div>
+            <div class="kpi__foot">总额度 12.00M · 已用 61.8%</div>
+          </div>
+
+          <div class="card kpi kpi--accent-compute">
+            <div class="kpi__label">卡时可用</div>
+            <div class="kpi__value"><span class="num-xl">2 098.0</span><span class="kpi__unit">卡时</span></div>
+            <div class="levelbar levelbar--sm mt-3"><div class="levelbar__track">
+              <div class="levelbar__seg levelbar__seg--used" style="width:57.2%"></div>
+              <div class="levelbar__seg levelbar__seg--frozen" style="width:0.84%"></div>
+              <div class="levelbar__seg levelbar__seg--avail" style="width:41.96%"></div>
+            </div><div class="levelbar__tick" style="left:80%"></div><div class="levelbar__tick levelbar__tick--limit" style="left:100%"></div></div>
+            <div class="kpi__foot">总额度 5 000 · 已用 57.2%</div>
+          </div>
+
+          <div class="card kpi kpi--accent-spend">
+            <div class="kpi__label">本月费用（分摊前）</div>
+            <div class="kpi__value">
+              <button class="num-xl numbtn" data-receipt>¥ 41,286</button>
+            </div>
+            <div class="kpi__foot">较上月 <span class="variance variance--over">+12.4%</span><span class="dot-sep">·</span>预算 ¥ 60,000</div>
+          </div>
+
+          <div class="card kpi">
+            <div class="kpi__label">进行中任务</div>
+            <div class="kpi__value"><span class="num-xl">12</span><span class="kpi__unit">个</span></div>
+            <div class="kpi__foot">
+              <span class="chip chip--compute"><i class="chip__dot"></i>运行中 9</span>
+              <span class="chip chip--spend"><i class="chip__dot"></i>排队中 3</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 我的任务 -->
+        <section class="card mt-4">
+          <div class="card__head">
+            <h2>我的任务</h2>
+            <span class="t-micro">共 12 个进行中 · 下表为最近 6 条</span>
+            <span class="spacer"></span>
+            <button class="btn btn--sm">查看全部</button>
+          </div>
+          <div class="dg-wrap" style="border:0;border-radius:0">
+            <table class="dg">
+              <thead>
+                <tr>
+                  <th>任务名</th>
+                  <th class="w-type">类型</th>
+                  <th class="w-status">状态</th>
+                  <th class="w-progress">进度</th>
+                  <th class="num w-num">卡时消耗</th>
+                  <th class="num w-num">Token 消耗</th>
+                  <th class="w-actions">操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="dg-primary">视频检查 · 批次 A</td>
+                  <td>智能体批任务</td>
+                  <td><span class="chip chip--compute"><i class="chip__dot"></i>运行中</span></td>
+                  <td><div class="capacity"><div class="capacity__track"><div class="capacity__fill" style="width:68%"></div></div><span class="capacity__val">68%</span></div></td>
+                  <td class="num"><button class="num-md numbtn" data-receipt>12.4</button></td>
+                  <td class="num"><button class="num-md numbtn" data-receipt>96.4k</button></td>
+                  <td><div class="dg-actions"><button class="btn btn--sm">查看</button></div></td>
+                </tr>
+                <tr>
+                  <td class="dg-primary">法务合同审查 · Q3 包</td>
+                  <td>行业应用</td>
+                  <td><span class="chip chip--compute"><i class="chip__dot"></i>运行中</span></td>
+                  <td><div class="capacity"><div class="capacity__track"><div class="capacity__fill" style="width:42%"></div></div><span class="capacity__val">42%</span></div></td>
+                  <td class="num"><button class="num-md numbtn" data-receipt>6.8</button></td>
+                  <td class="num"><button class="num-md numbtn" data-receipt>154.2k</button></td>
+                  <td><div class="dg-actions"><button class="btn btn--sm">查看</button></div></td>
+                </tr>
+                <tr>
+                  <td class="dg-primary">Qwen3-32B 效果评测</td>
+                  <td>模型评测</td>
+                  <td><span class="chip chip--compute"><i class="chip__dot"></i>运行中</span></td>
+                  <td><div class="capacity"><div class="capacity__track"><div class="capacity__fill" style="width:21%"></div></div><span class="capacity__val">21%</span></div></td>
+                  <td class="num"><button class="num-md numbtn" data-receipt>3.2</button></td>
+                  <td class="num"><button class="num-md numbtn" data-receipt>126.5k</button></td>
+                  <td><div class="dg-actions"><button class="btn btn--sm">查看</button></div></td>
+                </tr>
+                <tr>
+                  <td class="dg-primary">知识库增量向量化</td>
+                  <td>数据处理</td>
+                  <td><span class="chip chip--spend"><i class="chip__dot"></i>排队中</span></td>
+                  <td><span class="t-micro">等待算力释放</span></td>
+                  <td class="num">—</td>
+                  <td class="num">—</td>
+                  <td><div class="dg-actions"><button class="btn btn--sm">取消</button></div></td>
+                </tr>
+                <tr>
+                  <td class="dg-primary">InternVL2-26B 微调 v3</td>
+                  <td>模型微调</td>
+                  <td><span class="chip chip--compute"><i class="chip__dot"></i>运行中</span></td>
+                  <td><div class="capacity"><div class="capacity__track"><div class="capacity__fill" style="width:87%"></div></div><span class="capacity__val">87%</span></div></td>
+                  <td class="num"><button class="num-md numbtn" data-receipt>24.0</button></td>
+                  <td class="num"><button class="num-md numbtn" data-receipt>18.2k</button></td>
+                  <td><div class="dg-actions"><button class="btn btn--sm">查看</button></div></td>
+                </tr>
+                <tr data-state="risk">
+                  <td class="dg-primary">语音转写批处理</td>
+                  <td>数据处理</td>
+                  <td><span class="chip chip--risk"><i class="chip__dot"></i>失败</span></td>
+                  <td><div class="capacity"><div class="capacity__track"><div class="capacity__fill" data-state="full" style="width:34%"></div></div><span class="capacity__val">34%</span></div></td>
+                  <td class="num"><button class="num-md numbtn" data-receipt>1.4</button></td>
+                  <td class="num"><button class="num-md numbtn" data-receipt>62.4k</button></td>
+                  <td><div class="dg-actions"><button class="btn btn--sm">重试</button></div></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card__foot row">
+            <span class="t-micro">失败的实例将在 2 小时后自动解冻并返还冻结卡时。</span>
+            <span class="spacer"></span>
+            <button class="btn btn--sm btn--primary">新建任务</button>
+          </div>
+        </section>
+
+        <div class="grid grid--2 mt-4">
+
+          <!-- 最近回执 -->
+          <section class="card">
+            <div class="card__head">
+              <h2>最近回执</h2>
+              <span class="t-micro">预估 → 冻结 → 结算</span>
+              <span class="spacer"></span>
+              <span class="chip chip--neutral"><i class="chip__dot"></i>⌥R 展开</span>
+            </div>
+            <div class="card__body">
+              <div class="col" style="gap:var(--sp-3)">
+
+                <div class="row" style="gap:var(--sp-3)">
+                  <span class="num-sm" style="width:38px">14:32</span>
+                  <span class="t-meta" style="flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">知识问答 · 会话结算</span>
+                  <button class="num-md numbtn" data-receipt>1,180</button>
+                  <span class="t-micro" style="width:34px">Token</span>
+                  <span class="variance variance--under" style="width:52px;justify-content:flex-end">-4.8%</span>
+                </div>
+
+                <div class="row" style="gap:var(--sp-3)">
+                  <span class="num-sm" style="width:38px">13:07</span>
+                  <span class="t-meta" style="flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">视频检查 · 批任务结算</span>
+                  <button class="num-md numbtn" data-receipt>42,600</button>
+                  <span class="t-micro" style="width:34px">Token</span>
+                  <span class="variance variance--under" style="width:52px;justify-content:flex-end">+6.5%</span>
+                </div>
+
+                <div class="row" style="gap:var(--sp-3)">
+                  <span class="num-sm" style="width:38px">11:48</span>
+                  <span class="t-meta" style="flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">推理实例 · 卡时结算</span>
+                  <button class="num-md numbtn" data-receipt>36.5</button>
+                  <span class="t-micro" style="width:34px">卡时</span>
+                  <span class="variance variance--under" style="width:52px;justify-content:flex-end">-8.8%</span>
+                </div>
+
+              </div>
+
+              <hr class="divider">
+
+              <div class="row row--between">
+                <span class="t-micro">今日已结算</span>
+                <span class="row" style="gap:var(--sp-3)">
+                  <span class="num-md">43.8k <span class="t-micro">Token</span></span>
+                  <span class="num-md">36.5 <span class="t-micro">卡时</span></span>
+                </span>
+              </div>
+              <button class="btn btn--sm w-full mt-3" data-receipt>查看全部回执</button>
+            </div>
+          </section>
+
+          <!-- 待处理 -->
+          <section class="card">
+            <div class="card__head">
+              <h2>待处理</h2>
+              <span class="chip chip--risk"><i class="chip__dot"></i>1 条告警</span>
+              <span class="spacer"></span>
+              <span class="t-micro">共 6 项</span>
+            </div>
+            <div class="card__body col" style="gap:var(--sp-4)">
+
+              <div>
+                <div class="t-micro mb-3">待审批申请 · 2</div>
+                <div class="col" style="gap:2px">
+                  <div class="todo">
+                    <span class="chip chip--spend"><i class="chip__dot"></i>待审批</span>
+                    <span class="todo__text">算力申请 · InternVL2-26B 微调 · ≈48 卡时</span>
+                    <button class="btn btn--sm">审批</button>
+                  </div>
+                  <div class="todo">
+                    <span class="chip chip--spend"><i class="chip__dot"></i>待审批</span>
+                    <span class="todo__text">配额追加 · 项目「标书撰写」· ≈2.0M Token</span>
+                    <button class="btn btn--sm">审批</button>
+                  </div>
+                </div>
+              </div>
+
+              <hr class="divider" style="margin:0">
+
+              <div>
+                <div class="t-micro mb-3">告警 · 1</div>
+                <div class="todo">
+                  <span class="chip chip--risk"><i class="chip__dot"></i>额度告警</span>
+                  <span class="todo__text">标书撰写 Token 已用 92.6%，预计 3 天后触顶</span>
+                  <button class="btn btn--sm">处理</button>
+                </div>
+              </div>
+
+              <hr class="divider" style="margin:0">
+
+              <div>
+                <div class="t-micro mb-3">即将到期的实例 · 3</div>
+                <div class="col" style="gap:2px">
+                  <div class="todo">
+                    <span class="chip chip--spend"><i class="chip__dot"></i>即将到期</span>
+                    <span class="todo__text">推理实例 inf-3f2a · Qwen3-32B · 剩余 <span class="num-sm">6</span> 小时</span>
+                    <button class="btn btn--sm">续期</button>
+                  </div>
+                  <div class="todo">
+                    <span class="chip chip--spend"><i class="chip__dot"></i>即将到期</span>
+                    <span class="todo__text">批任务队列 slot-a · 剩余 <span class="num-sm">18</span> 小时</span>
+                    <button class="btn btn--sm">续期</button>
+                  </div>
+                  <div class="todo">
+                    <span class="chip chip--spend"><i class="chip__dot"></i>即将到期</span>
+                    <span class="todo__text">微调实例 ft-9c14 · InternVL2-26B · 剩余 <span class="num-sm">41</span> 小时</span>
+                    <button class="btn btn--sm">续期</button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </section>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <aside class="ledger" id="ledger" aria-label="消耗上下文"></aside>
+</div>
+
+<template id="band-actions">
+  <select class="select" aria-label="项目切换">
+    <option>视觉检索平台</option><option>合同审查</option><option>标书撰写</option>
+  </select>
+  <button class="btn btn--primary">新建任务</button>
+</template>
+
+<template id="band-ribbon">
+  <div class="ribbon ribbon--risk">1 个任务失败：「语音转写批处理」中断于 34%，冻结的 1.4 卡时将于 2 小时后解冻返还
+    <span class="ribbon__more">还有 1 条告警</span></div>
+</template>
+
+<template id="ledger-extra">
+  <h3>本页待处理</h3>
+  <div class="col" style="gap:var(--sp-2)">
+    <div class="row" style="gap:var(--sp-2)"><span class="chip chip--risk"><i class="chip__dot"></i>告警</span><span class="t-micro">标书撰写 Token 92.6%</span></div>
+    <div class="row" style="gap:var(--sp-2)"><span class="chip chip--spend"><i class="chip__dot"></i>审批</span><span class="t-micro">2 条待批 · 约 48 卡时</span></div>
+    <div class="row" style="gap:var(--sp-2)"><span class="chip chip--spend"><i class="chip__dot"></i>到期</span><span class="t-micro">3 个实例 41 小时内到期</span></div>
+  </div>
+</template>
+
+<script src="assets/charts.js"></script>
+<script src="assets/app.js?v=20260924-7"></script>
+</body>
+</html>
